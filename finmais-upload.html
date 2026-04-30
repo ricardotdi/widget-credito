@@ -457,6 +457,48 @@
 
   <script>
     const BACKEND = "https://credito-backend-ffnk.onrender.com/send-documents";
+    const VALIDAR = "https://credito-backend-ffnk.onrender.com/validar-token";
+
+    // Verificar token ao carregar a página
+    async function verificarToken() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+
+      if (!token) {
+        mostrarErro("Link inválido. Por favor contacte a FinMais para obter um novo link.");
+        return;
+      }
+
+      try {
+        const res = await fetch(VALIDAR + "?token=" + token);
+        const data = await res.json();
+
+        if (!data.valid) {
+          mostrarErro(data.motivo || "Link inválido ou expirado.");
+          return;
+        }
+
+        // Preencher nome do cliente automaticamente
+        document.getElementById("cliente-nome").value = data.clienteNome;
+        document.getElementById("cliente-nome").readOnly = true;
+
+      } catch (e) {
+        mostrarErro("Erro ao validar o link. Tente novamente.");
+      }
+    }
+
+    function mostrarErro(msg) {
+      document.querySelector(".card-body").innerHTML = `
+        <div style="text-align:center; padding: 40px 20px;">
+          <div style="font-size:3rem; margin-bottom:16px;">⏰</div>
+          <h2 style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:#1a1814; margin-bottom:12px;">Link expirado ou inválido</h2>
+          <p style="color:#7a7162; font-size:0.9rem; line-height:1.6;">${msg}</p>
+          <p style="margin-top:16px;"><a href="https://www.finmais.pt" style="color:#A19276; font-size:0.85rem;">www.finmais.pt</a></p>
+        </div>
+      `;
+    }
+
+    window.addEventListener("DOMContentLoaded", verificarToken);
 
     const totalDocs = 6;
     const uploadedFiles = {};
