@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>FinMais — Envio de Documentos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap');
 
@@ -457,15 +456,7 @@
   </div>
 
   <script>
-    // =============================================
-    // CONFIGURAÇÃO EMAILJS
-    // Substitui os valores abaixo após criar conta
-    // =============================================
-    const EMAILJS_PUBLIC_KEY  = "LgU6ujg1KWALK8Tlq";   // Account > API Keys
-    const EMAILJS_SERVICE_ID  = "service_ggkmve9";   // Email Services
-    const EMAILJS_TEMPLATE_ID = "template_yhhppdh";  // Email Templates
-
-    emailjs.init(EMAILJS_PUBLIC_KEY);
+    const BACKEND = "https://credito-backend-ffnk.onrender.com/send-documents";
 
     const totalDocs = 6;
     const uploadedFiles = {};
@@ -540,32 +531,30 @@
           "Certidão Permanente do Imóvel"
         ];
 
-        // Construir lista de documentos enviados
-        let docList = "";
-        const attachments = [];
+        const ficheiros = [];
+        const docList = [];
 
         for (const [index, files] of Object.entries(uploadedFiles)) {
           for (const file of files) {
             const b64 = await fileToBase64(file);
-            attachments.push({ name: file.name, data: b64, type: file.type });
-            docList += "✅ " + docNames[index] + " — " + file.name + "\n";
+            ficheiros.push({ name: file.name, type: file.type, data: b64 });
+            docList.push("✅ " + docNames[index] + " — " + file.name);
           }
         }
 
-        // Documentos em falta
         for (let i = 0; i < totalDocs; i++) {
           if (!uploadedFiles[i]) {
-            docList += "❌ " + docNames[i] + " — não enviado\n";
+            docList.push("❌ " + docNames[i] + " — não enviado");
           }
         }
 
-        const templateParams = {
-          cliente_nome: nome,
-          doc_list: docList,
-          total_enviados: Object.keys(uploadedFiles).length + " de " + totalDocs,
-        };
+        const res = await fetch(BACKEND, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ clienteNome: nome, docList, ficheiros })
+        });
 
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        if (!res.ok) throw new Error("Erro no servidor");
 
         statusEl.textContent = "✅ Documentos enviados com sucesso! Entraremos em contacto brevemente.";
         statusEl.className = "status-msg ok";
