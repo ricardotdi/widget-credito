@@ -1,611 +1,179 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <title>Simulador Crédito Habitação</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg: #f3f4f6;
-      --card-bg: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --radius: 14px;
-      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Simulador Crédito Habitação</title>
 
-    * {
-      box-sizing: border-box;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+  max-width: 480px;
+  margin: auto;
+}
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #e0f2fe, #f9fafb);
-      color: var(--text);
-    }
+h2 {
+  margin-top: 30px;
+}
 
-    .widget-root {
-      max-width: 960px;
-      margin: 30px auto;
-      padding: 20px;
-    }
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
 
-    .widget-card {
-      background: linear-gradient(135deg, #ffffff, #f9fafb);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      padding: 24px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      gap: 28px;
-    }
+button {
+  background: #0078ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
 
-    @media (max-width: 800px) {
-      .widget-card {
-        grid-template-columns: 1fr;
-      }
-    }
+button:hover {
+  background: #005fcc;
+}
 
-    .widget-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 18px;
-    }
+.box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
 
-    .widget-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .widget-subtitle {
-      font-size: 0.9rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .badge {
-      font-size: 0.75rem;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(37, 99, 235, 0.08);
-      color: var(--primary-dark);
-      border: 1px solid rgba(37, 99, 235, 0.25);
-    }
-
-    .section-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .inputs-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    @media (max-width: 600px) {
-      .inputs-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .field label {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .field input,
-    .field select {
-      padding: 9px 11px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      font-size: 0.9rem;
-      outline: none;
-      background: #f9fafb;
-      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-    }
-
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--primary);
-      background: #ffffff;
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
-    }
-
-    .field small {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    .actions-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      border-radius: 999px;
-      border: none;
-      padding: 9px 16px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #ffffff;
-      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(37, 99, 235, 0.4);
-    }
-
-    .btn-ghost {
-      background: rgba(15, 23, 42, 0.02);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    .btn-ghost:hover {
-      background: rgba(15, 23, 42, 0.04);
-    }
-
-    .results-card {
-      background: rgba(15, 23, 42, 0.02);
-      border-radius: 18px;
-      padding: 14px 16px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-    }
-
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .result-item {
-      padding: 8px 10px;
-      border-radius: 12px;
-      background: #ffffff;
-      border: 1px solid rgba(226, 232, 240, 0.9);
-    }
-
-    .result-label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 2px;
-    }
-
-    .result-value {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .result-tagline {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 8px;
-    }
-
-    .lead-card {
-      background: #0f172a;
-      color: #e5e7eb;
-      border-radius: 18px;
-      padding: 16px 16px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .lead-card::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 55%);
-      opacity: 0.9;
-      pointer-events: none;
-    }
-
-    .lead-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .lead-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .lead-subtitle {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      margin-bottom: 8px;
-    }
-
-    .lead-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-
-    .lead-field label {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-bottom: 2px;
-      display: block;
-    }
-
-    .lead-field input {
-      width: 100%;
-      padding: 7px 9px;
-      border-radius: 9px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      font-size: 0.85rem;
-      outline: none;
-    }
-
-    .lead-field input:focus {
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
-    }
-
-    .lead-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 6px;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .lead-note {
-      font-size: 0.7rem;
-      color: #9ca3af;
-    }
-
-    .lead-btn {
-      border-radius: 999px;
-      border: none;
-      padding: 7px 14px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      background: #38bdf8;
-      color: #0f172a;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .lead-btn:hover {
-      background: #0ea5e9;
-    }
-
-    .status {
-      margin-top: 6px;
-      font-size: 0.8rem;
-    }
-
-    .status.ok {
-      color: #16a34a;
-    }
-
-    .status.err {
-      color: #dc2626;
-    }
-  </style>
+.result {
+  font-size: 18px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+</style>
 </head>
+
 <body>
-  <div class="widget-root">
-    <div class="widget-card">
-      <!-- Coluna esquerda: simulação -->
-      <div>
-        <div class="widget-header">
-          <div>
-            <div class="widget-title">Simulador de Crédito Habitação</div>
-            <div class="widget-subtitle">Simule a prestação, exporte o plano e peça contacto em menos de 1 minuto.</div>
-          </div>
-          <div class="badge">Simulação indicativa</div>
-        </div>
 
-        <div>
-          <div class="section-title">Dados do empréstimo</div>
-          <div class="inputs-grid">
-            <div class="field">
-              <label>Valor do empréstimo (€)</label>
-              <input id="valor" type="number" min="1000" step="500" placeholder="ex: 180000" />
-              <small>Montante a financiar.</small>
-            </div>
-            <div class="field">
-              <label>Prazo (anos)</label>
-              <input id="anos" type="number" min="5" max="50" step="1" placeholder="ex: 30" />
-              <small>Prazo total do contrato.</small>
-            </div>
-            <div class="field">
-              <label>Euribor (%)</label>
-              <input id="euribor" type="number" step="0.01" placeholder="ex: 3.50" />
-              <small>Taxa de referência (ex: 12M).</small>
-            </div>
-            <div class="field">
-              <label>Spread (%)</label>
-              <input id="spread" type="number" step="0.01" placeholder="ex: 1.20" />
-              <small>Margem do banco.</small>
-            </div>
-          </div>
+<h1>Simulador de Crédito Habitação</h1>
 
-          <div class="actions-row">
-            <button class="btn btn-primary" onclick="simular()">
-              <span>Calcular prestação</span>
-            </button>
-            <button class="btn btn-ghost" onclick="exportarExcel()">
-              <span>Exportar plano em Excel</span>
-            </button>
-          </div>
-          <div id="status-sim" class="status"></div>
-        </div>
+<div class="box">
+  <h2>Simulação indicativa</h2>
 
-        <div style="margin-top:18px;">
-          <div class="section-title">Resumo da simulação</div>
-          <div class="results-card">
-            <div class="results-grid">
-              <div class="result-item">
-                <div class="result-label">Prestação mensal</div>
-                <div id="res-prestacao" class="result-value">—</div>
-              </div>
-              <div class="result-item">
-                <div class="result-label">Taxa anual (TAN)</div>
-                <div id="res-tan" class="result-value">—</div>
-              </div>
-              <div class="result-item">
-                <div class="result-label">Prazo total</div>
-                <div id="res-prazo" class="result-value">—</div>
-              </div>
-              <div class="result-item">
-                <div class="result-label">Custo total aproximado</div>
-                <div id="res-total" class="result-value">—</div>
-              </div>
-            </div>
-            <div class="result-tagline">
-              Valores meramente indicativos. A aprovação e condições finais dependem da análise da instituição de crédito.
-            </div>
-          </div>
-        </div>
-      </div>
+  <label>Valor do empréstimo (€)</label>
+  <input id="valor" type="number" value="130000" />
 
-      <!-- Coluna direita: lead -->
-      <div>
-        <div class="lead-card">
-          <div class="lead-inner">
-            <div class="lead-title">Quer ser contactado por um especialista?</div>
-            <div class="lead-subtitle">
-              Envie os seus dados e receba uma simulação personalizada com condições reais de mercado.
-            </div>
+  <label>Prazo (anos)</label>
+  <input id="anos" type="number" value="32" />
 
-            <div class="lead-grid">
-              <div class="lead-field">
-                <label>Nome</label>
-                <input id="lead-nome" type="text" placeholder="O seu nome" />
-              </div>
-              <div class="lead-field">
-                <label>Email</label>
-                <input id="lead-email" type="email" placeholder="ex: nome@exemplo.pt" />
-              </div>
-              <div class="lead-field">
-                <label>Telemóvel</label>
-                <input id="lead-telefone" type="tel" placeholder="ex: 9xx xxx xxx" />
-              </div>
-            </div>
+  <label>Euribor (%)</label>
+  <input id="euribor" type="number" value="0" />
 
-            <div class="lead-footer">
-              <div class="lead-note">
-                Ao enviar, autoriza o contacto para efeitos de simulação de crédito habitação.
-              </div>
-              <button class="lead-btn" onclick="enviarLead()">
-                <span>Quero ser contactado</span>
-              </button>
-            </div>
+  <label>Spread (%)</label>
+  <input id="spread" type="number" value="1.4" />
 
-            <div id="status-lead" class="status"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <button onclick="calcular()">Calcular prestação</button>
 
-  <script>
-    const API_BASE = "https://credito-backend-ffnk.onrender.com/api"; // TROCAR PELO TEU ENDPOINT
-    const CLIENT_ID = "CLIENTE123"; // ID do cliente/imobiliária
+  <div id="resultado" class="result"></div>
 
-    function formatEuro(v) {
-      if (isNaN(v)) return "—";
-      return v.toLocaleString("pt-PT", {
-        style: "currency",
-        currency: "EUR",
-        maximumFractionDigits: 2
-      });
+  <button onclick="exportarExcel()">Exportar plano em Excel</button>
+</div>
+
+<div class="box">
+  <h2>Quer ser contactado?</h2>
+
+  <label>Nome</label>
+  <input id="nome" type="text" />
+
+  <label>Email</label>
+  <input id="email" type="email" />
+
+  <label>Telemóvel</label>
+  <input id="telefone" type="text" />
+
+  <button onclick="enviarLead()">Quero ser contactado</button>
+
+  <div id="leadMsg" class="result"></div>
+</div>
+
+<script>
+function calcular() {
+  try {
+    const valor = parseFloat(document.getElementById("valor").value);
+    const anos = parseFloat(document.getElementById("anos").value);
+    const euribor = parseFloat(document.getElementById("euribor").value);
+    const spread = parseFloat(document.getElementById("spread").value);
+
+    const meses = anos * 12;
+    const taxaMensal = (euribor + spread) / 100 / 12;
+
+    const prestacao =
+      (valor * taxaMensal) / (1 - Math.pow(1 + taxaMensal, -meses));
+
+    if (isNaN(prestacao)) {
+      document.getElementById("resultado").innerHTML =
+        "Ocorreu um erro ao calcular. Verifique os valores.";
+      return;
     }
 
-    async function simular() {
-      const valor = parseFloat(document.getElementById("valor").value);
-      const anos = parseInt(document.getElementById("anos").value);
-      const euribor = parseFloat(document.getElementById("euribor").value);
-      const spread = parseFloat(document.getElementById("spread").value);
-      const status = document.getElementById("status-sim");
+    document.getElementById("resultado").innerHTML =
+      "Prestação mensal: " + prestacao.toFixed(2) + " €";
+  } catch (e) {
+    document.getElementById("resultado").innerHTML =
+      "Ocorreu um erro ao calcular. Tente novamente.";
+  }
+}
 
-      status.textContent = "";
-      status.className = "status";
+function exportarExcel() {
+  alert("Funcionalidade disponível na próxima versão.");
+}
 
-      if (!valor || !anos || isNaN(euribor) || isNaN(spread)) {
-        status.textContent = "Preencha todos os campos da simulação.";
-        status.classList.add("err");
-        return;
+async function enviarLead() {
+  const nome = document.getElementById("nome").value;
+  const email = document.getElementById("email").value;
+  const telefone = document.getElementById("telefone").value;
+
+  if (!nome || !email || !telefone) {
+    document.getElementById("leadMsg").innerHTML =
+      "Preencha todos os campos.";
+    return;
+  }
+
+  const payload = {
+    nome,
+    email,
+    telefone,
+    rendimento: "N/A",
+    valorCredito: document.getElementById("valor").value,
+    prazo: document.getElementById("anos").value,
+    tipoTaxa: "Euribor + Spread"
+  };
+
+  try {
+    const response = await fetch(
+      "https://credito-backend-ffnk.onrender.com/send-email",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       }
+    );
 
-      const meses = anos * 12;
-      const taxaAnual = euribor + spread;
+    const result = await response.json();
 
-      try {
-        const res = await fetch(API_BASE + "/calculate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            valor,
-            euribor,
-            spread,
-            meses
-          })
-        });
-
-        if (!res.ok) throw new Error();
-
-        const data = await res.json();
-
-        document.getElementById("res-prestacao").textContent = formatEuro(
-          parseFloat(data.prestacao)
-        );
-        document.getElementById("res-tan").textContent =
-          taxaAnual.toFixed(2) + " %";
-        document.getElementById("res-prazo").textContent =
-          anos + " anos (" + meses + " meses)";
-        document.getElementById("res-total").textContent = formatEuro(
-          parseFloat(data.total)
-        );
-
-        status.textContent = "Simulação atualizada.";
-        status.classList.add("ok");
-      } catch (e) {
-        status.textContent = "Ocorreu um erro ao calcular. Tente novamente.";
-        status.classList.add("err");
-      }
+    if (result.success) {
+      document.getElementById("leadMsg").innerHTML =
+        "Lead enviada com sucesso!";
+    } else {
+      document.getElementById("leadMsg").innerHTML =
+        "Erro ao enviar a lead. Tente novamente.";
     }
+  } catch (e) {
+    document.getElementById("leadMsg").innerHTML =
+      "Erro ao enviar a lead. Verifique a ligação.";
+  }
+}
+</script>
 
-    async function exportarExcel() {
-      const valor = parseFloat(document.getElementById("valor").value);
-      const anos = parseInt(document.getElementById("anos").value);
-      const euribor = parseFloat(document.getElementById("euribor").value);
-      const spread = parseFloat(document.getElementById("spread").value);
-      const status = document.getElementById("status-sim");
-
-      status.textContent = "";
-      status.className = "status";
-
-      if (!valor || !anos || isNaN(euribor) || isNaN(spread)) {
-        status.textContent = "Preencha os dados antes de exportar o plano.";
-        status.classList.add("err");
-        return;
-      }
-
-      const meses = anos * 12;
-      const taxa = euribor + spread;
-
-      try {
-        const res = await fetch(API_BASE + "/schedule/export", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            valor,
-            taxa,
-            meses
-          })
-        });
-
-        if (!res.ok) throw new Error();
-
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "plano_prestacional.xlsx";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-
-        status.textContent = "Plano prestacional exportado em Excel.";
-        status.classList.add("ok");
-      } catch (e) {
-        status.textContent = "Erro ao exportar o plano. Tente novamente.";
-        status.classList.add("err");
-      }
-    }
-
-    async function enviarLead() {
-      const nome = document.getElementById("lead-nome").value.trim();
-      const email = document.getElementById("lead-email").value.trim();
-      const telefone = document.getElementById("lead-telefone").value.trim();
-      const valor = parseFloat(document.getElementById("valor").value) || null;
-      const anos = parseInt(document.getElementById("anos").value) || null;
-      const euribor = parseFloat(document.getElementById("euribor").value) || null;
-      const spread = parseFloat(document.getElementById("spread").value) || null;
-      const taxa = euribor && spread ? euribor + spread : null;
-
-      const status = document.getElementById("status-lead");
-      status.textContent = "";
-      status.className = "status";
-
-      if (!nome || !email || !telefone) {
-        status.textContent = "Preencha nome, email e telemóvel.";
-        status.classList.add("err");
-        return;
-      }
-
-      try {
-        const res = await fetch(API_BASE + "/lead", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            clientId: CLIENT_ID,
-            nome,
-            email,
-            telefone,
-            valor,
-            prazo: anos ? anos * 12 : null,
-            taxa
-          })
-        });
-
-        if (!res.ok) throw new Error();
-
-        status.textContent = "Lead enviada com sucesso. Será contactado em breve.";
-        status.classList.add("ok");
-      } catch (e) {
-        status.textContent = "Erro ao enviar a lead. Tente novamente.";
-        status.classList.add("err");
-      }
-    }
-  </script>
 </body>
 </html>
