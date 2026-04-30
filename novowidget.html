@@ -630,7 +630,6 @@
       const anos = parseInt(document.getElementById("anos").value) || null;
       const euribor = parseFloat(document.getElementById("euribor").value) || null;
       const spread = parseFloat(document.getElementById("spread").value) || null;
-      const taxa = euribor != null && spread != null ? euribor + spread : null;
       const status = document.getElementById("status-lead");
       status.textContent = "";
       status.className = "status";
@@ -639,6 +638,18 @@
         status.classList.add("err");
         return;
       }
+
+      // Construir campos de taxa conforme o tipo selecionado
+      let taxaInfo = "";
+      if (tipoTaxaAtual === "fixa") {
+        taxaInfo = spread != null ? "TAN: " + spread.toFixed(2) + "%" : "";
+      } else {
+        const partes = [];
+        if (euribor != null) partes.push("Euribor: " + euribor.toFixed(2) + "%");
+        if (spread != null) partes.push("Spread: " + spread.toFixed(2) + "%");
+        taxaInfo = partes.join(" | ");
+      }
+
       try {
         const res = await fetch("https://credito-backend-ffnk.onrender.com/send-email", {
           method: "POST",
@@ -647,10 +658,9 @@
             nome,
             email,
             telefone,
-            rendimento: "",
             valorCredito: valor != null ? String(valor) : "",
-            prazo: anos != null ? String(anos * 12) : "",
-            tipoTaxa: tipoTaxaAtual === "fixa" ? "Fixa" : "Variável"
+            prazo: anos != null ? String(anos) + " anos" : "",
+            tipoTaxa: (tipoTaxaAtual === "fixa" ? "Fixa" : "Variável") + (taxaInfo ? " — " + taxaInfo : "")
           })
         });
         if (!res.ok) throw new Error();
