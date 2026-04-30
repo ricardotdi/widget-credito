@@ -559,36 +559,30 @@
       const anos = parseInt(document.getElementById("anos").value) || null;
       const euribor = parseFloat(document.getElementById("euribor").value) || null;
       const spread = parseFloat(document.getElementById("spread").value) || null;
-      const taxa = euribor != null && !isNaN(euribor) && spread != null && !isNaN(spread)
-        ? euribor + spread
-        : null;
-
+      const taxa = euribor != null && spread != null ? euribor + spread : null;
       const status = document.getElementById("status-lead");
       status.textContent = "";
       status.className = "status";
-
       if (!nome || !email || !telefone) {
         status.textContent = "Preencha nome, email e telemóvel.";
         status.classList.add("err");
         return;
       }
-
       try {
-        const res = await fetch(LEAD_ENDPOINT, {
+        const res = await fetch("https://credito-backend-ffnk.onrender.com/send-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             nome,
             email,
             telefone,
-            valor: valor != null ? String(valor) : "",
+            rendimento: "",
+            valorCredito: valor != null ? String(valor) : "",
             prazo: anos != null ? String(anos * 12) : "",
-            taxa: taxa != null ? String(taxa) : ""
+            tipoTaxa: "Variável"
           })
         });
-
         if (!res.ok) throw new Error();
-
         status.textContent = "Lead enviada com sucesso. Será contactado em breve.";
         status.classList.add("ok");
       } catch (e) {
