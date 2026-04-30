@@ -12,43 +12,67 @@ body {
   padding: 20px;
   max-width: 480px;
   margin: auto;
+  color: #333;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 15px;
+  font-weight: bold;
 }
 
 h2 {
-  margin-top: 30px;
+  font-size: 18px;
+  margin-bottom: 15px;
+  font-weight: bold;
 }
 
-input, button {
+.box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+}
+
+input {
   width: 100%;
   padding: 12px;
-  margin-top: 10px;
-  border-radius: 6px;
+  margin-top: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  border-radius: 8px;
+  border: none;
   background: #0078ff;
   color: white;
-  border: none;
+  font-size: 16px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 button:hover {
   background: #005fcc;
 }
 
-.box {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 20px;
-}
-
 .result {
-  font-size: 18px;
-  margin-top: 10px;
+  margin-top: 15px;
+  font-size: 16px;
   font-weight: bold;
+  color: #0078ff;
 }
 </style>
 </head>
@@ -56,6 +80,7 @@ button:hover {
 <body>
 
 <h1>Simulador de Crédito Habitação</h1>
+<p>Simule a prestação, exporte o plano e peça contacto em menos de 1 minuto.</p>
 
 <div class="box">
   <h2>Simulação indicativa</h2>
@@ -64,7 +89,7 @@ button:hover {
   <input id="valor" type="number" value="130000" />
 
   <label>Prazo (anos)</label>
-  <input id="anos" type="number" value="32" />
+  <input id="anos" type="number" value="32.2" />
 
   <label>Euribor (%)</label>
   <input id="euribor" type="number" value="0" />
@@ -80,7 +105,8 @@ button:hover {
 </div>
 
 <div class="box">
-  <h2>Quer ser contactado?</h2>
+  <h2>Quer ser contactado por um especialista?</h2>
+  <p>Envie os seus dados e receba uma simulação personalizada com condições reais de mercado.</p>
 
   <label>Nome</label>
   <input id="nome" type="text" />
@@ -90,6 +116,10 @@ button:hover {
 
   <label>Telemóvel</label>
   <input id="telefone" type="text" />
+
+  <p style="font-size:12px; margin-top:10px;">
+    Ao enviar, autoriza o contacto para efeitos de simulação de crédito habitação.
+  </p>
 
   <button onclick="enviarLead()">Quero ser contactado</button>
 
