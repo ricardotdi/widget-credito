@@ -133,6 +133,42 @@
       color: var(--muted);
     }
 
+    .taxa-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 14px;
+      background: #f3f4f6;
+      border-radius: 999px;
+      padding: 4px 6px;
+      width: fit-content;
+      border: 1px solid var(--border);
+    }
+
+    .taxa-toggle span {
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: background 0.2s, color 0.2s;
+      user-select: none;
+    }
+
+    .taxa-toggle span.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    }
+
+    .field input:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+      border-color: #e5e7eb;
+    }
+
     .actions-row {
       display: flex;
       gap: 10px;
@@ -341,6 +377,12 @@
 
         <div>
           <div class="section-title">Dados do empréstimo</div>
+
+          <div class="taxa-toggle" style="margin-bottom:14px;">
+            <span id="toggle-variavel" class="active" onclick="setTaxa('variavel')">Taxa Variável</span>
+            <span id="toggle-fixa" onclick="setTaxa('fixa')">Taxa Fixa</span>
+          </div>
+
           <div class="inputs-grid">
             <div class="field">
               <label>Valor do empréstimo (€)</label>
@@ -352,15 +394,15 @@
               <input id="anos" type="number" min="5" max="50" step="1" placeholder="ex: 30" />
               <small>Prazo total do contrato.</small>
             </div>
-            <div class="field">
-              <label>Euribor (%)</label>
+            <div class="field" id="field-euribor">
+              <label id="label-euribor">Euribor (%)</label>
               <input id="euribor" type="number" step="0.01" placeholder="ex: 3.50" />
-              <small>Taxa de referência (ex: 12M).</small>
+              <small id="small-euribor">Taxa de referência (ex: 12M).</small>
             </div>
             <div class="field">
-              <label>Spread (%)</label>
+              <label id="label-spread">Spread (%)</label>
               <input id="spread" type="number" step="0.01" placeholder="ex: 1.20" />
-              <small>Margem do banco.</small>
+              <small id="small-spread">Margem do banco.</small>
             </div>
           </div>
 
@@ -464,24 +506,51 @@
       });
     }
 
+    var tipoTaxaAtual = "variavel";
+
+    function setTaxa(tipo) {
+      tipoTaxaAtual = tipo;
+      const euriborInput = document.getElementById("euribor");
+      const fieldEuribor = document.getElementById("field-euribor");
+      const labelSpread = document.getElementById("label-spread");
+      const smallSpread = document.getElementById("small-spread");
+
+      if (tipo === "fixa") {
+        document.getElementById("toggle-fixa").classList.add("active");
+        document.getElementById("toggle-variavel").classList.remove("active");
+        euriborInput.disabled = true;
+        euriborInput.value = "";
+        fieldEuribor.style.opacity = "0.4";
+        labelSpread.textContent = "TAN (%)";
+        smallSpread.textContent = "Taxa Anual Nominal fixa.";
+      } else {
+        document.getElementById("toggle-variavel").classList.add("active");
+        document.getElementById("toggle-fixa").classList.remove("active");
+        euriborInput.disabled = false;
+        fieldEuribor.style.opacity = "1";
+        labelSpread.textContent = "Spread (%)";
+        smallSpread.textContent = "Margem do banco.";
+      }
+    }
+
     function simular() {
       const valor = parseFloat(document.getElementById("valor").value);
       const anos = parseInt(document.getElementById("anos").value);
-      const euribor = parseFloat(document.getElementById("euribor").value);
+      const euribor = tipoTaxaAtual === "fixa" ? 0 : parseFloat(document.getElementById("euribor").value);
       const spread = parseFloat(document.getElementById("spread").value);
       const status = document.getElementById("status-sim");
 
       status.textContent = "";
       status.className = "status";
 
-      if (!valor || !anos || isNaN(euribor) || isNaN(spread)) {
+      if (!valor || !anos || (tipoTaxaAtual === "variavel" && isNaN(euribor)) || isNaN(spread)) {
         status.textContent = "Preencha todos os campos da simulação.";
         status.classList.add("err");
         return;
       }
 
       const meses = anos * 12;
-      const taxaAnual = euribor + spread;
+      const taxaAnual = tipoTaxaAtual === "fixa" ? spread : euribor + spread;
       const taxaMensal = taxaAnual / 100 / 12;
 
       let prestacao;
@@ -504,21 +573,21 @@
     function exportarExcel() {
       const valor = parseFloat(document.getElementById("valor").value);
       const anos = parseInt(document.getElementById("anos").value);
-      const euribor = parseFloat(document.getElementById("euribor").value);
+      const euribor = tipoTaxaAtual === "fixa" ? 0 : parseFloat(document.getElementById("euribor").value);
       const spread = parseFloat(document.getElementById("spread").value);
       const status = document.getElementById("status-sim");
 
       status.textContent = "";
       status.className = "status";
 
-      if (!valor || !anos || isNaN(euribor) || isNaN(spread)) {
+      if (!valor || !anos || (tipoTaxaAtual === "variavel" && isNaN(euribor)) || isNaN(spread)) {
         status.textContent = "Preencha os dados antes de exportar o plano.";
         status.classList.add("err");
         return;
       }
 
       const meses = anos * 12;
-      const taxaAnual = euribor + spread;
+      const taxaAnual = tipoTaxaAtual === "fixa" ? spread : euribor + spread;
       const taxaMensal = taxaAnual / 100 / 12;
 
       let prestacao;
@@ -581,7 +650,7 @@
             rendimento: "",
             valorCredito: valor != null ? String(valor) : "",
             prazo: anos != null ? String(anos * 12) : "",
-            tipoTaxa: "Variável"
+            tipoTaxa: tipoTaxaAtual === "fixa" ? "Fixa" : "Variável"
           })
         });
         if (!res.ok) throw new Error();
