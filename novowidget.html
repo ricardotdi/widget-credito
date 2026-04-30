@@ -9,8 +9,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
+      --primary: #A19276;
+      --primary-dark: #8a7d65;
       --bg: #f3f4f6;
       --card-bg: #ffffff;
       --text: #111827;
@@ -26,7 +26,7 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #e0f2fe, #f9fafb);
+      background: radial-gradient(circle at top left, #f5f0ea, #f9fafb);
       color: var(--text);
     }
 
@@ -75,9 +75,9 @@
       font-size: 0.75rem;
       padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(37, 99, 235, 0.08);
-      color: var(--primary-dark);
-      border: 1px solid rgba(37, 99, 235, 0.25);
+      background: rgba(161, 146, 118, 0.08);
+      color: #8a7d65;
+      border: 1px solid rgba(161, 146, 118, 0.35);
     }
 
     .section-title {
@@ -125,9 +125,9 @@
 
     .field input:focus,
     .field select:focus {
-      border-color: var(--primary);
+      border-color: #A19276;
       background: #ffffff;
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.35);
     }
 
     .field small {
@@ -159,9 +159,9 @@
     }
 
     .taxa-toggle span.active {
-      background: var(--primary);
+      background: #A19276;
       color: #fff;
-      box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+      box-shadow: 0 4px 12px rgba(161,146,118,0.25);
     }
 
     .field input:disabled {
@@ -193,15 +193,15 @@
     }
 
     .btn-primary {
-      background: var(--primary);
+      background: #A19276;
       color: #ffffff;
-      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 10px 25px rgba(161, 146, 118, 0.35);
     }
 
     .btn-primary:hover {
       background: var(--primary-dark);
       transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 14px 30px rgba(161, 146, 118, 0.4);
     }
 
     .btn-ghost {
@@ -338,8 +338,8 @@
       font-size: 0.8rem;
       font-weight: 500;
       cursor: pointer;
-      background: #38bdf8;
-      color: #0f172a;
+      background: #A19276;
+      color: #ffffff;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -347,7 +347,7 @@
     }
 
     .lead-btn:hover {
-      background: #0ea5e9;
+      background: #8a7d65;
     }
 
     .status {
@@ -473,7 +473,7 @@
                 Ao enviar, autoriza o contacto para efeitos de simulação de crédito habitação.
               </div>
               <button class="lead-btn" onclick="enviarLead()">
-                <span>Quero ser contactado</span>
+                <span>Submeter</span>
               </button>
             </div>
 
@@ -730,7 +730,7 @@
 
       // Título
       doc.setFontSize(16);
-      doc.setTextColor(37, 99, 235);
+      doc.setTextColor(161, 146, 118);
       doc.setFont(undefined, "bold");
       doc.text("Simulador Crédito Habitação", pageW / 2, 32, { align: "center" });
 
@@ -757,7 +757,7 @@
         head: [["Parâmetro", "Valor"]],
         body: resumo,
         theme: "grid",
-        headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: "bold", fontSize: 10 },
+        headStyles: { fillColor: [161, 146, 118], textColor: 255, fontStyle: "bold", fontSize: 10 },
         bodyStyles: { fontSize: 10 },
         columnStyles: { 0: { fontStyle: "bold", cellWidth: 80 }, 1: { cellWidth: 80 } },
         margin: { left: (pageW - 160) / 2, right: (pageW - 160) / 2 },
@@ -767,7 +767,7 @@
       // Título do mapa de amortização
       let finalY = doc.lastAutoTable.finalY + 10;
       doc.setFontSize(12);
-      doc.setTextColor(37, 99, 235);
+      doc.setTextColor(161, 146, 118);
       doc.setFont(undefined, "bold");
       doc.text("Mapa de Amortização", pageW / 2, finalY, { align: "center" });
 
@@ -792,7 +792,7 @@
         head: [["Mês", "Prestação (€)", "Juros (€)", "Amortização (€)", "Saldo em dívida (€)"]],
         body: rows,
         theme: "striped",
-        headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: "bold", fontSize: 9 },
+        headStyles: { fillColor: [161, 146, 118], textColor: 255, fontStyle: "bold", fontSize: 9 },
         bodyStyles: { fontSize: 8 },
         margin: { left: 10, right: 10, top: 26, bottom: 18 },
         didDrawPage: function(data) { addHeaderFooter(data.pageNumber); }
