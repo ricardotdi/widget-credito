@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Simulador Crédito Habitação</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     :root {
       --primary: #2563eb;
@@ -519,33 +520,25 @@
       }
 
       let saldo = valor;
-      let csv = [];
-      csv.push("Mês;Prestação;Juros;Amortização;Saldo em dívida");
+      const dados = [["Mês", "Prestação (€)", "Juros (€)", "Amortização (€)", "Saldo em dívida (€)"]];
 
       for (let i = 1; i <= meses; i++) {
         const juros = saldo * taxaMensal;
         const amortizacao = prestacao - juros;
         saldo = saldo - amortizacao;
-        csv.push(
-          [
-            i,
-            prestacao.toFixed(2).replace(".", ","),
-            juros.toFixed(2).replace(".", ","),
-            amortizacao.toFixed(2).replace(".", ","),
-            Math.max(saldo, 0).toFixed(2).replace(".", ",")
-          ].join(";")
-        );
+        dados.push([
+          i,
+          parseFloat(prestacao.toFixed(2)),
+          parseFloat(juros.toFixed(2)),
+          parseFloat(amortizacao.toFixed(2)),
+          parseFloat(Math.max(saldo, 0).toFixed(2))
+        ]);
       }
 
-      const blob = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "Simulador_FinMais.xlsx"; // Excel abre o CSV sem problema
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
+      const ws = XLSX.utils.aoa_to_sheet(dados);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Plano Prestacional");
+      XLSX.writeFile(wb, "Simulador_FinMais.xlsx");
 
       status.textContent = "Plano prestacional exportado em Excel.";
       status.classList.add("ok");
