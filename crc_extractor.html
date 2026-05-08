@@ -221,8 +221,7 @@ Se não houver dados de crédito, devolve []. APENAS o JSON array, nada mais.`;
     const err = await resp.text().catch(() => '');
     let msg = 'Erro ' + resp.status;
     if (resp.status === 401) msg = 'API key inválida — verifique a chave introduzida';
-    else if (resp.status === 400) msg = 'Pedido inválido — verifique o PDF';
-    else { try { const j = JSON.parse(err); msg = j.error?.message || msg; } catch(e){} }
+    else { try { const j = JSON.parse(err); msg = '[' + resp.status + '] ' + (j.error?.message || err.slice(0,300)); } catch(e){ msg = '[' + resp.status + '] ' + err.slice(0,300); } }
     throw new Error(msg);
   }
 
