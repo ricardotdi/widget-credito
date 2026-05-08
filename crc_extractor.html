@@ -16,8 +16,10 @@
   .api-row { display: flex; gap: 8px; }
   .api-row input { flex: 1; height: 38px; border: 1px solid #d0cfc8; border-radius: 8px; padding: 0 12px; font-size: 13px; font-family: monospace; background: #fafaf8; color: #1a1a18; }
   .api-row input:focus { outline: none; border-color: #888; }
+  .api-saved { font-size: 12px; color: #0F6E56; margin-top: 5px; display: none; }
   .api-hint { font-size: 12px; color: #888; margin-top: 5px; }
   .api-hint a { color: #185FA5; }
+  .btn-clear-key { background: none; border: none; font-size: 12px; color: #a32d2d; cursor: pointer; padding: 0; margin-left: 8px; text-decoration: underline; }
   .drop-zone { border: 1.5px dashed #bbb; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; cursor: pointer; background: #fafaf8; position: relative; transition: border-color 0.15s, background 0.15s; margin-bottom: 1rem; }
   .drop-zone.drag-over { border-color: #378ADD; background: #eef5fd; }
   .drop-zone.has-file { border-color: #1D9E75; background: #edf8f3; }
@@ -69,7 +71,11 @@
       <input type="password" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off" />
       <button class="eye-btn" onclick="toggleKey()" title="Mostrar/ocultar"><i class="ti ti-eye" id="eyeIcon"></i></button>
     </div>
-    <p class="api-hint">Obtenha a sua chave em <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>. Não é guardada em lado nenhum.</p>
+    <p class="api-saved" id="apiSaved">
+      <i class="ti ti-circle-check" style="vertical-align:-2px;"></i> Chave guardada neste browser.
+      <button class="btn-clear-key" onclick="clearKey()">Remover</button>
+    </p>
+    <p class="api-hint" id="apiHint">Obtenha a sua chave em <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>. É guardada localmente apenas no seu browser.</p>
   </div>
 
   <div class="drop-zone" id="dropZone">
@@ -100,7 +106,35 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const $ = id => document.getElementById(id);
+const LS_KEY = 'crc_anthropic_key';
 let selFile = null, data = [];
+
+// Carregar chave guardada
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(LS_KEY);
+  if (saved) {
+    $('apiKey').value = saved;
+    $('apiSaved').style.display = 'block';
+    $('apiHint').style.display = 'none';
+  }
+});
+
+// Guardar chave ao sair do campo
+$('apiKey').addEventListener('blur', () => {
+  const v = $('apiKey').value.trim();
+  if (v.startsWith('sk-ant-')) {
+    localStorage.setItem(LS_KEY, v);
+    $('apiSaved').style.display = 'block';
+    $('apiHint').style.display = 'none';
+  }
+});
+
+function clearKey() {
+  localStorage.removeItem(LS_KEY);
+  $('apiKey').value = '';
+  $('apiSaved').style.display = 'none';
+  $('apiHint').style.display = 'block';
+}
 
 function toggleKey() {
   const inp = $('apiKey');
@@ -185,7 +219,7 @@ Se não houver dados de crédito, devolve []. APENAS o JSON array, nada mais.`;
   if (!resp.ok) {
     const err = await resp.text().catch(() => '');
     let msg = 'Erro ' + resp.status;
-    if (resp.status === 401) msg = 'API key inválida ou sem permissões';
+    if (resp.status === 401) msg = 'API key inválida — verifique a chave introduzida';
     else if (resp.status === 400) msg = 'Pedido inválido — verifique o PDF';
     else { try { const j = JSON.parse(err); msg = j.error?.message || msg; } catch(e){} }
     throw new Error(msg);
@@ -204,10 +238,10 @@ function fmtEur(v) {
 }
 
 function renderPreview(rows) {
-  const totDiv = rows.reduce((s,r)=>s+(r.montante_utilizado||0),0);
-  const totPot = rows.reduce((s,r)=>s+(r.montante_potencial||0),0);
+  const totDiv   = rows.reduce((s,r)=>s+(r.montante_utilizado||0),0);
+  const totPot   = rows.reduce((s,r)=>s+(r.montante_potencial||0),0);
   const totPrest = rows.reduce((s,r)=>s+(r.prestacao||0),0);
-  const venc = rows.filter(r=>r.situacao==='Vencido').length;
+  const venc     = rows.filter(r=>r.situacao==='Vencido').length;
 
   $('metricsRow').innerHTML = `
     <div class="metric"><div class="metric-lbl">Registos</div><div class="metric-val">${rows.length}</div></div>
@@ -276,6 +310,12 @@ $('extractBtn').addEventListener('click', async () => {
   const apiKey = $('apiKey').value.trim();
   if (!apiKey) { alert('Introduza a sua chave API Anthropic antes de continuar.'); return; }
   if (!selFile) return;
+  // Guardar chave automaticamente ao usar
+  if (apiKey.startsWith('sk-ant-')) {
+    localStorage.setItem(LS_KEY, apiKey);
+    $('apiSaved').style.display = 'block';
+    $('apiHint').style.display = 'none';
+  }
   $('extractBtn').disabled = true;
   $('progressWrap').style.display = 'block';
   $('preview').style.display = 'none';
