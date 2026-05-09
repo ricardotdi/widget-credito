@@ -342,6 +342,11 @@
               <input id="carencia" type="number" min="0" max="24" step="1" placeholder="ex: 6" oninput="validarCampos()" />
               <small>Período inicial só de juros (máx. 24 meses).</small>
             </div>
+            <div class="field">
+              <label>Rendimento líquido mensal (€) <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">— opcional</span></label>
+              <input id="rendimento" type="number" min="0" step="1" placeholder="ex: 2500" oninput="calcularDSTI()" />
+              <small>Para cálculo da taxa de esforço (DSTI).</small>
+            </div>
           </div>
           <div class="actions-row">
             <button class="btn btn-primary" onclick="simular()" style="flex:1;">
@@ -377,6 +382,10 @@
               <div class="result-item">
                 <div class="result-label">TAEG</div>
                 <div id="res-taeg" class="result-value">—</div>
+              </div>
+              <div class="result-item" id="res-dsti-item" style="display:none;">
+                <div class="result-label">Taxa de Esforço (DSTI)</div>
+                <div id="res-dsti" class="result-value">—</div>
               </div>
             </div>
             <div class="result-tagline">
@@ -474,6 +483,9 @@
               <span>Exportar plano em PDF</span>
             </button>
           </div>
+          <div style="display:flex; justify-content:flex-end; margin-top:10px; padding-top:8px; border-top:1px solid var(--border);">
+            <span style="font-size:0.75rem; color:var(--muted); font-family:var(--font); font-weight:400;">Desenvolvido pela Fin+®</span>
+          </div>
         </div>
       </div>
     </div>
@@ -493,6 +505,28 @@
         document.getElementById("toggle-" + t).classList.remove("active");
       });
       document.getElementById("toggle-" + tipo).classList.add("active");
+    }
+
+    function calcularDSTI() {
+      var rendimento = parseFloat(document.getElementById("rendimento").value);
+      var prestacaoEl = document.getElementById("res-prestacao");
+      var dstiItem = document.getElementById("res-dsti-item");
+      var dstiEl = document.getElementById("res-dsti");
+      if (!rendimento || rendimento <= 0 || !prestacaoEl || prestacaoEl.textContent === "—") {
+        dstiItem.style.display = "none";
+        dstiEl.textContent = "—";
+        return;
+      }
+      var prestacaoTexto = prestacaoEl.textContent.replace(/[^\d,]/g, "").replace(",", ".");
+      var prestacao = parseFloat(prestacaoTexto);
+      if (!prestacao || prestacao <= 0) {
+        dstiItem.style.display = "none";
+        return;
+      }
+      var dsti = (prestacao / rendimento) * 100;
+      dstiEl.textContent = dsti.toFixed(1) + " %";
+      dstiEl.style.color = dsti > 40 ? "#ef4444" : dsti > 30 ? "#f59e0b" : "var(--primary)";
+      dstiItem.style.display = "";
     }
 
     var tipoTaxaAtual = "variavel";
@@ -590,10 +624,14 @@
       if (pv) pv.value = "";
 
       // Resultados
-      ["res-prestacao","res-tan","res-prazo","res-total","res-taeg"].forEach(id => {
+      ["res-prestacao","res-tan","res-prazo","res-total","res-taeg","res-dsti"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = "—";
       });
+      const dstiItem = document.getElementById("res-dsti-item");
+      if (dstiItem) dstiItem.style.display = "none";
+      const rendEl = document.getElementById("rendimento");
+      if (rendEl) { rendEl.value = ""; rendEl.style.borderColor = ""; }
 
       // Status
       const st = document.getElementById("status-sim");
@@ -684,6 +722,7 @@
         }
         const taegMista = r > 0 ? (Math.pow(1 + r, 12) - 1) * 100 : 0;
         document.getElementById("res-taeg").textContent = taegMista > 0 ? taegMista.toFixed(2) + " %" : "—";
+        calcularDSTI();
         status.textContent = "Simulação mista actualizada."; status.classList.add("ok"); return;
       }
 
@@ -717,6 +756,7 @@
       document.getElementById("res-prazo").textContent = anos + " anos (" + meses + " meses)" + (mesesCarencia ? " · carência " + mesesCarencia + "m" : "");
       document.getElementById("res-total").textContent = formatEuro(totalPago);
       document.getElementById("res-taeg").textContent = taeg > 0 ? taeg.toFixed(2) + " %" : "—";
+      calcularDSTI();
       status.textContent = "Simulação atualizada."; status.classList.add("ok");
     }
 
@@ -831,7 +871,16 @@
             prazo: anos != null ? String(anos) + " anos" : "",
             carencia: carenciaVal > 0 ? String(carenciaVal) + " meses" : "",
             tipoCredito: tipoCredito === "aquisicao" ? "Aquisição" : tipoCredito === "construcao" ? "Construção" : "Transferência",
-            tipoTaxa: (tipoTaxaAtual === "fixa" ? "Fixa" : tipoTaxaAtual === "mista" ? "Mista" : "Variável") + (taxaInfo ? " — " + taxaInfo : "")
+            tipoTaxa: (tipoTaxaAtual === "fixa" ? "Fixa" : tipoTaxaAtual === "mista" ? "Mista" : "Variável") + (taxaInfo ? " — " + taxaInfo : ""),
+            rendimentoLiquido: (function() {
+              const r = parseFloat(document.getElementById("rendimento").value);
+              return (!isNaN(r) && r > 0) ? r.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2}) : "";
+            })(),
+            dsti: (function() {
+              const el = document.getElementById("res-dsti");
+              const txt = el ? el.textContent : "—";
+              return (txt && txt !== "—") ? txt : "";
+            })()
           })
         });
         if (!res.ok) throw new Error();
