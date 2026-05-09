@@ -200,6 +200,37 @@
     .rgpd-wrap label a { color: #A19276; text-decoration: underline; }
     .rgpd-err { color: #f87171; font-size: 0.72rem; margin: 2px 0 6px; display: none; }
 
+
+    .mista-dd-btn {
+      width:100%; padding:9px 11px; border-radius:10px;
+      border:1px solid var(--border);
+      font-size:0.9rem; outline:none; background:#f9fafb;
+      cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+      text-align:left; color:#6b7280;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .mista-dd-btn:hover { border-color:#A19276; }
+    .mista-dd-btn.selected { color: var(--text); background:#ffffff; }
+    .mista-dd-panel {
+      overflow:hidden; max-height:0;
+      transition:max-height 0.35s ease, opacity 0.25s ease;
+      opacity:0;
+      border-radius:0 0 10px 10px;
+      border:0px solid var(--border);
+      background:#ffffff;
+      position:absolute; z-index:99; width:100%;
+      box-shadow: 0 8px 20px rgba(15,23,42,0.1);
+    }
+    .mista-dd-item {
+      display:block; padding:8px 11px; font-size:0.88rem;
+      color:var(--muted); cursor:pointer;
+      border-bottom:1px solid rgba(226,232,240,0.7);
+      transition:background 0.15s;
+    }
+    .mista-dd-item:hover { background:rgba(161,146,118,0.1); color:var(--text); }
+
+    #horario-dropdown label:hover { background: rgba(161,146,118,0.15); color: #e5e7eb; }
+    #horario-btn:hover { border-color: #A19276; }
   </style>
 </head>
 <body>
@@ -228,36 +259,96 @@
         </div>
 
         <div>
+          <div class="section-title" style="margin-bottom:10px;">Tipo de Crédito</div>
+          <div class="taxa-toggle" style="margin-bottom:18px;">
+            <span id="toggle-aquisicao" class="active" onclick="setTipoCredito('aquisicao')">Aquisição</span>
+            <span id="toggle-construcao" onclick="setTipoCredito('construcao')">Construção</span>
+            <span id="toggle-transferencia" onclick="setTipoCredito('transferencia')">Transferência</span>
+          </div>
+
           <div class="section-title">Dados do empréstimo</div>
           <div class="taxa-toggle" style="margin-bottom:14px;">
             <span id="toggle-variavel" class="active" onclick="setTaxa('variavel')">Taxa Variável</span>
             <span id="toggle-fixa" onclick="setTaxa('fixa')">Taxa Fixa</span>
+            <span id="toggle-mista" onclick="setTaxa('mista')">Taxa Mista</span>
           </div>
+          <!-- Campos sempre visíveis -->
           <div class="inputs-grid">
             <div class="field">
               <label>Valor do empréstimo (€)</label>
-              <input id="valor" type="number" min="1000" step="500" placeholder="ex: 180000" />
+              <input id="valor" type="number" min="1000" step="500" placeholder="ex: 180000" oninput="validarCampos()" />
               <small>Montante a financiar.</small>
             </div>
             <div class="field">
               <label>Prazo (anos)</label>
-              <input id="anos" type="number" min="5" max="50" step="1" placeholder="ex: 30" />
+              <input id="anos" type="number" min="5" max="50" step="1" placeholder="ex: 30" oninput="calcPrazoVariavel(); validarCampos();" />
               <small>Prazo total do contrato.</small>
             </div>
+          </div>
+          <!-- Campos Variável / Fixa (ocultos em modo mista) -->
+          <div id="taxa-extra-fields" class="inputs-grid" style="margin-top:14px;">
             <div class="field" id="field-euribor">
               <label id="label-euribor">Euribor (%)</label>
-              <input id="euribor" type="number" step="0.01" placeholder="ex: 3.50" />
+              <input id="euribor" type="number" step="0.01" placeholder="ex: 3.50" oninput="validarCampos()" />
               <small id="small-euribor">Taxa de referência (ex: 12M).</small>
             </div>
             <div class="field">
               <label id="label-spread">Spread (%)</label>
-              <input id="spread" type="number" step="0.01" placeholder="ex: 1.20" />
+              <input id="spread" type="number" step="0.01" placeholder="ex: 1.20" oninput="validarCampos()" />
               <small id="small-spread">Margem do banco.</small>
             </div>
           </div>
+
+          <!-- Campos Taxa Mista (ocultos por defeito) -->
+          <div id="mista-grid" style="display:none; margin-top:10px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+              <div>
+                <div style="font-size:0.78rem; font-weight:600; color:#A19276; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid rgba(161,146,118,0.25);">Período Taxa Fixa</div>
+                <div class="field" style="margin-bottom:10px;">
+                  <label>Prazo da taxa fixa (anos)</label>
+                  <input id="mista-prazo-value" type="number" min="1" max="49" step="1" placeholder="ex: 5" oninput="calcPrazoVariavel(); validarCampos();" />
+                  <small>Anos em taxa fixa.</small>
+                </div>
+                <div class="field">
+                  <label>TAN durante período fixo (%)</label>
+                  <input id="mista-tan-value" type="number" step="0.01" placeholder="ex: 3.50" oninput="validarCampos()" />
+                  <small>Taxa Anual Nominal fixa.</small>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:0.78rem; font-weight:600; color:#A19276; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid rgba(161,146,118,0.25);">Período Taxa Variável</div>
+                <div class="field" style="margin-bottom:10px;">
+                  <label>Prazo variável (calculado)</label>
+                  <input id="mista-prazo-variavel" type="text" placeholder="— anos" readonly style="background:#e5e7eb; color:#6b7280; cursor:default;" />
+                  <small>Prazo total menos período fixo.</small>
+                </div>
+                <div class="field" style="margin-bottom:10px;">
+                  <label>Euribor (%)</label>
+                  <input id="mista-euribor" type="number" step="0.01" placeholder="ex: 3.50" oninput="validarCampos()" />
+                  <small>Taxa de referência (ex: 12M).</small>
+                </div>
+                <div class="field">
+                  <label>Spread (%)</label>
+                  <input id="mista-spread" type="number" step="0.01" placeholder="ex: 1.20" oninput="validarCampos()" />
+                  <small>Margem do banco.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Campo carência -->
+          <div id="carencia-field" class="inputs-grid" style="margin-top:14px;">
+            <div class="field">
+              <label>Carência de capital (meses) <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">— opcional</span></label>
+              <input id="carencia" type="number" min="0" max="24" step="1" placeholder="ex: 6" oninput="validarCampos()" />
+              <small>Período inicial só de juros (máx. 24 meses).</small>
+            </div>
+          </div>
           <div class="actions-row">
-            <button class="btn btn-primary" onclick="simular()">
+            <button class="btn btn-primary" onclick="simular()" style="flex:1;">
               <span>Simular Prestação</span>
+            </button>
+            <button class="btn btn-ghost" onclick="limparSimulacao()" style="flex:0 0 auto; padding:0 16px;" title="Limpar todos os campos">
+              <span>✕ Limpar</span>
             </button>
           </div>
           <div id="status-sim" class="status"></div>
@@ -280,8 +371,12 @@
                 <div id="res-prazo" class="result-value">—</div>
               </div>
               <div class="result-item">
-                <div class="result-label">Custo total aproximado</div>
+                <div class="result-label">Custo total (MTIC)</div>
                 <div id="res-total" class="result-value">—</div>
+              </div>
+              <div class="result-item">
+                <div class="result-label">TAEG</div>
+                <div id="res-taeg" class="result-value">—</div>
               </div>
             </div>
             <div class="result-tagline">
@@ -311,6 +406,36 @@
               <div class="lead-field">
                 <label>Telemóvel</label>
                 <input id="lead-telefone" type="tel" placeholder="ex: 9xx xxx xxx" />
+              </div>
+              <div class="lead-field">
+                <label>Horário Preferencial de Contacto</label>
+                <div style="position:relative; margin-top:4px;">
+                  <button type="button" id="horario-btn" onclick="toggleHorario()" style="
+                    width:100%; padding:7px 9px; border-radius:9px;
+                    border:1px solid rgba(148,163,184,0.7);
+                    background:rgba(15,23,42,0.9); color:#9ca3af;
+                    font-size:0.85rem; outline:none; cursor:pointer;
+                    display:flex; justify-content:space-between; align-items:center;
+                    text-align:left;">
+                    <span id="horario-label">Qualquer hora</span>
+                    <span id="horario-arrow" style="transition:transform 0.3s ease; display:inline-block;">▾</span>
+                  </button>
+                  <div id="horario-dropdown" style="
+                    overflow:hidden; max-height:0;
+                    transition:max-height 0.35s ease, opacity 0.25s ease;
+                    opacity:0;
+                    border-radius:0 0 9px 9px;
+                    border:0px solid rgba(148,163,184,0.7);
+                    background:rgba(15,23,42,0.95);">
+                    <div id="horario-inner">
+                      <label onclick="selectHorario('qualquer','Qualquer hora')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">Qualquer hora</label>
+                      <label onclick="selectHorario('manha','De manhã')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">De manhã</label>
+                      <label onclick="selectHorario('almoco','Hora de Almoço')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">Hora de Almoço</label>
+                      <label onclick="selectHorario('tarde','De tarde')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; transition:background 0.15s;">De tarde</label>
+                    </div>
+                  </div>
+                  <input type="hidden" id="horario-value" value="qualquer" />
+                </div>
               </div>
             </div>
             
@@ -360,6 +485,16 @@
       return v.toLocaleString("pt-PT", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
     }
 
+    var tipoCredito = "aquisicao";
+
+    function setTipoCredito(tipo) {
+      tipoCredito = tipo;
+      ["aquisicao","construcao","transferencia"].forEach(function(t) {
+        document.getElementById("toggle-" + t).classList.remove("active");
+      });
+      document.getElementById("toggle-" + tipo).classList.add("active");
+    }
+
     var tipoTaxaAtual = "variavel";
 
     function setTaxa(tipo) {
@@ -368,77 +503,268 @@
       const fieldEuribor = document.getElementById("field-euribor");
       const labelSpread = document.getElementById("label-spread");
       const smallSpread = document.getElementById("small-spread");
-      if (tipo === "fixa") {
-        document.getElementById("toggle-fixa").classList.add("active");
-        document.getElementById("toggle-variavel").classList.remove("active");
-        euriborInput.disabled = true;
-        euriborInput.value = "";
-        fieldEuribor.style.opacity = "0.4";
-        labelSpread.textContent = "TAN (%)";
-        smallSpread.textContent = "Taxa Anual Nominal fixa.";
+      const mistaGrid = document.getElementById("mista-grid");
+      document.getElementById("toggle-variavel").classList.remove("active");
+      document.getElementById("toggle-fixa").classList.remove("active");
+      document.getElementById("toggle-mista").classList.remove("active");
+      document.getElementById("toggle-" + tipo).classList.add("active");
+      const taxaExtra = document.getElementById("taxa-extra-fields");
+      if (tipo === "mista") {
+        if (taxaExtra) taxaExtra.style.display = "none";
+        mistaGrid.style.display = "block";
+        calcPrazoVariavel();
       } else {
-        document.getElementById("toggle-variavel").classList.add("active");
-        document.getElementById("toggle-fixa").classList.remove("active");
-        euriborInput.disabled = false;
-        fieldEuribor.style.opacity = "1";
-        labelSpread.textContent = "Spread (%)";
-        smallSpread.textContent = "Margem do banco.";
+        if (taxaExtra) taxaExtra.style.display = "grid";
+        mistaGrid.style.display = "none";
+        if (tipo === "fixa") {
+          euriborInput.disabled = true; euriborInput.value = "";
+          fieldEuribor.style.opacity = "0.4";
+          labelSpread.textContent = "TAN (%)";
+          smallSpread.textContent = "Taxa Anual Nominal fixa.";
+        } else {
+          euriborInput.disabled = false;
+          fieldEuribor.style.opacity = "1";
+          labelSpread.textContent = "Spread (%)";
+          smallSpread.textContent = "Margem do banco.";
+        }
       }
+    }
+
+    // ── Validação em tempo real ──
+    function validarCampos() {
+      const valor = parseFloat(document.getElementById("valor").value);
+      const anos = parseInt(document.getElementById("anos").value);
+      const carencia = parseInt(document.getElementById("carencia").value) || 0;
+
+      // Prazo
+      const campoAnos = document.getElementById("anos");
+      if (anos && (anos < 1 || anos > 50)) {
+        campoAnos.style.borderColor = "#ef4444";
+        campoAnos.title = "Prazo entre 1 e 50 anos";
+      } else { campoAnos.style.borderColor = ""; campoAnos.title = ""; }
+
+      // Valor
+      const campoValor = document.getElementById("valor");
+      if (valor && valor < 1000) {
+        campoValor.style.borderColor = "#ef4444";
+        campoValor.title = "Valor mínimo: 1 000 €";
+      } else { campoValor.style.borderColor = ""; campoValor.title = ""; }
+
+      // Carência
+      const campoCarencia = document.getElementById("carencia");
+      if (carencia && (carencia < 0 || carencia > 24)) {
+        campoCarencia.style.borderColor = "#ef4444";
+        campoCarencia.title = "Máximo 24 meses de carência";
+      } else { campoCarencia.style.borderColor = ""; campoCarencia.title = ""; }
+
+      // Carência vs prazo total em meses
+      if (anos && carencia && carencia >= anos * 12) {
+        campoCarencia.style.borderColor = "#ef4444";
+        campoCarencia.title = "Carência não pode ser igual ou superior ao prazo total";
+      }
+
+      // Euribor / Spread (só em variável)
+      if (tipoTaxaAtual === "variavel") {
+        const euribor = parseFloat(document.getElementById("euribor").value);
+        const spread = parseFloat(document.getElementById("spread").value);
+        const ce = document.getElementById("euribor");
+        const cs = document.getElementById("spread");
+        if (!isNaN(euribor) && (euribor < 0 || euribor > 20)) { ce.style.borderColor="#ef4444"; } else { ce.style.borderColor=""; }
+        if (!isNaN(spread) && (spread < 0 || spread > 10)) { cs.style.borderColor="#ef4444"; } else { cs.style.borderColor=""; }
+      }
+    }
+
+    // ── Limpar simulação ──
+    function limparSimulacao() {
+      // Inputs principais
+      ["valor","anos","euribor","spread","carencia"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ""; el.style.borderColor = ""; el.title = ""; }
+      });
+      // Mista
+      ["mista-prazo-value","mista-tan-value","mista-euribor","mista-spread"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ""; el.style.borderColor = ""; }
+      });
+      const pv = document.getElementById("mista-prazo-variavel");
+      if (pv) pv.value = "";
+
+      // Resultados
+      ["res-prestacao","res-tan","res-prazo","res-total","res-taeg"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "—";
+      });
+
+      // Status
+      const st = document.getElementById("status-sim");
+      if (st) { st.textContent = ""; st.className = "status"; }
+    }
+
+    // ── Calcular TAEG: (1 + TAN_mensal)^12 - 1 ──
+    function calcularTAEG(taxaMensalDecimal) {
+      return (Math.pow(1 + taxaMensalDecimal, 12) - 1) * 100;
     }
 
     function simular() {
       const valor = parseFloat(document.getElementById("valor").value);
       const anos = parseInt(document.getElementById("anos").value);
+      const carencia = parseInt(document.getElementById("carencia").value) || 0;
+      const status = document.getElementById("status-sim");
+      status.textContent = ""; status.className = "status";
+
+      if (tipoTaxaAtual === "mista") {
+        const tanFixa = parseFloat(document.getElementById("mista-tan-value").value);
+        const prazoFixaAnos = parseInt(document.getElementById("mista-prazo-value").value);
+        const euriborMista = parseFloat(document.getElementById("mista-euribor").value);
+        const spreadMista = parseFloat(document.getElementById("mista-spread").value);
+        if (!valor || !anos || isNaN(tanFixa) || isNaN(prazoFixaAnos) || isNaN(euriborMista) || isNaN(spreadMista)) {
+          status.textContent = "Preencha todos os campos da simulação mista.";
+          status.classList.add("err"); return;
+        }
+        if (prazoFixaAnos >= anos) {
+          status.textContent = "O prazo fixo deve ser inferior ao prazo total.";
+          status.classList.add("err"); return;
+        }
+        const meses = anos * 12; const mesesFixos = prazoFixaAnos * 12;
+        const taxaMensalFixa = tanFixa / 100 / 12;
+        const taxaVariavel = euriborMista + spreadMista;
+        const taxaMensalVariavel = taxaVariavel / 100 / 12;
+
+        // Carência: meses iniciais só de juros (fase fixa)
+        let saldo = valor;
+        let totalPago = 0;
+        let mesesCarencia = Math.min(carencia, mesesFixos);
+
+        // Fase carência (só juros)
+        for (let i = 0; i < mesesCarencia; i++) {
+          totalPago += saldo * taxaMensalFixa;
+        }
+        // Prestação fixa sobre meses restantes
+        const mesesFixosEfetivos = mesesFixos - mesesCarencia;
+        const mesesVariaveisEfetivos = meses - mesesFixos;
+        const mesesAmortFixa = mesesFixosEfetivos + mesesVariaveisEfetivos;
+        let prestacaoFixa = taxaMensalFixa === 0 ? saldo / mesesAmortFixa : saldo * (taxaMensalFixa / (1 - Math.pow(1 + taxaMensalFixa, -mesesAmortFixa)));
+
+        for (let i = 0; i < mesesFixosEfetivos; i++) {
+          const j = saldo * taxaMensalFixa; saldo -= (prestacaoFixa - j);
+          totalPago += prestacaoFixa;
+        }
+        saldo = Math.max(saldo, 0);
+        let prestacaoVariavel = taxaMensalVariavel === 0 ? saldo / mesesVariaveisEfetivos : saldo * (taxaMensalVariavel / (1 - Math.pow(1 + taxaMensalVariavel, -mesesVariaveisEfetivos)));
+        totalPago += prestacaoVariavel * mesesVariaveisEfetivos;
+
+        document.getElementById("res-prestacao").innerHTML =
+          formatEuro(prestacaoFixa) + ' <span style="font-size:0.75rem;color:var(--muted);">(fixa)</span><br>' +
+          formatEuro(prestacaoVariavel) + ' <span style="font-size:0.75rem;color:var(--muted);">(variável)</span>';
+        document.getElementById("res-tan").innerHTML =
+          tanFixa.toFixed(2) + ' % <span style="font-size:0.75rem;color:var(--muted);">(fixa)</span><br>' +
+          taxaVariavel.toFixed(2) + ' % <span style="font-size:0.75rem;color:var(--muted);">(variável)</span>';
+        document.getElementById("res-prazo").textContent = anos + " anos (" + meses + " meses)" + (carencia ? " · carência " + carencia + "m" : "");
+        document.getElementById("res-total").textContent = formatEuro(totalPago);
+
+        // TAEG mista — TIR sobre os fluxos reais (Newton-Raphson sobre VPL)
+        // Construir array de pagamentos mensais reais
+        const fluxos = [];
+        for (let i = 0; i < mesesCarencia; i++) fluxos.push(valor * taxaMensalFixa);
+        for (let i = 0; i < mesesFixosEfetivos; i++) fluxos.push(prestacaoFixa);
+        for (let i = 0; i < mesesVariaveisEfetivos; i++) fluxos.push(prestacaoVariavel);
+        // Newton-Raphson: encontrar r mensal tal que PV(fluxos, r) = valor
+        let r = 0.003;
+        for (let iter = 0; iter < 200; iter++) {
+          let vpn = 0, dvpn = 0;
+          for (let t = 0; t < fluxos.length; t++) {
+            const desc = Math.pow(1 + r, -(t + 1));
+            vpn += fluxos[t] * desc;
+            dvpn -= (t + 1) * fluxos[t] * desc / (1 + r);
+          }
+          vpn -= valor;
+          const rNew = r - vpn / dvpn;
+          if (Math.abs(rNew - r) < 1e-12) { r = rNew; break; }
+          r = rNew;
+        }
+        const taegMista = r > 0 ? (Math.pow(1 + r, 12) - 1) * 100 : 0;
+        document.getElementById("res-taeg").textContent = taegMista > 0 ? taegMista.toFixed(2) + " %" : "—";
+        status.textContent = "Simulação mista actualizada."; status.classList.add("ok"); return;
+      }
+
       const euribor = tipoTaxaAtual === "fixa" ? 0 : parseFloat(document.getElementById("euribor").value);
       const spread = parseFloat(document.getElementById("spread").value);
-      const status = document.getElementById("status-sim");
-      status.textContent = "";
-      status.className = "status";
       if (!valor || !anos || (tipoTaxaAtual === "variavel" && isNaN(euribor)) || isNaN(spread)) {
-        status.textContent = "Preencha todos os campos da simulação.";
-        status.classList.add("err");
-        return;
+        status.textContent = "Preencha todos os campos da simulação."; status.classList.add("err"); return;
       }
       const meses = anos * 12;
       const taxaAnual = tipoTaxaAtual === "fixa" ? spread : euribor + spread;
       const taxaMensal = taxaAnual / 100 / 12;
+
+      // Fase de carência (só juros)
+      let totalPago = 0;
+      const mesesCarencia = Math.min(carencia, meses - 1);
+      const jurosMensaisCarencia = taxaMensal === 0 ? 0 : valor * taxaMensal;
+      totalPago += jurosMensaisCarencia * mesesCarencia;
+
+      // Prestação após carência
+      const mesesAmort = meses - mesesCarencia;
       let prestacao;
-      if (taxaMensal === 0) {
-        prestacao = valor / meses;
-      } else {
-        prestacao = valor * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -meses)));
-      }
-      const total = prestacao * meses;
+      if (taxaMensal === 0) { prestacao = valor / mesesAmort; }
+      else { prestacao = valor * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -mesesAmort))); }
+      totalPago += prestacao * mesesAmort;
+
+      // TAEG e MTIC
+      const taeg = taxaMensal === 0 ? 0 : calcularTAEG(taxaMensal);
+
       document.getElementById("res-prestacao").textContent = formatEuro(prestacao);
       document.getElementById("res-tan").textContent = taxaAnual.toFixed(2) + " %";
-      document.getElementById("res-prazo").textContent = anos + " anos (" + meses + " meses)";
-      document.getElementById("res-total").textContent = formatEuro(total);
-      status.textContent = "Simulação atualizada.";
-      status.classList.add("ok");
+      document.getElementById("res-prazo").textContent = anos + " anos (" + meses + " meses)" + (mesesCarencia ? " · carência " + mesesCarencia + "m" : "");
+      document.getElementById("res-total").textContent = formatEuro(totalPago);
+      document.getElementById("res-taeg").textContent = taeg > 0 ? taeg.toFixed(2) + " %" : "—";
+      status.textContent = "Simulação atualizada."; status.classList.add("ok");
     }
 
     function exportarExcel() {
       const valor = parseFloat(document.getElementById("valor").value);
       const anos = parseInt(document.getElementById("anos").value);
+      const status = document.getElementById("status-sim");
+      status.textContent = ""; status.className = "status";
+      if (tipoTaxaAtual === "mista") {
+        const tanFixa = parseFloat(document.getElementById("mista-tan-value").value);
+        const prazoFixaAnos = parseInt(document.getElementById("mista-prazo-value").value);
+        const euriborMista = parseFloat(document.getElementById("mista-euribor").value);
+        const spreadMista = parseFloat(document.getElementById("mista-spread").value);
+        if (!valor || !anos || isNaN(tanFixa) || isNaN(prazoFixaAnos) || isNaN(euriborMista) || isNaN(spreadMista)) {
+          status.textContent = "Preencha os dados antes de exportar o plano."; status.classList.add("err"); return;
+        }
+        const meses = anos * 12; const mesesFixos = prazoFixaAnos * 12;
+        const taxaMensalFixa = tanFixa / 100 / 12;
+        const taxaVariavel = euriborMista + spreadMista;
+        const taxaMensalVariavel = taxaVariavel / 100 / 12;
+        let prestacaoFixa = taxaMensalFixa === 0 ? valor / meses : valor * (taxaMensalFixa / (1 - Math.pow(1 + taxaMensalFixa, -meses)));
+        let saldo = valor;
+        const dados = [["Mês", "Fase", "Prestação (€)", "Juros (€)", "Amortização (€)", "Saldo em dívida (€)"]];
+        for (let i = 1; i <= mesesFixos; i++) {
+          const j = saldo * taxaMensalFixa; const am = prestacaoFixa - j; saldo = Math.max(saldo - am, 0);
+          dados.push([i, "Fixa", +prestacaoFixa.toFixed(2), +j.toFixed(2), +am.toFixed(2), +saldo.toFixed(2)]);
+        }
+        const mesesVariaveis = meses - mesesFixos;
+        let prestacaoVariavel = taxaMensalVariavel === 0 ? saldo / mesesVariaveis : saldo * (taxaMensalVariavel / (1 - Math.pow(1 + taxaMensalVariavel, -mesesVariaveis)));
+        for (let i = mesesFixos + 1; i <= meses; i++) {
+          const j = saldo * taxaMensalVariavel; const am = prestacaoVariavel - j; saldo = Math.max(saldo - am, 0);
+          dados.push([i, "Variável", +prestacaoVariavel.toFixed(2), +j.toFixed(2), +am.toFixed(2), +saldo.toFixed(2)]);
+        }
+        const ws = XLSX.utils.aoa_to_sheet(dados);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Plano Prestacional");
+        XLSX.writeFile(wb, "Simulador_FinMais.xlsx");
+        status.textContent = "Plano prestacional exportado em Excel."; status.classList.add("ok"); return;
+      }
       const euribor = tipoTaxaAtual === "fixa" ? 0 : parseFloat(document.getElementById("euribor").value);
       const spread = parseFloat(document.getElementById("spread").value);
-      const status = document.getElementById("status-sim");
-      status.textContent = "";
-      status.className = "status";
       if (!valor || !anos || (tipoTaxaAtual === "variavel" && isNaN(euribor)) || isNaN(spread)) {
-        status.textContent = "Preencha os dados antes de exportar o plano.";
-        status.classList.add("err");
-        return;
+        status.textContent = "Preencha os dados antes de exportar o plano."; status.classList.add("err"); return;
       }
       const meses = anos * 12;
       const taxaAnual = tipoTaxaAtual === "fixa" ? spread : euribor + spread;
       const taxaMensal = taxaAnual / 100 / 12;
-      let prestacao;
-      if (taxaMensal === 0) {
-        prestacao = valor / meses;
-      } else {
-        prestacao = valor * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -meses)));
-      }
+      let prestacao = taxaMensal === 0 ? valor / meses : valor * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -meses)));
       let saldo = valor;
       const dados = [["Mês", "Prestação (€)", "Juros (€)", "Amortização (€)", "Saldo em dívida (€)"]];
       for (let i = 1; i <= meses; i++) {
@@ -459,32 +785,37 @@
       const nome = document.getElementById("lead-nome").value.trim();
       const email = document.getElementById("lead-email").value.trim();
       const telefone = document.getElementById("lead-telefone").value.trim();
+      const horarioValue = document.getElementById("horario-value").value;
+      const horarioLabels = { qualquer: "Qualquer hora", manha: "De manhã", almoco: "Hora de Almoço", tarde: "De tarde" };
+      const horario = horarioLabels[horarioValue] || "Qualquer hora";
       const valor = parseFloat(document.getElementById("valor").value) || null;
       const anos = parseInt(document.getElementById("anos").value) || null;
-      const euribor = parseFloat(document.getElementById("euribor").value) || null;
-      const spread = parseFloat(document.getElementById("spread").value) || null;
+      const carenciaVal = parseInt(document.getElementById("carencia").value) || 0;
       const status = document.getElementById("status-lead");
-      status.textContent = "";
-      status.className = "status";
-      
-      // RGPD check
+      status.textContent = ""; status.className = "status";
       const rgpdCheck = document.getElementById('rgpd-consent');
       const rgpdErr = document.getElementById('rgpd-err');
-      if (!rgpdCheck.checked) {
-        rgpdErr.style.display = 'block';
-        return;
-      }
+      if (!rgpdCheck.checked) { rgpdErr.style.display = 'block'; return; }
       rgpdErr.style.display = 'none';
-
       if (!nome || !email || !telefone) {
-        status.textContent = "Preencha nome, email e telemóvel.";
-        status.classList.add("err");
-        return;
+        status.textContent = "Preencha nome, email e telemóvel."; status.classList.add("err"); return;
       }
       let taxaInfo = "";
       if (tipoTaxaAtual === "fixa") {
+        const spread = parseFloat(document.getElementById("spread").value) || null;
         taxaInfo = spread != null ? "TAN: " + spread.toFixed(2) + "%" : "";
+      } else if (tipoTaxaAtual === "mista") {
+        const tanFixa = parseFloat(document.getElementById("mista-tan-value").value) || null;
+        const prazoFixa = parseInt(document.getElementById("mista-prazo-value").value) || null;
+        const euriborMista = parseFloat(document.getElementById("mista-euribor").value) || null;
+        const spreadMista = parseFloat(document.getElementById("mista-spread").value) || null;
+        const partes = [];
+        if (tanFixa != null) partes.push("Fixa " + (prazoFixa ? prazoFixa + "a" : "") + ": TAN " + tanFixa.toFixed(2) + "%");
+        if (euriborMista != null && spreadMista != null) partes.push("Variável: Euribor " + euriborMista.toFixed(2) + "% + Spread " + spreadMista.toFixed(2) + "%");
+        taxaInfo = partes.join(" | ");
       } else {
+        const euribor = parseFloat(document.getElementById("euribor").value) || null;
+        const spread = parseFloat(document.getElementById("spread").value) || null;
         const partes = [];
         if (euribor != null) partes.push("Euribor: " + euribor.toFixed(2) + "%");
         if (spread != null) partes.push("Spread: " + spread.toFixed(2) + "%");
@@ -495,10 +826,12 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            nome, email, telefone,
+            nome, email, telefone, horario,
             valorCredito: valor != null ? String(valor) : "",
             prazo: anos != null ? String(anos) + " anos" : "",
-            tipoTaxa: (tipoTaxaAtual === "fixa" ? "Fixa" : "Variável") + (taxaInfo ? " — " + taxaInfo : "")
+            carencia: carenciaVal > 0 ? String(carenciaVal) + " meses" : "",
+            tipoCredito: tipoCredito === "aquisicao" ? "Aquisição" : tipoCredito === "construcao" ? "Construção" : "Transferência",
+            tipoTaxa: (tipoTaxaAtual === "fixa" ? "Fixa" : tipoTaxaAtual === "mista" ? "Mista" : "Variável") + (taxaInfo ? " — " + taxaInfo : "")
           })
         });
         if (!res.ok) throw new Error();
@@ -513,25 +846,60 @@
     function exportarPDF() {
       const valor = parseFloat(document.getElementById("valor").value);
       const anos = parseInt(document.getElementById("anos").value);
-      const euribor = tipoTaxaAtual === "fixa" ? 0 : parseFloat(document.getElementById("euribor").value);
-      const spread = parseFloat(document.getElementById("spread").value);
       const status = document.getElementById("status-sim");
-      status.textContent = "";
-      status.className = "status";
-      if (!valor || !anos || (tipoTaxaAtual === "variavel" && isNaN(euribor)) || isNaN(spread)) {
-        status.textContent = "Preencha os dados antes de exportar o plano.";
-        status.classList.add("err");
-        return;
-      }
-      const meses = anos * 12;
-      const taxaAnual = tipoTaxaAtual === "fixa" ? spread : euribor + spread;
-      const taxaMensal = taxaAnual / 100 / 12;
-      let prestacao;
-      if (taxaMensal === 0) {
-        prestacao = valor / meses;
+      status.textContent = ""; status.className = "status";
+
+      // ── Validação e cálculo por tipo de taxa ──
+      let meses, taxaAnual, taxaMensal, prestacao, tipoTaxaLabel;
+      let isMista = false;
+      let prestacaoFixa, prestacaoVariavel, tanFixa, taxaVariavel, mesesFixos, mesesVariaveis;
+      let mesesCarenciaPDF = 0;
+
+      if (tipoTaxaAtual === "mista") {
+        tanFixa = parseFloat(document.getElementById("mista-tan-value").value);
+        const prazoFixaAnos = parseInt(document.getElementById("mista-prazo-value").value);
+        const euriborMista = parseFloat(document.getElementById("mista-euribor").value);
+        const spreadMista = parseFloat(document.getElementById("mista-spread").value);
+        if (!valor || !anos || isNaN(tanFixa) || isNaN(prazoFixaAnos) || isNaN(euriborMista) || isNaN(spreadMista)) {
+          status.textContent = "Preencha os dados antes de exportar o plano.";
+          status.classList.add("err"); return;
+        }
+        meses = anos * 12; mesesFixos = prazoFixaAnos * 12; mesesVariaveis = meses - mesesFixos;
+        const taxaMensalFixa = tanFixa / 100 / 12;
+        taxaVariavel = euriborMista + spreadMista;
+        const taxaMensalVariavel = taxaVariavel / 100 / 12;
+        const _carenciaMista = parseInt(document.getElementById("carencia").value) || 0;
+        mesesCarenciaPDF = Math.min(_carenciaMista, mesesFixos - 1);
+        const mesesFixosEfetivos = mesesFixos - mesesCarenciaPDF;
+        const mesesAmortTotal = mesesFixosEfetivos + mesesVariaveis;
+        prestacaoFixa = taxaMensalFixa === 0 ? valor / mesesAmortTotal : valor * (taxaMensalFixa / (1 - Math.pow(1 + taxaMensalFixa, -mesesAmortTotal)));
+        let saldo = valor;
+        for (let i = 0; i < mesesFixosEfetivos; i++) { const j = saldo * taxaMensalFixa; saldo -= (prestacaoFixa - j); }
+        saldo = Math.max(saldo, 0);
+        prestacaoVariavel = taxaMensalVariavel === 0 ? saldo / mesesVariaveis : saldo * (taxaMensalVariavel / (1 - Math.pow(1 + taxaMensalVariavel, -mesesVariaveis)));
+        isMista = true;
+        tipoTaxaLabel = "Mista — Fixa " + prazoFixaAnos + "a: TAN " + tanFixa.toFixed(2) + "% | Variável: " + taxaVariavel.toFixed(2) + "%"
+          + (mesesCarenciaPDF ? " · carência " + mesesCarenciaPDF + "m" : "");
       } else {
-        prestacao = valor * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -meses)));
+        const euribor = tipoTaxaAtual === "fixa" ? 0 : parseFloat(document.getElementById("euribor").value);
+        const spread = parseFloat(document.getElementById("spread").value);
+        if (!valor || !anos || (tipoTaxaAtual === "variavel" && isNaN(euribor)) || isNaN(spread)) {
+          status.textContent = "Preencha os dados antes de exportar o plano.";
+          status.classList.add("err"); return;
+        }
+        meses = anos * 12;
+        taxaAnual = tipoTaxaAtual === "fixa" ? spread : euribor + spread;
+        taxaMensal = taxaAnual / 100 / 12;
+        const _carencia = parseInt(document.getElementById("carencia").value) || 0;
+        mesesCarenciaPDF = Math.min(_carencia, meses - 1);
+        const mesesAmortPDF = meses - mesesCarenciaPDF;
+        prestacao = taxaMensal === 0 ? valor / mesesAmortPDF : valor * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -mesesAmortPDF)));
+        tipoTaxaLabel = tipoTaxaAtual === "fixa"
+          ? "Fixa — TAN: " + spread.toFixed(2) + "%"
+          : "Variável — Euribor: " + euribor.toFixed(2) + "% | Spread: " + spread.toFixed(2) + "%";
       }
+
+      // ── PDF ──
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
       const pageW = doc.internal.pageSize.getWidth();
@@ -543,33 +911,44 @@
         doc.setDrawColor(220, 220, 220);
         doc.line(10, 22, pageW - 10, 22);
         doc.line(10, pageH - 14, pageW - 10, pageH - 14);
-        doc.setFontSize(9);
-        doc.setTextColor(130, 130, 130);
+        doc.setFontSize(9); doc.setTextColor(130, 130, 130);
         doc.text("www.finmais.pt", pageW / 2, pageH - 8, { align: "center" });
         doc.text("Pág. " + pageNum, pageW - 10, pageH - 8, { align: "right" });
       }
 
-      doc.setFontSize(16);
-      doc.setTextColor(161, 146, 118);
-      doc.setFont(undefined, "bold");
+      doc.setFontSize(16); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold");
       doc.text("Simulador Crédito Habitação", pageW / 2, 32, { align: "center" });
+      doc.setFontSize(10); doc.setTextColor(60, 60, 60); doc.setFont(undefined, "normal");
 
-      doc.setFontSize(10);
-      doc.setTextColor(60, 60, 60);
-      doc.setFont(undefined, "normal");
-      const totalPago = prestacao * meses;
-      const tipoTaxaLabel = tipoTaxaAtual === "fixa"
-        ? "Fixa — TAN: " + spread.toFixed(2) + "%"
-        : "Variável — Euribor: " + euribor.toFixed(2) + "% | Spread: " + spread.toFixed(2) + "%";
-
-      const resumo = [
-        ["Valor do empréstimo", valor.toLocaleString("pt-PT", {style:"currency", currency:"EUR"})],
-        ["Prazo", anos + " anos (" + meses + " meses)"],
-        ["Tipo de Taxa", tipoTaxaLabel],
-        ["TAN", taxaAnual.toFixed(2) + " %"],
-        ["Prestação mensal", prestacao.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})],
-        ["Custo total aproximado", totalPago.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})]
-      ];
+      let resumo;
+      if (isMista) {
+        const taxaMensalFixa2 = tanFixa / 100 / 12;
+        const mesesFixosEfetivos2 = mesesFixos - mesesCarenciaPDF;
+        const jurosCarenciaMista = taxaMensalFixa2 === 0 ? 0 : valor * taxaMensalFixa2 * mesesCarenciaPDF;
+        const totalPago = jurosCarenciaMista + prestacaoFixa * mesesFixosEfetivos2 + prestacaoVariavel * mesesVariaveis;
+        resumo = [
+          ["Valor do empréstimo", valor.toLocaleString("pt-PT", {style:"currency", currency:"EUR"})],
+          ["Prazo total", anos + " anos (" + meses + " meses)" + (mesesCarenciaPDF ? " · carência " + mesesCarenciaPDF + "m" : "")],
+          ["Tipo de Taxa", tipoTaxaLabel],
+          ["Prestação (fase fixa)", prestacaoFixa.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})],
+          ["Prestação (fase variável)", prestacaoVariavel.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})],
+          ["MTIC (custo total)", totalPago.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})]
+        ];
+      } else {
+        const mesesAmortFinal = meses - mesesCarenciaPDF;
+        const jurosCarencia = taxaMensal === 0 ? 0 : valor * taxaMensal * mesesCarenciaPDF;
+        const totalPago = jurosCarencia + prestacao * mesesAmortFinal;
+        const taegPDF = taxaMensal === 0 ? 0 : calcularTAEG(taxaMensal);
+        resumo = [
+          ["Valor do empréstimo", valor.toLocaleString("pt-PT", {style:"currency", currency:"EUR"})],
+          ["Prazo", anos + " anos (" + meses + " meses)" + (mesesCarenciaPDF ? " · carência " + mesesCarenciaPDF + "m" : "")],
+          ["Tipo de Taxa", tipoTaxaLabel],
+          ["TAN", taxaAnual.toFixed(2) + " %"],
+          ["TAEG", taegPDF > 0 ? taegPDF.toFixed(2) + " %" : "—"],
+          ["Prestação mensal", prestacao.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})],
+          ["MTIC (custo total)", totalPago.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})]
+        ];
+      }
 
       doc.autoTable({
         startY: 38,
@@ -584,40 +963,187 @@
       });
 
       let finalY = doc.lastAutoTable.finalY + 10;
-      doc.setFontSize(12);
-      doc.setTextColor(161, 146, 118);
-      doc.setFont(undefined, "bold");
+      doc.setFontSize(12); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold");
       doc.text("Mapa de Amortização", pageW / 2, finalY, { align: "center" });
 
-      let saldo = valor;
       const rows = [];
-      for (let i = 1; i <= meses; i++) {
-        const juros = saldo * taxaMensal;
-        const amortizacao = prestacao - juros;
-        saldo = saldo - amortizacao;
-        rows.push([
-          i,
-          prestacao.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
-          juros.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
-          amortizacao.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
-          Math.max(saldo, 0).toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2})
-        ]);
+      if (isMista) {
+        let saldo = valor;
+        const taxaMensalFixa2 = tanFixa / 100 / 12;
+        // Fase carência (só juros, fase fixa)
+        for (let i = 1; i <= mesesCarenciaPDF; i++) {
+          const juros = taxaMensalFixa2 === 0 ? 0 : saldo * taxaMensalFixa2;
+          rows.push([i + " (carência)", "Fixa",
+            juros.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            juros.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            (0).toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            saldo.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2})
+          ]);
+        }
+        // Fase fixa (amortização)
+        for (let i = mesesCarenciaPDF + 1; i <= mesesFixos; i++) {
+          const juros = saldo * taxaMensalFixa2;
+          const amort = prestacaoFixa - juros;
+          saldo = Math.max(saldo - amort, 0);
+          rows.push([i, "Fixa",
+            prestacaoFixa.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            juros.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            amort.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            saldo.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2})
+          ]);
+        }
+        const taxaMensalVariavel2 = taxaVariavel / 100 / 12;
+        for (let i = mesesFixos + 1; i <= meses; i++) {
+          const juros = saldo * taxaMensalVariavel2;
+          const amort = prestacaoVariavel - juros;
+          saldo = Math.max(saldo - amort, 0);
+          rows.push([i, "Variável",
+            prestacaoVariavel.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            juros.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            amort.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            saldo.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2})
+          ]);
+        }
+        doc.autoTable({
+          startY: finalY + 5,
+          head: [["Mês", "Fase", "Prestação (€)", "Juros (€)", "Amortização (€)", "Saldo em dívida (€)"]],
+          body: rows, theme: "striped",
+          headStyles: { fillColor: [161, 146, 118], textColor: 255, fontStyle: "bold", fontSize: 9 },
+          bodyStyles: { fontSize: 8 },
+          margin: { left: 10, right: 10, top: 26, bottom: 18 },
+          didDrawPage: function(data) { addHeaderFooter(data.pageNumber); }
+        });
+      } else {
+        let saldo = valor;
+        // Fase de carência — só juros
+        for (let i = 1; i <= mesesCarenciaPDF; i++) {
+          const juros = taxaMensal === 0 ? 0 : saldo * taxaMensal;
+          rows.push([i + " (carência)",
+            juros.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            juros.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            (0).toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            saldo.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2})
+          ]);
+        }
+        // Fase de amortização
+        for (let i = mesesCarenciaPDF + 1; i <= meses; i++) {
+          const juros = saldo * taxaMensal;
+          const amort = prestacao - juros;
+          saldo = saldo - amort;
+          rows.push([i,
+            prestacao.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            juros.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            amort.toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            Math.max(saldo, 0).toLocaleString("pt-PT", {minimumFractionDigits:2, maximumFractionDigits:2})
+          ]);
+        }
+        doc.autoTable({
+          startY: finalY + 5,
+          head: [["Mês", "Prestação (€)", "Juros (€)", "Amortização (€)", "Saldo em dívida (€)"]],
+          body: rows, theme: "striped",
+          headStyles: { fillColor: [161, 146, 118], textColor: 255, fontStyle: "bold", fontSize: 9 },
+          bodyStyles: { fontSize: 8 },
+          margin: { left: 10, right: 10, top: 26, bottom: 18 },
+          didDrawPage: function(data) { addHeaderFooter(data.pageNumber); }
+        });
       }
-
-      doc.autoTable({
-        startY: finalY + 5,
-        head: [["Mês", "Prestação (€)", "Juros (€)", "Amortização (€)", "Saldo em dívida (€)"]],
-        body: rows,
-        theme: "striped",
-        headStyles: { fillColor: [161, 146, 118], textColor: 255, fontStyle: "bold", fontSize: 9 },
-        bodyStyles: { fontSize: 8 },
-        margin: { left: 10, right: 10, top: 26, bottom: 18 },
-        didDrawPage: function(data) { addHeaderFooter(data.pageNumber); }
-      });
 
       doc.save("Simulador_FinMais.pdf");
       status.textContent = "Plano prestacional exportado em PDF.";
       status.classList.add("ok");
+    }
+
+        function toggleMistaDropdown(which) {
+      const btn = document.getElementById("mista-" + which + "-btn");
+      const dd = document.getElementById("mista-" + which + "-dd");
+      const arrow = document.getElementById("mista-" + which + "-arrow");
+      const isOpen = dd.style.maxHeight && dd.style.maxHeight !== "0px";
+      const other = which === "prazo" ? "tan" : "prazo";
+      const otherDd = document.getElementById("mista-" + other + "-dd");
+      const otherArrow = document.getElementById("mista-" + other + "-arrow");
+      const otherBtn = document.getElementById("mista-" + other + "-btn");
+      if (otherDd) { otherDd.style.maxHeight = "0"; otherDd.style.opacity = "0"; otherDd.style.borderWidth = "0"; if (otherArrow) otherArrow.style.transform = "rotate(0deg)"; if (otherBtn) otherBtn.style.borderRadius = "10px"; }
+      if (isOpen) { dd.style.maxHeight = "0"; dd.style.opacity = "0"; dd.style.borderWidth = "0"; arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "10px"; }
+      else { dd.style.maxHeight = dd.scrollHeight + "px"; dd.style.opacity = "1"; dd.style.borderWidth = "1px"; dd.style.borderTopWidth = "0"; arrow.style.transform = "rotate(180deg)"; btn.style.borderRadius = "10px 10px 0 0"; }
+    }
+
+    function selectMista(which, value, label) {
+      document.getElementById("mista-" + which + "-value").value = value;
+      const labelEl = document.getElementById("mista-" + which + "-label");
+      labelEl.textContent = label;
+      const btn = document.getElementById("mista-" + which + "-btn");
+      btn.classList.add("selected");
+      const dd = document.getElementById("mista-" + which + "-dd");
+      const arrow = document.getElementById("mista-" + which + "-arrow");
+      dd.style.maxHeight = "0"; dd.style.opacity = "0"; dd.style.borderWidth = "0";
+      arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "10px";
+      if (which === "prazo") calcPrazoVariavel();
+    }
+
+    function calcPrazoVariavel() {
+      if (tipoTaxaAtual !== "mista") return;
+      const anosTotal = parseInt(document.getElementById("anos").value);
+      const prazoFixo = parseInt(document.getElementById("mista-prazo-value").value);
+      const campo = document.getElementById("mista-prazo-variavel");
+      if (!campo) return;
+      if (!isNaN(anosTotal) && !isNaN(prazoFixo) && prazoFixo < anosTotal) {
+        campo.value = (anosTotal - prazoFixo) + " anos";
+      } else if (!isNaN(anosTotal) && isNaN(prazoFixo)) {
+        campo.value = "";
+      } else if (!isNaN(anosTotal) && !isNaN(prazoFixo) && prazoFixo >= anosTotal) {
+        campo.value = "⚠ prazo fixo ≥ total";
+      } else {
+        campo.value = "";
+      }
+    }
+
+    document.addEventListener("click", function(e) {
+      ["prazo","tan"].forEach(function(which) {
+        const btn = document.getElementById("mista-" + which + "-btn");
+        const dd = document.getElementById("mista-" + which + "-dd");
+        if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+          if (dd.style.maxHeight && dd.style.maxHeight !== "0px") {
+            dd.style.maxHeight = "0"; dd.style.opacity = "0"; dd.style.borderWidth = "0";
+            document.getElementById("mista-" + which + "-arrow").style.transform = "rotate(0deg)";
+            btn.style.borderRadius = "10px";
+          }
+        }
+      });
+      const hBtn = document.getElementById("horario-btn");
+      const hDd = document.getElementById("horario-dropdown");
+      if (hBtn && hDd && !hBtn.contains(e.target) && !hDd.contains(e.target)) {
+        if (hDd.style.maxHeight && hDd.style.maxHeight !== "0px") {
+          hDd.style.maxHeight = "0"; hDd.style.opacity = "0"; hDd.style.borderWidth = "0";
+          document.getElementById("horario-arrow").style.transform = "rotate(0deg)";
+          hBtn.style.borderRadius = "9px";
+        }
+      }
+    });
+
+    function toggleHorario() {
+      const dropdown = document.getElementById("horario-dropdown");
+      const arrow = document.getElementById("horario-arrow");
+      const btn = document.getElementById("horario-btn");
+      const isOpen = dropdown.style.maxHeight !== "0px" && dropdown.style.maxHeight !== "";
+      if (isOpen) {
+        dropdown.style.maxHeight = "0"; dropdown.style.opacity = "0"; dropdown.style.borderWidth = "0";
+        arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "9px";
+      } else {
+        dropdown.style.maxHeight = dropdown.scrollHeight + "px"; dropdown.style.opacity = "1";
+        dropdown.style.borderWidth = "1px"; dropdown.style.borderTopWidth = "0";
+        arrow.style.transform = "rotate(180deg)"; btn.style.borderRadius = "9px 9px 0 0";
+      }
+    }
+
+    function selectHorario(value, label) {
+      document.getElementById("horario-value").value = value;
+      document.getElementById("horario-label").textContent = label;
+      document.getElementById("horario-label").style.color = "#e5e7eb";
+      const dropdown = document.getElementById("horario-dropdown");
+      const arrow = document.getElementById("horario-arrow");
+      const btn = document.getElementById("horario-btn");
+      dropdown.style.maxHeight = "0"; dropdown.style.opacity = "0"; dropdown.style.borderWidth = "0";
+      arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "9px";
     }
   </script>
 </body>
