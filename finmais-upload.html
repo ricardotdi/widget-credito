@@ -206,6 +206,16 @@
             </div>
             <div class="doc-status" id="status-5">Clique para carregar</div>
           </div>
+
+          <div class="doc-item" id="item-6">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="fileSelected(this, 6)" />
+            <div class="doc-icon">🏛️</div>
+            <div class="doc-info">
+              <div class="doc-name">Mapa da Central de Responsabilidades do BdP</div>
+              <div class="doc-hint">PDF, JPG, PNG, Word — disponível no site do Banco de Portugal</div>
+            </div>
+            <div class="doc-status" id="status-6">Clique para carregar</div>
+          </div>
         </div>
 
         <div class="note">
@@ -268,7 +278,7 @@
 
     window.addEventListener("DOMContentLoaded", verificarToken);
 
-    const totalDocs = 6;
+    const totalDocs = 7;
     const uploadedFiles = {};
 
     function fileSelected(input, index) {
@@ -286,7 +296,7 @@
         delete uploadedFiles[index];
         item.classList.remove("uploaded");
         status.textContent = "Clique para carregar";
-        const icons = ["🪪","💶","📄","🏦","🏠","📋"];
+        const icons = ["🪪","💶","📄","🏦","🏠","📋","🏛️"];
         item.querySelector(".doc-icon").textContent = icons[index];
       }
       updateProgress();
@@ -328,7 +338,7 @@
       btn.disabled = true;
       btn.textContent = "A enviar...";
       try {
-        const docNames = ["Cartão de Cidadão ou Passaporte","Últimos 3 Recibos de Vencimento","Nota de Liquidação de IRS","Últimos 3 Extratos Bancários","Caderneta Predial","Certidão Permanente do Imóvel"];
+        const docNames = ["Cartão de Cidadão ou Passaporte","Últimos 3 Recibos de Vencimento","Nota de Liquidação de IRS","Últimos 3 Extratos Bancários","Caderneta Predial","Certidão Permanente do Imóvel","Mapa da Central de Responsabilidades do BdP"];
         const ficheiros = [];
         const docList = [];
         for (const [index, files] of Object.entries(uploadedFiles)) {
