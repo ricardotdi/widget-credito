@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: transparent; }
+  .euribor-box {
+    display: inline-block;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 13px;
+    min-width: 210px;
+  }
+  .euribor-header {
+    background: #A19276;
+    color: #fff;
+    text-align: center;
+    padding: 7px 12px;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .euribor-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+  }
+  .euribor-row:last-child { border-bottom: none; }
+  .euribor-label { color: #374151; font-weight: 500; }
+  .euribor-value {
+    color: #A19276;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 55px;
+    text-align: right;
+  }
+  .euribor-footer {
+    background: #f9fafb;
+    text-align: center;
+    padding: 4px 10px;
+    font-size: 10px;
+    color: #9ca3af;
+    border-top: 1px solid #e5e7eb;
+  }
+</style>
+</head>
+<body>
+
+<div class="euribor-box">
+  <div class="euribor-header">Taxa Euribor %</div>
+  <div class="euribor-row">
+    <span class="euribor-label">Euribor 3 meses</span>
+    <span class="euribor-value" id="e3m">...</span>
+  </div>
+  <div class="euribor-row">
+    <span class="euribor-label">Euribor 6 meses</span>
+    <span class="euribor-value" id="e6m">...</span>
+  </div>
+  <div class="euribor-row">
+    <span class="euribor-label">Euribor 12 meses</span>
+    <span class="euribor-value" id="e12m">...</span>
+  </div>
+  <div class="euribor-footer" id="data-ref">A carregar...</div>
+</div>
+
+<script>
+const WORKER_URL = "https://euribor-proxy.ricardotdi.workers.dev";
+
+fetch(WORKER_URL)
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("e3m").textContent  = data.e3m  + "%";
+    document.getElementById("e6m").textContent  = data.e6m  + "%";
+    document.getElementById("e12m").textContent = data.e12m + "%";
+    document.getElementById("data-ref").textContent =
+      "Ref.: " + data.date + " · Fonte: BCE";
+  })
+  .catch(() => {
+    ["e3m","e6m","e12m"].forEach(id =>
+      document.getElementById(id).textContent = "n/d"
+    );
+    document.getElementById("data-ref").textContent = "Dados indisponíveis";
+  });
+</script>
+</body>
+</html>
