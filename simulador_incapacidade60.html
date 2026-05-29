@@ -824,15 +824,9 @@
     const ws = XLSX.utils.aoa_to_sheet(data);
     ws["!cols"] = [{wch:18},{wch:22},{wch:20},{wch:18},{wch:20},{wch:22}];
     XLSX.utils.book_append_sheet(wb, ws, "Plano Bonificado");
-    // Compatível com iframe (Wix): usa link com data URI em vez de writeFile
+    // Abre em nova janela (funciona dentro de iframe Wix)
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
-    const a = document.createElement("a");
-    a.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + wbout;
-    a.download = "Plano_Bonificado_Lei64_2014_FinMais.xlsx";
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() { document.body.removeChild(a); }, 200);
+    window.open("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + wbout, "_blank");
   }
 
   function exportarPDF() {
@@ -880,15 +874,8 @@
       margin: { left: 8, right: 8, top: 26, bottom: 18 },
       didDrawPage: function(data) { addHeader(data.pageNumber); }
     });
-    // Compatível com iframe (Wix): abre em nova janela em vez de doc.save()
-    const pdfData = doc.output("datauristring");
-    const a = document.createElement("a");
-    a.href = pdfData;
-    a.download = "Plano_Bonificado_Lei64_2014_FinMais.pdf";
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() { document.body.removeChild(a); }, 200);
+    // Abre em nova janela (funciona dentro de iframe Wix)
+    window.open(doc.output("datauristring"), "_blank");
   }
 
   async function enviarLead() {
