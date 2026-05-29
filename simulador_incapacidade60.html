@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulador Crédito Habitação Bonificado – Lei n.º 64/2014</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    :root {
+      --primary: #A19276;
+      --primary-dark: #8a7d65;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 14px;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --accent: #1d4ed8;
+      --accent-light: rgba(29,78,216,0.07);
+    }
+    .inline-input::placeholder {
+      color: #c0c0c0;
+      font-size: 0.72rem;
+      font-weight: 300;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #f5f0ea, #f9fafb);
+      color: var(--text);
+    }
+    .widget-root { max-width: 980px; margin: 30px auto; padding: 20px; }
+
+    .regime-banner {
+      background: linear-gradient(135deg, #1e3a8a, #1d4ed8 80%);
+      border-radius: 18px 18px 0 0;
+      padding: 14px 24px;
+      display: flex; align-items: center; gap: 14px;
+      color: #dbeafe;
+    }
+    .regime-icon { font-size: 1.5rem; }
+    .regime-title { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em; }
+    .regime-sub { font-size: 0.78rem; color: rgba(219,234,254,0.75); margin-top: 2px; }
+    .regime-badge {
+      margin-left: auto; background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25); border-radius: 999px;
+      font-size: 0.72rem; font-weight: 600; padding: 4px 12px; color: #dbeafe;
+      white-space: nowrap;
+    }
+
+    .widget-card {
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      border-radius: 0 0 24px 24px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-top: none;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 28px;
+    }
+    @media (max-width: 800px) { .widget-card { grid-template-columns: 1fr; } }
+
+    .widget-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .widget-title { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+    .widget-subtitle { font-size: 0.86rem; color: var(--muted); margin-top: 4px; }
+
+    .taxa-mecanismo {
+      background: var(--accent-light);
+      border: 1px solid rgba(29,78,216,0.18);
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 16px;
+    }
+    .taxa-mecanismo .tm-title {
+      font-size: 0.78rem; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;
+    }
+    .taxa-formula {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      font-size: 0.83rem; font-weight: 600; color: #1e3a8a;
+    }
+    .tf-block {
+      background: #fff; border: 1px solid rgba(29,78,216,0.2);
+      border-radius: 8px; padding: 5px 10px; text-align: center; min-width: 90px;
+    }
+    .tf-block .tf-label { font-size: 0.65rem; color: var(--muted); font-weight: 400; display: block; }
+    .tf-block .tf-val { font-size: 0.88rem; font-weight: 700; color: #1e3a8a; }
+    .tf-op { color: var(--muted); font-size: 1rem; }
+    .tf-result {
+      background: #1d4ed8; color: #fff;
+      border-radius: 8px; padding: 5px 12px; text-align: center;
+    }
+    .tf-result .tf-label { font-size: 0.65rem; color: rgba(255,255,255,0.7); font-weight: 400; display: block; }
+    .tf-result .tf-val { font-size: 0.9rem; font-weight: 700; color: #fff; }
+
+    .section-title {
+      font-size: 0.88rem; font-weight: 600; margin-bottom: 8px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .inputs-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    @media (max-width: 600px) { .inputs-grid { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: 0.85rem; color: var(--muted); }
+    .field input, .field select {
+      padding: 9px 11px; border-radius: 10px; border: 1px solid var(--border);
+      font-size: 0.9rem; outline: none; background: #f9fafb;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: #A19276; background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.35);
+    }
+    .field input:disabled {
+      background: #e5e7eb; color: #9ca3af; cursor: not-allowed; border-color: #e5e7eb;
+    }
+    .field small { font-size: 0.75rem; color: var(--muted); }
+
+    .taxa-live-row {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px;
+    }
+    .taxa-live-item {
+      background: #fff; border: 1px solid var(--border); border-radius: 12px;
+      padding: 8px 10px; text-align: center;
+    }
+    .tl-label { font-size: 0.7rem; color: var(--muted); margin-bottom: 3px; }
+    .tl-val { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .tl-val.highlight { color: #1d4ed8; }
+    .tl-val.green { color: #16a34a; }
+    .tl-source { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+    .inline-input {
+      width: 60px; border: none; background: transparent;
+      font-size: 1rem; font-weight: 700; text-align: center; outline: none;
+    }
+
+    .actions-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .btn {
+      border-radius: 999px; border: none; padding: 9px 16px;
+      font-size: 0.9rem; font-weight: 500; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: transform 0.1s, box-shadow 0.1s, background 0.1s; white-space: nowrap;
+    }
+    .btn-primary {
+      background: #A19276; color: #ffffff;
+      box-shadow: 0 10px 25px rgba(161, 146, 118, 0.35);
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.02); color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: rgba(15, 23, 42, 0.04); }
+
+    .results-card {
+      background: rgba(15, 23, 42, 0.02); border-radius: 18px;
+      padding: 14px 16px; border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .results-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .result-item {
+      padding: 8px 10px; border-radius: 12px;
+      background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.9);
+    }
+    .result-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 2px; }
+    .result-value { font-size: 1rem; font-weight: 600; }
+    .result-item.highlight {
+      background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+      border-color: transparent;
+    }
+    .result-item.highlight .result-label { color: rgba(219,234,254,0.75); }
+    .result-item.highlight .result-value { color: #fff; font-size: 1.1rem; }
+    .result-item.green-hi { background: linear-gradient(135deg, #14532d, #16a34a); border-color: transparent; }
+    .result-item.green-hi .result-label { color: rgba(220,252,231,0.8); }
+    .result-item.green-hi .result-value { color: #fff; }
+
+    .lead-card {
+      background: #0f172a; color: #e5e7eb; border-radius: 18px;
+      padding: 16px 16px 18px; display: flex; flex-direction: column;
+      gap: 10px; position: relative; overflow: hidden;
+    }
+    .lead-card::before {
+      content: ""; position: absolute; inset: -40%;
+      background: radial-gradient(circle at top right, rgba(29,78,216,0.25), transparent 55%);
+      opacity: 0.9; pointer-events: none;
+    }
+    .lead-inner { position: relative; z-index: 1; }
+    .lead-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+    .lead-subtitle { font-size: 0.8rem; color: #9ca3af; margin-bottom: 8px; }
+    .lead-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .lead-field label { font-size: 0.75rem; color: #9ca3af; margin-bottom: 2px; display: block; }
+    .lead-field input, .lead-field select {
+      width: 100%; padding: 7px 9px; border-radius: 9px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9); color: #e5e7eb; font-size: 0.85rem; outline: none;
+    }
+    .lead-field input:focus, .lead-field select:focus {
+      border-color: #60a5fa; box-shadow: 0 0 0 1px rgba(96,165,250,0.4);
+    }
+    .lead-field select option { background: #1e293b; color: #e5e7eb; }
+    .lead-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 6px; gap: 8px; flex-wrap: wrap;
+    }
+    .lead-note { font-size: 0.7rem; color: #9ca3af; }
+    .lead-btn {
+      border-radius: 999px; border: none; padding: 7px 14px;
+      font-size: 0.8rem; font-weight: 500; cursor: pointer;
+      background: #A19276; color: #ffffff;
+      display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .lead-btn:hover { background: #8a7d65; }
+    .rgpd-wrap {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin: 8px 0 6px; padding: 10px 12px;
+      background: rgba(255,255,255,0.04); border-radius: 9px;
+      border: 1px solid rgba(148,163,184,0.25);
+    }
+    .rgpd-wrap input[type="checkbox"] {
+      margin-top: 2px; flex-shrink: 0;
+      accent-color: #A19276; width: 15px; height: 15px; cursor: pointer;
+    }
+    .rgpd-wrap label { font-size: 0.72rem; color: #9ca3af; line-height: 1.5; cursor: pointer; }
+    .rgpd-wrap label a { color: #A19276; text-decoration: underline; }
+    .rgpd-err { color: #f87171; font-size: 0.72rem; margin: 2px 0 6px; display: none; }
+
+    .status { margin-top: 6px; font-size: 0.8rem; }
+    .status.ok { color: #16a34a; }
+    .status.err { color: #dc2626; }
+
+    .limites-box {
+      background: #fff8ed; border: 1px solid #fcd34d;
+      border-radius: 12px; padding: 10px 14px; margin-top: 12px;
+      font-size: 0.78rem; color: #78350f;
+    }
+    .limites-box strong { color: #92400e; }
+
+    #cookie-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+      background: #0f172a; color: #e2e8f0;
+      padding: 18px 24px; box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
+      font-size: 0.85rem; line-height: 1.6;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+    }
+    #cookie-banner.hidden { display: none; }
+    .cookie-text { flex: 1; min-width: 220px; color: #94a3b8; }
+    .cookie-text a { color: #A19276; text-decoration: underline; }
+    .cookie-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .cookie-btn {
+      padding: 8px 18px; border-radius: 999px; font-size: 0.82rem;
+      font-weight: 500; cursor: pointer; border: none; white-space: nowrap;
+    }
+    .cookie-btn-accept { background: #A19276; color: #fff; }
+    .cookie-btn-accept:hover { background: #8a7d65; }
+    .cookie-btn-reject { background: transparent; color: #94a3b8; border: 1px solid #334155; }
+    .cookie-btn-reject:hover { background: rgba(255,255,255,0.05); }
+  </style>
+</head>
+<body>
+
+<div id="cookie-banner" class="hidden">
+  <div class="cookie-text">
+    Utilizamos cookies essenciais para o funcionamento do site.
+    <a href="https://www.finmais.pt/politica-de-privacidade" target="_blank">Política de Privacidade</a>
+  </div>
+  <div class="cookie-btns">
+    <button class="cookie-btn cookie-btn-reject" onclick="cookieChoice('essential')">Apenas essenciais</button>
+    <button class="cookie-btn cookie-btn-accept" onclick="cookieChoice('all')">Aceitar todos</button>
+  </div>
+</div>
+
+<div class="widget-root">
+
+  <div class="regime-banner">
+    <div class="regime-icon">♿</div>
+    <div>
+      <div class="regime-title">Crédito Habitação Bonificado – Incapacidade ≥ 60%</div>
+      <div class="regime-sub">Lei n.º 64/2014, de 26 de agosto · Portaria n.º 502/2003 · Taxa bonificada: mutuário paga apenas 65% da taxa BCE</div>
+    </div>
+    <div class="regime-badge">Simulação indicativa</div>
+  </div>
+
+  <div class="widget-card">
+
+    <!-- Coluna esquerda -->
+    <div>
+      <div class="widget-header">
+        <div>
+          <div class="widget-title">Simulador de Prestação Bonificada</div>
+          <div class="widget-subtitle">A taxa paga pelo mutuário é apenas 65% da taxa de referência BCE. O Estado suporta a bonificação restante.</div>
+        </div>
+      </div>
+
+      <!-- Fórmula visual da bonificação -->
+      <div class="taxa-mecanismo">
+        <div class="tm-title">⚖ Mecanismo da Bonificação · Art.º 7.º da Lei n.º 64/2014</div>
+        <div class="taxa-formula">
+          <div class="tf-block">
+            <span class="tf-label">TRCB (Portaria 502/2003)</span>
+            <span class="tf-val" id="fm-trcb">—</span>
+          </div>
+          <span class="tf-op">−</span>
+          <div class="tf-block">
+            <span class="tf-label">65% × Taxa BCE (MRO)</span>
+            <span class="tf-val" id="fm-65bce">—</span>
+          </div>
+          <span class="tf-op">=</span>
+          <div class="tf-result">
+            <span class="tf-label">Bonificação suportada pelo Estado</span>
+            <span class="tf-val" id="fm-bonif">—</span>
+          </div>
+        </div>
+        <div style="font-size:0.7rem; color:#1e3a8a; margin-top:8px; line-height:1.5;">
+          O mutuário paga apenas <strong id="fm-pagador">65% da Taxa BCE</strong>.
+          A diferença entre a TRCB e esse valor é liquidada pelo Estado ao banco.
+          Se a taxa contratada for inferior à TRCB, a bonificação usa a taxa contratada como referência.
+        </div>
+      </div>
+
+      <!-- Separador visual — início do preenchimento -->
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; margin-top:4px;">
+        <div style="flex:1; height:1px; background:linear-gradient(to right, transparent, rgba(29,78,216,0.25));"></div>
+        <div style="display:flex; align-items:center; gap:7px; background:rgba(29,78,216,0.07); border:1px solid rgba(29,78,216,0.18); border-radius:999px; padding:5px 14px; white-space:nowrap;">
+          <span style="color:#1d4ed8; font-size:0.78rem;">✏</span>
+          <span style="font-size:0.75rem; font-weight:600; color:#1d4ed8; letter-spacing:0.04em;">Preencha a partir daqui</span>
+        </div>
+        <div style="flex:1; height:1px; background:linear-gradient(to left, transparent, rgba(29,78,216,0.25));"></div>
+      </div>
+
+      <!-- Taxas de referência — introduzidas pelo cliente -->
+      <div class="section-title">Taxas de Referência</div>
+      <div class="taxa-live-row">
+        <div class="taxa-live-item">
+          <div class="tl-label">Taxa BCE (%)</div>
+          <div class="tl-val highlight">
+            <input id="taxa-bce" type="number" step="0.01" placeholder="ex: 2.90" class="inline-input" style="color:#1d4ed8; width:75px;" oninput="recalcTaxas()" />%
+          </div>
+        </div>
+        <div class="taxa-live-item">
+          <div class="tl-label">TRCB (%)</div>
+          <div class="tl-val">
+            <input id="taxa-trcb" type="number" step="0.001" placeholder="ex: 3.175" class="inline-input" style="width:75px;" oninput="recalcTaxas()" />%
+          </div>
+        </div>
+        <div class="taxa-live-item">
+          <div class="tl-label">Taxa efetiva (mutuário)</div>
+          <div class="tl-val green" id="taxa-efetiva-display">—</div>
+          <div class="tl-source">= 65% × Taxa BCE</div>
+        </div>
+      </div>
+
+      <!-- Dados do empréstimo -->
+      <div class="section-title">Dados do Empréstimo</div>
+      <div class="inputs-grid">
+        <div class="field">
+          <label>Valor do empréstimo (€)</label>
+          <input id="valor" type="number" min="1000" max="228127" step="500" placeholder="ex: 150 000" oninput="validarCampos()" />
+          <small>Máx. legal: 228 127,27 € (art.º 5.º).</small>
+        </div>
+        <div class="field">
+          <label>Prazo (anos)</label>
+          <input id="anos" type="number" min="1" max="50" step="1" placeholder="ex: 30" oninput="validarCampos()" />
+          <small>Máx. 50 anos (art.º 6.º Lei 64/2014).</small>
+        </div>
+      </div>
+
+      <div class="inputs-grid" style="margin-top:14px;">
+        <div class="field">
+          <label>Valor do imóvel (€) <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">— opcional</span></label>
+          <input id="valor-imovel" type="number" min="0" step="1000" placeholder="ex: 200 000" oninput="validarLTV()" />
+          <small>Para verificação do LTV (máx. 90%).</small>
+        </div>
+        <div class="field">
+          <label>Carência de capital (meses) <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">— opcional</span></label>
+          <input id="carencia" type="number" min="0" max="24" step="1" placeholder="ex: 6" oninput="validarCampos()" />
+          <small>Período inicial só de juros.</small>
+        </div>
+      </div>
+
+      <div class="inputs-grid" style="margin-top:14px;">
+        <div class="field">
+          <label>Rendimento líquido mensal (€) <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">— opcional</span></label>
+          <input id="rendimento" type="number" min="0" step="1" placeholder="ex: 1500" oninput="calcularDSTI()" />
+          <small>Para cálculo da taxa de esforço (DSTI).</small>
+        </div>
+        <div class="field">
+          <label>Finalidade (art.º 2.º Lei 64/2014)</label>
+          <select id="finalidade">
+            <option value="aquisicao">Aquisição HPP</option>
+            <option value="construcao">Construção HPP</option>
+            <option value="obras">Obras / Beneficiação</option>
+            <option value="ampliacao">Ampliação HPP</option>
+          </select>
+          <small>Habitação própria permanente.</small>
+        </div>
+      </div>
+
+      <!-- Alertas limites legais -->
+      <div class="limites-box" id="limites-box" style="display:none;">
+        <strong>⚠ Verificação de limites legais:</strong> <span id="limites-texto"></span>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-primary" onclick="simular()" style="flex:1;">
+          ▶ Simular Prestação Bonificada
+        </button>
+        <button class="btn btn-ghost" onclick="limpar()" style="flex:0 0 auto; padding:0 16px;">
+          ✕ Limpar
+        </button>
+      </div>
+      <div id="status-sim" class="status"></div>
+
+      <!-- Resumo resultados -->
+      <div style="margin-top:18px;">
+        <div class="section-title">Resumo da simulação</div>
+        <div class="results-card">
+          <div class="results-grid">
+            <div class="result-item highlight">
+              <div class="result-label">Prestação mensal (mutuário)</div>
+              <div class="result-value" id="res-prestacao">—</div>
+            </div>
+            <div class="result-item green-hi">
+              <div class="result-label">Poupança mensal (vs. mercado)</div>
+              <div class="result-value" id="res-poupanca">—</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Taxa efetiva mutuário (65% BCE)</div>
+              <div class="result-value" id="res-tan">—</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Taxa mercado referência (TRCB)</div>
+              <div class="result-value" id="res-tan-mercado">—</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">TAEG estimada</div>
+              <div class="result-value" id="res-taeg">—</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Prazo</div>
+              <div class="result-value" id="res-prazo">—</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Total pago pelo mutuário</div>
+              <div class="result-value" id="res-total">—</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Total bonificação suportada pelo Estado</div>
+              <div class="result-value" id="res-total-bonif">—</div>
+            </div>
+            <div class="result-item" id="res-dsti-item" style="display:none;">
+              <div class="result-label">Taxa de esforço (DSTI)</div>
+              <div class="result-value" id="res-dsti">—</div>
+            </div>
+            <div class="result-item" id="res-ltv-item" style="display:none;">
+              <div class="result-label">LTV (empréstimo / imóvel)</div>
+              <div class="result-value" id="res-ltv">—</div>
+            </div>
+          </div>
+          <div style="font-size:0.72rem; color:var(--muted); margin-top:10px; line-height:1.5;">
+            Simulação ao abrigo da Lei n.º 64/2014, de 26 de agosto · Portaria n.º 502/2003. Meramente indicativa. Sujeita a aprovação bancária e verificação de elegibilidade pelo Estado.
+          </div>
+        </div>
+      </div>
+
+      <!-- Exportar -->
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+        <button class="btn btn-ghost" style="width:100%; justify-content:center;" onclick="exportarExcel()">
+          📊 Exportar plano em Excel
+        </button>
+        <button class="btn btn-ghost" style="width:100%; justify-content:center;" onclick="exportarPDF()">
+          📄 Exportar plano em PDF
+        </button>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:10px; padding-top:8px; border-top:1px solid var(--border);">
+        <span style="font-size:0.75rem; color:var(--muted);">Desenvolvido pela Fin+® · Lei n.º 64/2014</span>
+      </div>
+    </div>
+
+    <!-- Coluna direita -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Condições legais -->
+      <div style="background:#fff; border-radius:18px; border:1px solid rgba(148,163,184,0.3); padding:18px; box-shadow:0 4px 16px rgba(15,23,42,0.06);">
+        <div style="font-size:0.82rem; font-weight:700; color:#1e3a8a; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.06em;">📋 Condições · Lei n.º 64/2014</div>
+        <div style="display:flex; flex-direction:column; gap:9px;">
+          <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--muted);">
+            <span style="color:#1d4ed8; font-weight:700; flex-shrink:0;">✓</span>
+            <span><strong style="color:var(--text);">Grau de incapacidade ≥ 60%</strong> comprovado por Atestado Médico de Incapacidade Multiuso (AMIM).</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--muted);">
+            <span style="color:#1d4ed8; font-weight:700; flex-shrink:0;">✓</span>
+            <span><strong style="color:var(--text);">Taxa bonificada:</strong> mutuário paga 65% da taxa BCE (MRO). O Estado paga a diferença ao banco (TRCB − 65%×BCE).</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--muted);">
+            <span style="color:#1d4ed8; font-weight:700; flex-shrink:0;">✓</span>
+            <span><strong style="color:var(--text);">Montante máximo:</strong> 228.127,27 € (atualizado anualmente pelo IPC). Pode ter vários empréstimos sem exceder este total.</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--muted);">
+            <span style="color:#1d4ed8; font-weight:700; flex-shrink:0;">✓</span>
+            <span><strong style="color:var(--text);">LTV máximo:</strong> 90% do valor de avaliação bancária.</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--muted);">
+            <span style="color:#1d4ed8; font-weight:700; flex-shrink:0;">✓</span>
+            <span><strong style="color:var(--text);">Prazo máximo:</strong> 50 anos.</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--muted);">
+            <span style="color:#1d4ed8; font-weight:700; flex-shrink:0;">✓</span>
+            <span><strong style="color:var(--text);">Seguro de vida não obrigatório</strong> por lei (ao contrário do regime geral).</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--muted);">
+            <span style="color:#16a34a; font-weight:700; flex-shrink:0;">↺</span>
+            <span><strong style="color:var(--text);">Conversão automática:</strong> se a incapacidade surgir após o contrato, o banco não pode recusar a migração para este regime.</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--muted);">
+            <span style="color:#dc2626; font-weight:700; flex-shrink:0;">⚠</span>
+            <span><strong style="color:var(--text);">Inalienabilidade 5 anos:</strong> o imóvel não pode ser vendido/doado nos primeiros 5 anos, salvo desemprego, morte, alteração familiar ou mobilidade profissional.</span>
+          </div>
+        </div>
+        <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-size:0.7rem; color:var(--muted);">
+          Deficientes das Forças Armadas: aplicam-se as condições do DL n.º 230/80, de 16 de julho.
+        </div>
+      </div>
+
+      <!-- Lead card -->
+      <div class="lead-card">
+        <div class="lead-inner">
+          <div class="lead-title">Fale com um especialista</div>
+          <div class="lead-subtitle">Verificamos a sua elegibilidade e apresentamos propostas de vários bancos, sem custo.</div>
+          <div class="lead-grid">
+            <div class="lead-field">
+              <label>Nome completo</label>
+              <input id="lead-nome" type="text" placeholder="O seu nome" />
+            </div>
+            <div class="lead-field">
+              <label>Telefone / WhatsApp</label>
+              <input id="lead-tel" type="tel" placeholder="+351 9XX XXX XXX" />
+            </div>
+            <div class="lead-field">
+              <label>Email</label>
+              <input id="lead-email" type="email" placeholder="email@exemplo.pt" />
+            </div>
+            <div class="lead-field">
+              <label>Grau de incapacidade declarado</label>
+              <select id="lead-grau">
+                <option value="" disabled selected>Selecione</option>
+                <option value="60-79">60% – 79%</option>
+                <option value="80-99">80% – 99%</option>
+                <option value="100">100% (total/absoluta)</option>
+                <option value="dfa">Deficiente das Forças Armadas</option>
+              </select>
+            </div>
+            <div class="lead-field">
+              <label>Melhor horário para contacto</label>
+              <select id="lead-horario">
+                <option value="" disabled selected>Selecione</option>
+                <option value="manha">Manhã (9h–12h)</option>
+                <option value="tarde">Tarde (12h–18h)</option>
+                <option value="qualquer">Qualquer hora</option>
+              </select>
+            </div>
+          </div>
+          <div class="rgpd-wrap">
+            <input type="checkbox" id="lead-rgpd" />
+            <label for="lead-rgpd">
+              Autorizo o tratamento dos meus dados pessoais para efeitos de contacto comercial, nos termos da
+              <a href="https://www.finmais.pt/politica-de-privacidade" target="_blank">Política de Privacidade</a>.
+            </label>
+          </div>
+          <div class="rgpd-err" id="rgpd-err">Por favor aceite a política de privacidade.</div>
+          <div class="lead-footer">
+            <span class="lead-note">🔒 Dados protegidos. Sem spam.</span>
+            <button class="lead-btn" onclick="enviarLead()">Pedir contacto →</button>
+          </div>
+          <div id="lead-status" style="font-size:0.78rem; margin-top:4px;"></div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <a href="https://www.finmais.pt" target="_blank" style="font-size:0.82rem; color:var(--muted); text-decoration:none;">www.finmais.pt</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function() {
+    if (!localStorage.getItem('cookie_consent')) {
+      document.getElementById('cookie-banner').classList.remove('hidden');
+    }
+  })();
+  function cookieChoice(t) {
+    localStorage.setItem('cookie_consent', t);
+    document.getElementById('cookie-banner').classList.add('hidden');
+  }
+
+  function getTaxaBCE()  { return parseFloat(document.getElementById("taxa-bce").value)  || 0; }
+  function getTRCB()     { return parseFloat(document.getElementById("taxa-trcb").value) || 0; }
+
+  function recalcTaxas() {
+    const bce  = getTaxaBCE();
+    const trcb = getTRCB();
+
+    if (!bce && !trcb) {
+      document.getElementById("fm-trcb").textContent        = "—";
+      document.getElementById("fm-65bce").textContent       = "—";
+      document.getElementById("fm-bonif").textContent       = "—";
+      document.getElementById("fm-pagador").textContent     = "65% da Taxa BCE";
+      document.getElementById("taxa-efetiva-display").textContent = "—";
+      return;
+    }
+
+    const ef65  = bce * 0.65;
+    const bonif = trcb > 0 ? Math.max(trcb - ef65, 0) : 0;
+
+    document.getElementById("fm-trcb").textContent        = trcb > 0 ? trcb.toFixed(3).replace(".",",") + "%" : "—";
+    document.getElementById("fm-65bce").textContent       = bce  > 0 ? ef65.toFixed(3).replace(".",",") + "%" : "—";
+    document.getElementById("fm-bonif").textContent       = (bce > 0 && trcb > 0) ? bonif.toFixed(3).replace(".",",") + "%" : "—";
+    document.getElementById("fm-pagador").textContent     = bce  > 0 ? "65% × BCE = " + ef65.toFixed(3).replace(".",",") + "% ao ano" : "65% da Taxa BCE";
+    document.getElementById("taxa-efetiva-display").textContent = bce > 0 ? ef65.toFixed(3).replace(".",",") + "%" : "—";
+  }
+  recalcTaxas();
+
+  function formatEuro(v) {
+    if (isNaN(v) || v === null) return "—";
+    return v.toLocaleString("pt-PT", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
+  }
+
+  function validarLTV() {
+    const valor  = parseFloat(document.getElementById("valor").value);
+    const imovel = parseFloat(document.getElementById("valor-imovel").value);
+    const ltvItem = document.getElementById("res-ltv-item");
+    const ltvEl   = document.getElementById("res-ltv");
+    if (valor && imovel && imovel > 0) {
+      const ltv = (valor / imovel) * 100;
+      ltvEl.textContent  = ltv.toFixed(1) + "%";
+      ltvEl.style.color  = ltv > 90 ? "#ef4444" : "#16a34a";
+      ltvItem.style.display = "";
+    } else {
+      ltvItem.style.display = "none";
+    }
+    verificarLimites();
+  }
+
+  function verificarLimites() {
+    const valor  = parseFloat(document.getElementById("valor").value);
+    const anos   = parseInt(document.getElementById("anos").value);
+    const imovel = parseFloat(document.getElementById("valor-imovel").value);
+    const avisos = [];
+    if (valor && valor > 228127.27)              avisos.push("Valor excede o máximo legal de 228.127,27 €.");
+    if (anos  && anos > 50)                      avisos.push("Prazo excede o máximo legal de 50 anos.");
+    if (valor && imovel && imovel > 0 && (valor/imovel) > 0.9) avisos.push("LTV superior a 90% (máximo legal).");
+    const box = document.getElementById("limites-box");
+    document.getElementById("limites-texto").textContent = avisos.length ? " " + avisos.join(" ") : "";
+    box.style.display = avisos.length ? "block" : "none";
+  }
+
+  function validarCampos() { verificarLimites(); validarLTV(); }
+
+  function calcularDSTI() {
+    const rendimento  = parseFloat(document.getElementById("rendimento").value);
+    const prestacaoEl = document.getElementById("res-prestacao");
+    const dstiItem    = document.getElementById("res-dsti-item");
+    const dstiEl      = document.getElementById("res-dsti");
+    if (!rendimento || rendimento <= 0 || !prestacaoEl || prestacaoEl.textContent === "—") {
+      dstiItem.style.display = "none"; return;
+    }
+    const txt      = prestacaoEl.textContent.replace(/[^\d,]/g,"").replace(",",".");
+    const prestacao = parseFloat(txt);
+    if (!prestacao || prestacao <= 0) { dstiItem.style.display = "none"; return; }
+    const dsti = (prestacao / rendimento) * 100;
+    dstiEl.textContent = dsti.toFixed(1) + " %";
+    dstiEl.style.color = dsti > 40 ? "#ef4444" : dsti > 30 ? "#f59e0b" : "#16a34a";
+    dstiItem.style.display = "";
+  }
+
+  function calcTAEG(taxaMensal) {
+    return (Math.pow(1 + taxaMensal, 12) - 1) * 100;
+  }
+
+  // ── CÁLCULO CENTRAL ──
+  // Taxa efetiva do mutuário = 65% × Taxa BCE (MRO)  [art.º 7.º Lei 64/2014]
+  // Bonificação do Estado    = TRCB − (65% × BCE)    [Portaria 502/2003]
+  // Se taxa contratada < TRCB, bonificação = taxa contratada − (65% × BCE)
+  function simular() {
+    const valor   = parseFloat(document.getElementById("valor").value);
+    const anos    = parseInt(document.getElementById("anos").value);
+    const carencia = parseInt(document.getElementById("carencia").value) || 0;
+    const status  = document.getElementById("status-sim");
+
+    if (!valor || valor < 1000) {
+      status.textContent = "Insira um valor de empréstimo válido (mínimo 1 000 €).";
+      status.className = "status err"; return;
+    }
+    if (!anos || anos < 1 || anos > 50) {
+      status.textContent = "Prazo inválido. Máximo 50 anos ao abrigo do art.º 6.º da Lei n.º 64/2014.";
+      status.className = "status err"; return;
+    }
+    if (valor > 228127.27) {
+      status.textContent = "Valor excede o limite legal de 228.127,27 € (art.º 5.º Lei 64/2014).";
+      status.className = "status err"; return;
+    }
+
+    const bce  = getTaxaBCE();
+    const trcb = getTRCB();
+
+    if (!bce || bce <= 0) {
+      status.textContent = "Por favor introduza a Taxa BCE (MRO).";
+      status.className = "status err"; return;
+    }
+    if (!trcb || trcb <= 0) {
+      status.textContent = "Por favor introduza a TRCB.";
+      status.className = "status err"; return;
+    }
+
+    // Taxa anual paga pelo mutuário
+    const taxaEfetivaPct = bce * 0.65;
+    const taxaMensal     = taxaEfetivaPct / 100 / 12;
+
+    // Taxa de referência para calcular poupança (TRCB)
+    const taxaMercadoPct = trcb;
+    const taxaMensalMerc = taxaMercadoPct / 100 / 12;
+
+    const meses     = anos * 12;
+    const mesesAmort = meses - carencia;
+
+    function calcPrestacao(tm) {
+      if (tm === 0) return valor / mesesAmort;
+      return valor * tm * Math.pow(1+tm, mesesAmort) / (Math.pow(1+tm, mesesAmort) - 1);
+    }
+
+    const prestacao       = calcPrestacao(taxaMensal);
+    const prestacaoMerc   = calcPrestacao(taxaMensalMerc);
+    const poupancaMensal  = Math.max(prestacaoMerc - prestacao, 0);
+
+    const totalMutuario = carencia > 0
+      ? (valor * taxaMensal * carencia) + (prestacao * mesesAmort)
+      : prestacao * meses;
+    const totalMercado = carencia > 0
+      ? (valor * taxaMensalMerc * carencia) + (prestacaoMerc * mesesAmort)
+      : prestacaoMerc * meses;
+    const totalBonif = Math.max(totalMercado - totalMutuario, 0);
+
+    const taeg = calcTAEG(taxaMensal);
+
+    document.getElementById("res-prestacao").textContent    = formatEuro(prestacao);
+    document.getElementById("res-poupanca").textContent     = formatEuro(poupancaMensal) + "/mês";
+    document.getElementById("res-tan").textContent          = taxaEfetivaPct.toFixed(3) + "% (65% × BCE)";
+    document.getElementById("res-tan-mercado").textContent  = taxaMercadoPct.toFixed(3) + "% (TRCB)";
+    document.getElementById("res-taeg").textContent         = taeg.toFixed(3) + "%";
+    document.getElementById("res-prazo").textContent        = anos + " anos";
+    document.getElementById("res-total").textContent        = formatEuro(totalMutuario);
+    document.getElementById("res-total-bonif").textContent  = formatEuro(totalBonif);
+
+    status.textContent  = "✓ Simulação calculada ao abrigo da Lei n.º 64/2014, de 26 de agosto.";
+    status.className    = "status ok";
+    calcularDSTI();
+    validarLTV();
+  }
+
+  function limpar() {
+    ["valor","anos","valor-imovel","carencia","rendimento"].forEach(function(id) {
+      const el = document.getElementById(id);
+      if (el) { el.value = ""; el.style.borderColor = ""; }
+    });
+    ["res-prestacao","res-poupanca","res-tan","res-tan-mercado","res-taeg","res-prazo","res-total","res-total-bonif","res-dsti","res-ltv"].forEach(function(id) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = "—";
+    });
+    document.getElementById("res-dsti-item").style.display  = "none";
+    document.getElementById("res-ltv-item").style.display   = "none";
+    document.getElementById("limites-box").style.display    = "none";
+    const st = document.getElementById("status-sim");
+    if (st) { st.textContent = ""; st.className = "status"; }
+  }
+
+  function gerarPlano() {
+    const valor    = parseFloat(document.getElementById("valor").value);
+    const anos     = parseInt(document.getElementById("anos").value);
+    const carencia = parseInt(document.getElementById("carencia").value) || 0;
+    const bce      = getTaxaBCE();
+    const trcb     = getTRCB();
+    const taxaEfetivaPct = bce * 0.65;
+    const taxaMensal     = taxaEfetivaPct / 100 / 12;
+    const taxaMercadoPct = trcb;
+    const taxaMensalMerc = taxaMercadoPct / 100 / 12;
+    const meses          = anos * 12;
+    const mesesAmort     = meses - carencia;
+    function calcP(tm) {
+      if (tm === 0) return valor / mesesAmort;
+      return valor * tm * Math.pow(1+tm, mesesAmort) / (Math.pow(1+tm, mesesAmort)-1);
+    }
+    const prestacao     = calcP(taxaMensal);
+    const prestacaoMerc = calcP(taxaMensalMerc);
+    const rows = [];
+    let saldo = valor;
+    for (let i = 1; i <= carencia; i++) {
+      const juros = saldo * taxaMensal;
+      rows.push({ mes: i + " (carência)", prestacao: juros, juros, amort: 0, saldo, bonif: saldo * taxaMensalMerc - juros });
+    }
+    for (let i = carencia + 1; i <= meses; i++) {
+      const juros  = saldo * taxaMensal;
+      const amort  = prestacao - juros;
+      const bonif  = Math.max((saldo * taxaMensalMerc) - juros, 0);
+      saldo = Math.max(saldo - amort, 0);
+      rows.push({ mes: i, prestacao, juros, amort, saldo, bonif });
+    }
+    return { rows, prestacao, taxaEfetivaPct, taxaMercadoPct, valor, anos, bce, trcb };
+  }
+
+  function exportarExcel() {
+    const res = document.getElementById("res-prestacao");
+    if (!res || res.textContent === "—") { alert("Faça a simulação primeiro."); return; }
+    const { rows, taxaEfetivaPct, taxaMercadoPct, valor, anos, bce, trcb } = gerarPlano();
+    const data = [
+      ["Simulador Crédito Bonificado – Lei n.º 64/2014 de 26 de agosto | Fin+®"],
+      ["Taxa BCE (MRO)", bce.toFixed(2) + "%", "TRCB", trcb.toFixed(3) + "%"],
+      ["Taxa efetiva mutuário (65% BCE)", taxaEfetivaPct.toFixed(3) + "%", "Valor", valor + " €", "Prazo", anos + " anos"],
+      [],
+      ["Mês","Prestação Mutuário (€)","Juros Mutuário (€)","Amortização (€)","Saldo em dívida (€)","Bonificação Estado (€)"]
+    ];
+    rows.forEach(function(r) {
+      data.push([r.mes, r.prestacao.toFixed(2), r.juros.toFixed(2), r.amort.toFixed(2), r.saldo.toFixed(2), r.bonif.toFixed(2)]);
+    });
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws["!cols"] = [{wch:18},{wch:22},{wch:20},{wch:18},{wch:20},{wch:22}];
+    XLSX.utils.book_append_sheet(wb, ws, "Plano Bonificado");
+    XLSX.writeFile(wb, "Plano_Bonificado_Lei64_2014_FinMais.xlsx");
+  }
+
+  function exportarPDF() {
+    const res = document.getElementById("res-prestacao");
+    if (!res || res.textContent === "—") { alert("Faça a simulação primeiro."); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const { rows, prestacao, taxaEfetivaPct, taxaMercadoPct, valor, anos, bce, trcb } = gerarPlano();
+
+    const addHeader = function(pageNum) {
+      doc.setFillColor(30, 58, 138);
+      doc.rect(0, 0, 210, 22, "F");
+      doc.setFontSize(10); doc.setTextColor(219,234,254); doc.setFont("helvetica","bold");
+      doc.text("Crédito Bonificado · Lei n.º 64/2014 de 26 de agosto · Fin+®", 10, 9);
+      doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(147,197,253);
+      doc.text("Taxa mutuário: " + taxaEfetivaPct.toFixed(3) + "% (65% × BCE " + bce.toFixed(2) + "%) · TRCB: " + trcb.toFixed(3) + "% · Bonificação suportada pelo Estado", 10, 15);
+      doc.text("Pág. " + pageNum, 200, 9, { align: "right" });
+    };
+    addHeader(1);
+    doc.setFontSize(10); doc.setTextColor(30,58,138); doc.setFont("helvetica","bold");
+    doc.text("Resumo · Plano Prestacional Bonificado", 10, 30);
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(50,50,50);
+    doc.text([
+      "Valor: " + valor.toLocaleString("pt-PT",{minimumFractionDigits:2}) + " €  |  Prazo: " + anos + " anos",
+      "Taxa BCE (MRO): " + bce.toFixed(2) + "%  ·  TRCB: " + trcb.toFixed(3) + "%",
+      "Taxa efetiva mutuário: " + taxaEfetivaPct.toFixed(3) + "% (= 65% × Taxa BCE)  ·  Prestação mensal: " + prestacao.toLocaleString("pt-PT",{minimumFractionDigits:2}) + " €",
+      "Lei n.º 64/2014, de 26 de agosto · Portaria n.º 502/2003 · Simulação indicativa."
+    ], 10, 38);
+
+    doc.autoTable({
+      startY: 60,
+      head: [["Mês","Prestação Mutuário (€)","Juros (€)","Amortização (€)","Saldo em dívida (€)","Bonificação Estado (€)"]],
+      body: rows.map(function(r) {
+        return [r.mes,
+          r.prestacao.toLocaleString("pt-PT",{minimumFractionDigits:2}),
+          r.juros.toLocaleString("pt-PT",{minimumFractionDigits:2}),
+          r.amort.toLocaleString("pt-PT",{minimumFractionDigits:2}),
+          r.saldo.toLocaleString("pt-PT",{minimumFractionDigits:2}),
+          r.bonif.toLocaleString("pt-PT",{minimumFractionDigits:2})
+        ];
+      }),
+      theme: "striped",
+      headStyles: { fillColor: [30,58,138], textColor: 255, fontStyle: "bold", fontSize: 8 },
+      bodyStyles: { fontSize: 7.5 },
+      margin: { left: 8, right: 8, top: 26, bottom: 18 },
+      didDrawPage: function(data) { addHeader(data.pageNumber); }
+    });
+    doc.save("Plano_Bonificado_Lei64_2014_FinMais.pdf");
+  }
+
+  function enviarLead() {
+    const rgpd = document.getElementById("lead-rgpd").checked;
+    const rgpdErr   = document.getElementById("rgpd-err");
+    const leadStatus = document.getElementById("lead-status");
+    if (!rgpd) { rgpdErr.style.display = "block"; return; }
+    rgpdErr.style.display = "none";
+    const nome = document.getElementById("lead-nome").value.trim();
+    const tel  = document.getElementById("lead-tel").value.trim();
+    if (!nome || !tel) { leadStatus.textContent = "Por favor preencha o nome e telefone."; leadStatus.style.color = "#f87171"; return; }
+    leadStatus.textContent = "✓ Pedido enviado! Entraremos em contacto brevemente.";
+    leadStatus.style.color = "#4ade80";
+  }
+</script>
+</body>
+</html>
