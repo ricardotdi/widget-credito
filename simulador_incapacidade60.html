@@ -824,7 +824,15 @@
     const ws = XLSX.utils.aoa_to_sheet(data);
     ws["!cols"] = [{wch:18},{wch:22},{wch:20},{wch:18},{wch:20},{wch:22}];
     XLSX.utils.book_append_sheet(wb, ws, "Plano Bonificado");
-    XLSX.writeFile(wb, "Plano_Bonificado_Lei64_2014_FinMais.xlsx");
+    // Compatível com iframe (Wix): usa link com data URI em vez de writeFile
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
+    const a = document.createElement("a");
+    a.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + wbout;
+    a.download = "Plano_Bonificado_Lei64_2014_FinMais.xlsx";
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { document.body.removeChild(a); }, 200);
   }
 
   function exportarPDF() {
@@ -872,20 +880,89 @@
       margin: { left: 8, right: 8, top: 26, bottom: 18 },
       didDrawPage: function(data) { addHeader(data.pageNumber); }
     });
-    doc.save("Plano_Bonificado_Lei64_2014_FinMais.pdf");
+    // Compatível com iframe (Wix): abre em nova janela em vez de doc.save()
+    const pdfData = doc.output("datauristring");
+    const a = document.createElement("a");
+    a.href = pdfData;
+    a.download = "Plano_Bonificado_Lei64_2014_FinMais.pdf";
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { document.body.removeChild(a); }, 200);
   }
 
-  function enviarLead() {
-    const rgpd = document.getElementById("lead-rgpd").checked;
-    const rgpdErr   = document.getElementById("rgpd-err");
+  async function enviarLead() {
+    const rgpd       = document.getElementById("lead-rgpd").checked;
+    const rgpdErr    = document.getElementById("rgpd-err");
     const leadStatus = document.getElementById("lead-status");
+
     if (!rgpd) { rgpdErr.style.display = "block"; return; }
     rgpdErr.style.display = "none";
-    const nome = document.getElementById("lead-nome").value.trim();
-    const tel  = document.getElementById("lead-tel").value.trim();
-    if (!nome || !tel) { leadStatus.textContent = "Por favor preencha o nome e telefone."; leadStatus.style.color = "#f87171"; return; }
-    leadStatus.textContent = "✓ Pedido enviado! Entraremos em contacto brevemente.";
-    leadStatus.style.color = "#4ade80";
+
+    const nome    = document.getElementById("lead-nome").value.trim();
+    const tel     = document.getElementById("lead-tel").value.trim();
+    const email   = document.getElementById("lead-email").value.trim();
+    const grau    = document.getElementById("lead-grau").value;
+    const horario = document.getElementById("lead-horario").value;
+
+    if (!nome || !tel) {
+      leadStatus.textContent = "Por favor preencha o nome e telefone.";
+      leadStatus.style.color = "#f87171";
+      return;
+    }
+
+    // Recolher dados da simulação (se já foi feita)
+    const prestacaoEl = document.getElementById("res-prestacao");
+    const poupancaEl  = document.getElementById("res-poupanca");
+    const valorEl     = document.getElementById("valor");
+    const anosEl      = document.getElementById("anos");
+
+    const prestacao = prestacaoEl ? prestacaoEl.textContent : "—";
+    const poupanca  = poupancaEl  ? poupancaEl.textContent  : "—";
+    const valor     = valorEl && valorEl.value ? valorEl.value + " €" : "";
+    const anos      = anosEl  && anosEl.value  ? anosEl.value + " anos" : "";
+
+    const grauLabel = {
+      "60-79": "60% – 79%",
+      "80-99": "80% – 99%",
+      "100":   "100% (total/absoluta)",
+      "dfa":   "Deficiente das Forças Armadas"
+    }[grau] || "";
+
+    const horarioLabel = {
+      "manha":    "Manhã (9h–12h)",
+      "tarde":    "Tarde (12h–18h)",
+      "qualquer": "Qualquer hora"
+    }[horario] || "";
+
+    leadStatus.textContent = "A enviar…";
+    leadStatus.style.color = "#9ca3af";
+
+    try {
+      const res = await fetch("https://credito-backend-ffnk.onrender.com/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome,
+          email,
+          telefone:       tel,
+          horario:        horarioLabel,
+          valorCredito:   valor,
+          prazo:          anos,
+          carencia:       "",
+          tipoCredito:    "Crédito Bonificado – Incapacidade ≥ 60% (Lei 64/2014)",
+          tipoTaxa:       "Taxa BCE bonificada (65% × BCE)" + (grauLabel ? " | Grau: " + grauLabel : ""),
+          rendimentoLiquido: "",
+          dsti:           prestacao !== "—" ? "Prestação: " + prestacao + " | Poupança vs mercado: " + poupanca : ""
+        })
+      });
+      if (!res.ok) throw new Error();
+      leadStatus.textContent = "✓ Pedido enviado! Entraremos em contacto brevemente.";
+      leadStatus.style.color = "#4ade80";
+    } catch (e) {
+      leadStatus.textContent = "Erro ao enviar. Tente novamente ou contacte-nos directamente.";
+      leadStatus.style.color = "#f87171";
+    }
   }
 </script>
 </body>
