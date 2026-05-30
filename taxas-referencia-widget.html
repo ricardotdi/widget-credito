@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: transparent; }
+  .box { display: inline-block; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden; font-size: 13px; min-width: 260px; }
+  .header { background: #A19276; color: #fff; text-align: center; padding: 7px 12px; font-weight: bold; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .subheader { display: flex; background: #f3f0ec; border-bottom: 1px solid #d1d5db; }
+  .subheader span { flex: 1; text-align: center; padding: 5px 6px; font-size: 11px; font-weight: bold; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
+  .subheader span:first-child { flex: 2; text-align: left; padding-left: 14px; }
+  .row { display: flex; align-items: center; padding: 7px 0; border-bottom: 1px solid #e5e7eb; background: #fff; }
+  .row:last-child { border-bottom: none; }
+  .row-label { flex: 2; padding-left: 14px; color: #374151; font-weight: 500; font-size: 13px; }
+  .row-val { flex: 1; text-align: center; font-weight: bold; font-size: 13px; color: #A19276; }
+  .row-sub { flex: 1; text-align: center; font-size: 11px; color: #9ca3af; }
+  .row-auto { color: #374151; }
+  .dot-live { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #4ade80; margin-right: 5px; animation: pulse 2.5s infinite; }
+  @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
+  .footer { background: #f9fafb; text-align: center; padding: 4px 10px; font-size: 10px; color: #9ca3af; border-top: 1px solid #e5e7eb; }
+  .loading { color: #d1d5db; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="header">Taxas de Referência</div>
+  <div class="subheader">
+    <span>Taxa</span>
+    <span>Valor</span>
+    <span>Fonte</span>
+  </div>
+
+  <!-- Taxa BCE MRO — automática -->
+  <div class="row">
+    <span class="row-label">Taxa BCE (MRO)</span>
+    <span class="row-val" id="bce-val"><span class="loading">…</span></span>
+    <span class="row-sub"><span class="dot-live"></span>BCE</span>
+  </div>
+
+  <!-- TRCB — manual -->
+  <div class="row">
+    <span class="row-label">TRCB</span>
+    <!-- ═══════════════════════════════════
+         EDITE AQUI: valor e período TRCB
+         ═══════════════════════════════════ -->
+    <span class="row-val">2,623%</span>
+    <span class="row-sub">DGTF · 1.º sem. 2026</span>
+  </div>
+
+  <div class="footer">
+    <span id="bce-date">BCE: a carregar…</span> · <span id="data-auto"></span>
+  </div>
+</div>
+
+<script>
+  // ── Data de atualização do widget ──
+  var meses = ["janeiro","fevereiro","março","abril","maio","junho",
+               "julho","agosto","setembro","outubro","novembro","dezembro"];
+  var d = new Date();
+  document.getElementById("data-auto").textContent =
+    "Atualizado: " + meses[d.getMonth()] + " " + d.getFullYear();
+
+  // ── Taxa BCE via Worker ──
+  fetch("https://taxas-referencia.ricardotdi.workers.dev")
+    .then(function(r) { return r.json(); })
+    .then(function(json) {
+      if (json.error) throw new Error(json.error);
+
+      // Formatar taxa
+      document.getElementById("bce-val").textContent =
+        json.mro.toFixed(2).replace(".", ",") + "%";
+
+      // Formatar data
+      var parts = json.date.split("-");
+      var mesesAbrev = ["jan","fev","mar","abr","mai","jun",
+                        "jul","ago","set","out","nov","dez"];
+      var dataFmt = parts[2] + " " + mesesAbrev[parseInt(parts[1])-1] + ". " + parts[0];
+      document.getElementById("bce-date").textContent = "BCE: " + dataFmt;
+    })
+    .catch(function() {
+      document.getElementById("bce-val").textContent = "—";
+      document.getElementById("bce-date").textContent = "BCE: erro ao carregar";
+    });
+</script>
+</body>
+</html>
