@@ -200,7 +200,7 @@
       <div class="dot"></div>
       <div class="widget-title">Taxas Euribor</div>
     </div>
-    <div class="bce-badge" id="bce-badge">Gráfico: dados BCE</div>
+    <div class="bce-badge" id="bce-badge"></div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
@@ -240,7 +240,7 @@
 
   <!-- Footer -->
   <div class="widget-footer">
-    <span>Gráfico: <a href="https://data.ecb.europa.eu" target="_blank">BCE</a> · Médias mensais</span>
+    <span><span id="bce-badge"></span> Gráfico: <a href="https://data.ecb.europa.eu" target="_blank">BCE</a> · Médias mensais</span>
     <span id="footer-daily">Taxas diárias: atualização manual</span>
   </div>
 
@@ -253,10 +253,10 @@
 // date formato: "YYYY-MM-DD"
 // ═══════════════════════════════════════════════════════════════
 const DAILY = {
-  e3m:  "2.231",   // ← Euribor 3 meses
-  e6m:  "2.502",   // ← Euribor 6 meses
-  e12m: "2.761",   // ← Euribor 12 meses
-  date: "2026-05-28"  // ← Data de referência
+  e3m:  "2.204",   // ← Euribor 3 meses
+  e6m:  "2.619",   // ← Euribor 6 meses
+  e12m: "2.848",   // ← Euribor 12 meses
+  date: "2026-05-22"  // ← Data de referência
 };
 // ═══════════════════════════════════════════════════════════════
 
@@ -359,7 +359,7 @@ function renderChart() {
 
   const lastDate = hist[hist.length-1]?.date || "";
   document.getElementById("bce-badge").textContent =
-    "Último dado BCE: " + fmtMonth(lastDate);
+    "Último dado BCE: " + fmtMonth(lastDate) + " ·";
 
   chartInst = new Chart(ctx, {
     type: "line",
