@@ -41,7 +41,8 @@
       display: flex; align-items: center; gap: 14px;
       color: #dbeafe;
     }
-    .regime-icon { font-size: 1.5rem; }
+    .regime-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .regime-banner > div:nth-child(2) { flex: 1; min-width: 0; }
     .regime-title { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em; }
     .regime-sub { font-size: 0.78rem; color: rgba(219,234,254,0.75); margin-top: 2px; }
     .regime-badge {
@@ -49,6 +50,23 @@
       border: 1px solid rgba(255,255,255,0.25); border-radius: 999px;
       font-size: 0.72rem; font-weight: 600; padding: 4px 12px; color: #dbeafe;
       white-space: nowrap;
+    }
+    @media (max-width: 600px) {
+      .regime-banner {
+        flex-wrap: wrap;
+        padding: 14px 16px;
+        gap: 10px;
+      }
+      .regime-icon { font-size: 1.3rem; }
+      .regime-title { font-size: 0.9rem; }
+      .regime-sub { font-size: 0.74rem; }
+      .regime-badge {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+        white-space: normal;
+        order: 3;
+      }
     }
 
     .widget-card {
