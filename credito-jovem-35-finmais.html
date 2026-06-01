@@ -164,6 +164,18 @@
     .lead-field label { font-size: 0.75rem; color: #9ca3af; margin-bottom: 2px; display: block; }
     .lead-field input { width: 100%; padding: 7px 9px; border-radius: 9px; border: 1px solid rgba(148, 163, 184, 0.7); background: rgba(15, 23, 42, 0.9); color: #e5e7eb; font-size: 0.85rem; outline: none; min-width: 0; box-sizing: border-box; }
     .lead-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.4); }
+    #horario-dropdown label:hover { background: rgba(161,146,118,0.15); color: #e5e7eb; }
+    #horario-btn:hover { border-color: #A19276; }
+
+    /* Comparação comum vs jovem */
+    .br-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .br-col { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 10px 12px; text-align: center; }
+    .br-col-jovem { background: rgba(255,255,255,0.95); }
+    .br-col-label { font-size: 0.72rem; opacity: 0.9; margin-bottom: 4px; }
+    .br-col-jovem .br-col-label { color: #8a7d65; opacity: 1; font-weight: 600; }
+    .br-col-val { font-size: 1.2rem; font-weight: 700; }
+    .br-col .br-col-val { opacity: 0.85; }
+    .br-col-jovem .br-col-val { color: #6b5d44; opacity: 1; }
     .lead-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 8px; flex-wrap: wrap; }
     .lead-note { font-size: 0.7rem; color: #9ca3af; }
     .lead-btn { border-radius: 999px; border: none; padding: 8px 16px; font-size: 0.82rem; font-weight: 500; cursor: pointer; background: var(--primary); color: #ffffff; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
@@ -364,18 +376,28 @@
 
       <!-- BENEFÍCIO JOVEM -->
       <div class="benefit-result" id="benefit-block" style="display:none;">
-        <div class="br-title">Benefício jovem ≤ 35 anos</div>
+        <div class="br-title">Benefício jovem ≤ 35 anos · IMT + Imposto do Selo (0,8%)</div>
+        <div class="br-compare">
+          <div class="br-col">
+            <div class="br-col-label">Comprador comum paga</div>
+            <div class="br-col-val" id="res-comum">—</div>
+          </div>
+          <div class="br-col br-col-jovem">
+            <div class="br-col-label">Você (jovem ≤35) paga</div>
+            <div class="br-col-val" id="res-jovem">—</div>
+          </div>
+        </div>
         <div class="br-grid">
           <div class="br-item">
             <div class="br-label">IMT a pagar</div>
             <div class="br-value" id="res-imt">—</div>
           </div>
           <div class="br-item">
-            <div class="br-label">Imposto do Selo a pagar</div>
+            <div class="br-label">Imposto do Selo (0,8%)</div>
             <div class="br-value" id="res-selo">—</div>
           </div>
           <div class="br-item br-poupanca">
-            <div class="br-label">Poupança face a um comprador comum</div>
+            <div class="br-label">A sua poupança total em impostos</div>
             <div class="br-value" id="res-poupanca">—</div>
           </div>
         </div>
@@ -409,6 +431,24 @@
             <div class="lead-field"><label>Nome</label><input id="lead-nome" type="text" placeholder="O seu nome" /></div>
             <div class="lead-field"><label>Email</label><input id="lead-email" type="email" placeholder="ex: nome@exemplo.pt" /></div>
             <div class="lead-field"><label>Telemóvel</label><input id="lead-telefone" type="tel" placeholder="ex: 9xx xxx xxx" /></div>
+            <div class="lead-field">
+              <label>Horário Preferencial de Contacto</label>
+              <div style="position:relative; margin-top:4px;">
+                <button type="button" id="horario-btn" onclick="toggleHorario()" style="width:100%; padding:7px 9px; border-radius:9px; border:1px solid rgba(148,163,184,0.7); background:rgba(15,23,42,0.9); color:#9ca3af; font-size:0.85rem; outline:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; text-align:left; box-sizing:border-box; min-width:0;">
+                  <span id="horario-label">Qualquer hora</span>
+                  <span id="horario-arrow" style="transition:transform 0.3s ease; display:inline-block;">▾</span>
+                </button>
+                <div id="horario-dropdown" style="overflow:hidden; max-height:0; transition:max-height 0.35s ease, opacity 0.25s ease; opacity:0; border-radius:0 0 9px 9px; border:0px solid rgba(148,163,184,0.7); background:rgba(15,23,42,0.95); position:absolute; z-index:99; width:100%; max-width:100%; left:0;">
+                  <div id="horario-inner">
+                    <label onclick="selectHorario('qualquer','Qualquer hora')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">Qualquer hora</label>
+                    <label onclick="selectHorario('manha','De manhã')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">De manhã</label>
+                    <label onclick="selectHorario('almoco','Hora de Almoço')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">Hora de Almoço</label>
+                    <label onclick="selectHorario('tarde','De tarde')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; transition:background 0.15s;">De tarde</label>
+                  </div>
+                </div>
+                <input type="hidden" id="horario-value" value="qualquer" />
+              </div>
+            </div>
           </div>
           <div class="rgpd-wrap">
             <input type="checkbox" id="rgpd-consent" />
@@ -514,6 +554,43 @@
     try { localStorage.setItem('cookie_consent', type); } catch(e) {}
     document.getElementById('cookie-banner').classList.add('hidden');
   }
+
+  // ── Dropdown de horário preferencial ──
+  function toggleHorario() {
+    var dropdown = document.getElementById("horario-dropdown");
+    var arrow = document.getElementById("horario-arrow");
+    var btn = document.getElementById("horario-btn");
+    var isOpen = dropdown.style.maxHeight !== "0px" && dropdown.style.maxHeight !== "";
+    if (isOpen) {
+      dropdown.style.maxHeight = "0"; dropdown.style.opacity = "0"; dropdown.style.borderWidth = "0";
+      arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "9px";
+    } else {
+      dropdown.style.maxHeight = dropdown.scrollHeight + "px"; dropdown.style.opacity = "1";
+      dropdown.style.borderWidth = "1px"; dropdown.style.borderTopWidth = "0";
+      arrow.style.transform = "rotate(180deg)"; btn.style.borderRadius = "9px 9px 0 0";
+    }
+  }
+  function selectHorario(value, label) {
+    document.getElementById("horario-value").value = value;
+    document.getElementById("horario-label").textContent = label;
+    document.getElementById("horario-label").style.color = "#e5e7eb";
+    var dropdown = document.getElementById("horario-dropdown");
+    var arrow = document.getElementById("horario-arrow");
+    var btn = document.getElementById("horario-btn");
+    dropdown.style.maxHeight = "0"; dropdown.style.opacity = "0"; dropdown.style.borderWidth = "0";
+    arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "9px";
+  }
+  document.addEventListener("click", function(e) {
+    var hBtn = document.getElementById("horario-btn");
+    var hDd = document.getElementById("horario-dropdown");
+    if (hBtn && hDd && !hBtn.contains(e.target) && !hDd.contains(e.target)) {
+      if (hDd.style.maxHeight && hDd.style.maxHeight !== "0px") {
+        hDd.style.maxHeight = "0"; hDd.style.opacity = "0"; hDd.style.borderWidth = "0";
+        document.getElementById("horario-arrow").style.transform = "rotate(0deg)";
+        hBtn.style.borderRadius = "9px";
+      }
+    }
+  });
 
   function formatEuro(v) {
     if (isNaN(v)) return "—";
@@ -658,6 +735,8 @@
       document.getElementById("res-imt").textContent = formatEuro(imtJ);
       document.getElementById("res-selo").textContent = formatEuro(seloJ);
       document.getElementById("res-poupanca").textContent = formatEuro(poupanca);
+      document.getElementById("res-comum").textContent = formatEuro(imtN + seloN);
+      document.getElementById("res-jovem").textContent = formatEuro(imtJ + seloJ);
       benefitBlock.style.display = "block";
 
       var nota = "";
@@ -666,6 +745,8 @@
         document.getElementById("res-imt").textContent = formatEuro(imtN);
         document.getElementById("res-selo").textContent = formatEuro(seloN);
         document.getElementById("res-poupanca").textContent = formatEuro(0);
+        document.getElementById("res-comum").textContent = formatEuro(imtN + seloN);
+        document.getElementById("res-jovem").textContent = formatEuro(imtN + seloN);
       } else if (imovel <= t.isencaoTotal) {
         nota = "Isenção total: IMT e Imposto do Selo da compra a 0€ (imóvel até " + formatEuro(t.isencaoTotal) + ").";
       } else if (imovel <= t.isencaoLimite) {
@@ -776,7 +857,7 @@
       var el = document.getElementById(id); if (el) { el.value = ""; el.style.borderColor = ""; el.title = ""; }
     });
     var pv = document.getElementById("mista-prazo-variavel"); if (pv) pv.value = "";
-    ["res-prestacao","res-tan","res-prazo","res-total","res-taeg","res-dsti","res-imt","res-selo","res-poupanca"].forEach(function(id){
+    ["res-prestacao","res-tan","res-prazo","res-total","res-taeg","res-dsti","res-imt","res-selo","res-poupanca","res-comum","res-jovem"].forEach(function(id){
       var el = document.getElementById(id); if (el) el.textContent = "—";
     });
     document.getElementById("res-dsti-item").style.display = "none";
@@ -840,7 +921,8 @@
       + (poupTxt && poupTxt !== "—" ? " | Poupança IMT+Selo: " + poupTxt : "");
 
     var payload = {
-      nome: nome, email: email, telefone: telefone, horario: "Qualquer hora",
+      nome: nome, email: email, telefone: telefone,
+      horario: (function(){ var v = document.getElementById("horario-value").value; var L = { qualquer:"Qualquer hora", manha:"De manhã", almoco:"Hora de Almoço", tarde:"De tarde" }; return L[v] || "Qualquer hora"; })(),
       valorCredito: valor != null ? String(valor) : "",
       prazo: anos != null ? String(anos) + " anos" : "",
       carencia: carenciaVal > 0 ? String(carenciaVal) + " meses" : "",
@@ -917,6 +999,7 @@
     var imtTxt = document.getElementById("res-imt").textContent;
     var seloTxt = document.getElementById("res-selo").textContent;
     var poupTxt = document.getElementById("res-poupanca").textContent;
+    var comumTxt = document.getElementById("res-comum").textContent;
 
     function header() {
       doc.setFillColor(161,146,118); doc.rect(0,0,210,18,"F");
@@ -930,10 +1013,11 @@
     doc.text("Valor do imóvel: " + (imovel ? formatEuro(parseFloat(imovel)) : "—"), 10, y); y += 6;
     doc.text("Região: " + (regiaoAtual === "acores" ? "Açores e Madeira" : "Continente"), 10, y); y += 6;
     if (imtTxt !== "—") {
+      doc.text("Comprador comum pagaria: " + comumTxt + " (IMT + Selo)", 10, y); y += 6;
       doc.text("IMT a pagar (jovem <=35): " + imtTxt, 10, y); y += 6;
-      doc.text("Imposto do Selo a pagar: " + seloTxt, 10, y); y += 6;
+      doc.text("Imposto do Selo a pagar (0,8%): " + seloTxt, 10, y); y += 6;
       doc.setFont(undefined,"bold");
-      doc.text("Poupanca face a comprador comum: " + poupTxt, 10, y); y += 7;
+      doc.text("A sua poupanca em impostos: " + poupTxt, 10, y); y += 7;
       doc.setFont(undefined,"normal");
     }
 
