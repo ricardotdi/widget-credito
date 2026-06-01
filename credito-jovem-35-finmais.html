@@ -447,9 +447,8 @@
 
 <script>
   // ====== CONFIGURAÇÃO ======
-  // Endereço do backend que recebe os contactos (o mesmo que já usa no widget atual, no Render).
-  // Substitua pelo seu endpoint caso seja diferente.
-  var LEAD_ENDPOINT = "https://finmais-backend.onrender.com/lead";
+  // Endpoint do backend (Render) que envia o email via Brevo — o mesmo do widget principal.
+  var LEAD_ENDPOINT = "https://credito-backend-ffnk.onrender.com/send-email";
 
   // ====== TABELAS IMT 2026 — Ofício Circulado n.º 40129/2026 da AT ======
   // Método oficial: IMT = valor × taxa marginal do escalão − parcela a abater.
@@ -786,7 +785,7 @@
     var st = document.getElementById("status-sim"); st.textContent = ""; st.className = "status";
   }
 
-  // ── Envio de lead ──
+  // ── Envio de lead (formato compatível com o backend do widget principal) ──
   function enviarLead() {
     var nome = document.getElementById("lead-nome").value.trim();
     var email = document.getElementById("lead-email").value.trim();
@@ -798,19 +797,57 @@
 
     if (!consent) { rgpdErr.style.display = "block"; return; }
     rgpdErr.style.display = "none";
-    if (!nome || !email) { status.textContent = "Preencha pelo menos o nome e o email."; status.classList.add("err"); return; }
+    if (!nome || !email || !telefone) { status.textContent = "Preencha nome, email e telemóvel."; status.classList.add("err"); return; }
     var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!emailOk) { status.textContent = "Email inválido."; status.classList.add("err"); return; }
 
+    // Taxa em texto (igual ao widget principal)
+    var taxaInfo = "";
+    if (tipoTaxaAtual === "fixa") {
+      var sp = parseFloat(document.getElementById("spread").value);
+      taxaInfo = !isNaN(sp) ? "TAN: " + sp.toFixed(2) + "%" : "";
+    } else if (tipoTaxaAtual === "mista") {
+      var tf = parseFloat(document.getElementById("mista-tan-value").value);
+      var pf = parseInt(document.getElementById("mista-prazo-value").value);
+      var em = parseFloat(document.getElementById("mista-euribor").value);
+      var spm = parseFloat(document.getElementById("mista-spread").value);
+      var partes = [];
+      if (!isNaN(tf)) partes.push("Fixa " + (!isNaN(pf) ? pf + "a" : "") + ": TAN " + tf.toFixed(2) + "%");
+      if (!isNaN(em) && !isNaN(spm)) partes.push("Variável: Euribor " + em.toFixed(2) + "% + Spread " + spm.toFixed(2) + "%");
+      taxaInfo = partes.join(" | ");
+    } else {
+      var eu = parseFloat(document.getElementById("euribor").value);
+      var sp2 = parseFloat(document.getElementById("spread").value);
+      var p2 = [];
+      if (!isNaN(eu)) p2.push("Euribor: " + eu.toFixed(2) + "%");
+      if (!isNaN(sp2)) p2.push("Spread: " + sp2.toFixed(2) + "%");
+      taxaInfo = p2.join(" | ");
+    }
+
+    var valor = parseFloat(document.getElementById("valor").value) || null;
+    var anos = parseInt(document.getElementById("anos").value) || null;
+    var carenciaVal = parseInt(document.getElementById("carencia").value) || 0;
+    var imovel = parseFloat(document.getElementById("valorImovel").value) || null;
+    var idade = document.getElementById("idade").value;
+    var regiaoTxt = regiaoAtual === "acores" ? "Açores e Madeira" : "Continente";
+    var poupTxt = document.getElementById("res-poupanca").textContent;
+
+    // Dados específicos da página jovem, em texto livre no campo tipoCredito
+    var notaImovel = "Aquisição (Jovem ≤35)"
+      + (imovel != null ? " | Imóvel: " + imovel.toLocaleString("pt-PT") + "€" : "")
+      + " | Região: " + regiaoTxt
+      + (idade ? " | Idade: " + idade : "")
+      + (poupTxt && poupTxt !== "—" ? " | Poupança IMT+Selo: " + poupTxt : "");
+
     var payload = {
-      origem: "Pagina Jovem <=35",
-      nome: nome, email: email, telefone: telefone,
-      regiao: regiaoAtual,
-      valorImovel: document.getElementById("valorImovel").value,
-      valorEmprestimo: document.getElementById("valor").value,
-      prazo: document.getElementById("anos").value,
-      idade: document.getElementById("idade").value,
-      tipoTaxa: tipoTaxaAtual
+      nome: nome, email: email, telefone: telefone, horario: "Qualquer hora",
+      valorCredito: valor != null ? String(valor) : "",
+      prazo: anos != null ? String(anos) + " anos" : "",
+      carencia: carenciaVal > 0 ? String(carenciaVal) + " meses" : "",
+      tipoCredito: notaImovel,
+      tipoTaxa: (tipoTaxaAtual === "fixa" ? "Fixa" : tipoTaxaAtual === "mista" ? "Mista" : "Variável") + (taxaInfo ? " — " + taxaInfo : ""),
+      rendimentoLiquido: (function(){ var r = parseFloat(document.getElementById("rendimento").value); return (!isNaN(r) && r > 0) ? r.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2}) : ""; })(),
+      dsti: (function(){ var el = document.getElementById("res-dsti"); var t = el ? el.textContent : "—"; return (t && t !== "—") ? t : ""; })()
     };
 
     status.textContent = "A enviar…";
@@ -819,17 +856,14 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     }).then(function(res){
-      if (res.ok) {
-        status.textContent = "Pedido enviado. Entraremos em contacto em breve."; status.classList.add("ok");
-        document.getElementById("lead-nome").value = "";
-        document.getElementById("lead-email").value = "";
-        document.getElementById("lead-telefone").value = "";
-        document.getElementById("rgpd-consent").checked = false;
-      } else {
-        status.textContent = "Não foi possível enviar. Tente novamente ou contacte-nos por www.finmais.pt."; status.classList.add("err");
-      }
+      if (!res.ok) throw new Error();
+      status.textContent = "Lead enviada com sucesso. Será contactado em breve."; status.classList.add("ok");
+      document.getElementById("lead-nome").value = "";
+      document.getElementById("lead-email").value = "";
+      document.getElementById("lead-telefone").value = "";
+      document.getElementById("rgpd-consent").checked = false;
     }).catch(function(){
-      status.textContent = "Não foi possível enviar. Tente novamente ou contacte-nos por www.finmais.pt."; status.classList.add("err");
+      status.textContent = "Erro ao enviar a lead. Tente novamente."; status.classList.add("err");
     });
   }
 
