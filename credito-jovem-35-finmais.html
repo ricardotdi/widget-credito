@@ -996,6 +996,8 @@
     if (!rows) { var st = document.getElementById("status-sim"); st.textContent = "Faça primeiro uma simulação."; st.className = "status err"; return; }
     var jsPDFns = window.jspdf || window.jsPDF; var doc = new jsPDFns.jsPDF();
     var imovel = document.getElementById("valorImovel").value;
+    var emprestimo = document.getElementById("valor").value;
+    var prazoAnos = document.getElementById("anos").value;
     var imtTxt = document.getElementById("res-imt").textContent;
     var seloTxt = document.getElementById("res-selo").textContent;
     var poupTxt = document.getElementById("res-poupanca").textContent;
@@ -1007,10 +1009,21 @@
       doc.text("Fin+  ·  Simulação Crédito Habitação Jovem", 10, 12);
       doc.setTextColor(60,60,60); doc.setFont(undefined,"normal");
     }
+    function footer() {
+      var h = doc.internal.pageSize.getHeight();
+      doc.setDrawColor(161,146,118); doc.setLineWidth(0.4); doc.line(10, h - 16, 200, h - 16);
+      doc.setFontSize(8); doc.setTextColor(120,120,120); doc.setFont(undefined,"normal");
+      doc.text("www.finmais.pt", 10, h - 10);
+      doc.text("Intermediário de Crédito n.º 8693", 10, h - 6);
+      doc.text("Simulação indicativa, sem caráter vinculativo.", 200, h - 8, { align: "right" });
+      doc.setTextColor(60,60,60);
+    }
     header();
     doc.setFontSize(10);
     var y = 26;
     doc.text("Valor do imóvel: " + (imovel ? formatEuro(parseFloat(imovel)) : "—"), 10, y); y += 6;
+    doc.text("Valor do empréstimo: " + (emprestimo ? formatEuro(parseFloat(emprestimo)) : "—"), 10, y); y += 6;
+    doc.text("Prazo: " + (prazoAnos ? prazoAnos + " anos" : "—"), 10, y); y += 6;
     doc.text("Região: " + (regiaoAtual === "acores" ? "Açores e Madeira" : "Continente"), 10, y); y += 6;
     if (imtTxt !== "—") {
       doc.text("Comprador comum pagaria: " + comumTxt + " (IMT + Selo)", 10, y); y += 6;
@@ -1032,8 +1045,8 @@
       theme: "striped",
       headStyles: { fillColor: [161,146,118], textColor: 255, fontStyle: "bold", fontSize: 9 },
       bodyStyles: { fontSize: 8 },
-      margin: { left: 10, right: 10, top: 22 },
-      didDrawPage: function(){ header(); }
+      margin: { left: 10, right: 10, top: 22, bottom: 20 },
+      didDrawPage: function(){ header(); footer(); }
     });
     doc.save("Simulador_FinMais_Jovem.pdf");
   }
