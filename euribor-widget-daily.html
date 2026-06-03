@@ -128,7 +128,8 @@
     border-color:var(--border); border-bottom-color:var(--dark3);
   }
 
-  .chart-area { padding:18px 22px 14px; display:none; }
+  .chart-area { padding:18px 22px 14px; visibility:hidden; height:0; overflow:hidden; }
+  .chart-area.visible { visibility:visible; height:auto; }
   .chart-sublabel {
     font-size:0.68rem; color:var(--muted);
     text-transform:uppercase; letter-spacing:0.07em;
@@ -203,7 +204,7 @@
   </div>
 
   <!-- Gráfico (oculto por defeito) -->
-  <div class="chart-area" id="chart-area">
+  <div class="chart-area" id="chart-area" style="">
     <div class="chart-sublabel" id="chart-sublabel">
       Euribor 3 meses — médias mensais · Fonte: BCE
     </div>
@@ -446,7 +447,7 @@ function setTab(tab) {
     el.classList.toggle("active",
       (i === 0 && tab === "chart") || (i === 1 && tab === "table"));
   });
-  document.getElementById("chart-area").style.display  = tab === "chart" ? "" : "none";
+  document.getElementById("chart-area").classList.toggle("visible", tab === "chart");
   document.getElementById("table-area").classList.toggle("visible", tab === "table");
   if (tab === "chart") {
     if (chartJsReady) {
