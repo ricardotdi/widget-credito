@@ -326,17 +326,16 @@ function renderChart() {
 
   document.getElementById("chart-loading").style.display = "none";
   const canvas = document.getElementById("euribor-chart");
-  canvas.style.display = "";
-
-  // Forçar dimensões se o canvas ainda tiver 0x0
-  if (!canvas.offsetWidth) {
-    setTimeout(renderChart, 100);
-    return;
-  }
+  canvas.style.display = "block";
 
   if (chartInst) { chartInst.destroy(); chartInst = null; }
 
-  const ctx    = canvas.getContext("2d");
+  // Definir dimensões explícitas baseadas no contentor
+  const wrap = document.querySelector(".chart-wrap");
+  canvas.width  = wrap.clientWidth  || 600;
+  canvas.height = wrap.clientHeight || 165;
+
+  const ctx = canvas.getContext("2d");
   const labels = hist.map(d => fmtMonth(d.date));
   const rates  = hist.map(d => d.rate);
 
@@ -470,10 +469,18 @@ function reportHeight() {
 
 // ── Init ──────────────────────────────────────────────────────
 
-// Render taxas hardcoded imediatamente
 renderRates();
 
-// Carregar dados BCE — popular tabela assim que chegam
+// Carregar Chart.js e dados em paralelo, renderizar tabela quando dados chegam
+const chartScript = document.createElement("script");
+chartScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js";
+chartScript.onload = function() {
+  chartJsReady = true;
+  // Se já estamos no gráfico e os dados chegaram, renderiza agora
+  if (activeTab === "chart" && monthlyData) renderChart();
+};
+document.head.appendChild(chartScript);
+
 fetch(WORKER_URL)
   .then(r => r.json())
   .then(json => {
@@ -481,14 +488,10 @@ fetch(WORKER_URL)
     monthlyData = json;
     renderRates();
     renderTable();
+    // Se já estamos no gráfico e o Chart.js carregou, renderiza agora
+    if (activeTab === "chart" && chartJsReady) renderChart();
   })
   .catch(err => console.error(err));
-
-// Carregar Chart.js em background
-const chartScript = document.createElement("script");
-chartScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js";
-chartScript.onload = function() { chartJsReady = true; };
-document.head.appendChild(chartScript);
 </script>
 </body>
 </html>
