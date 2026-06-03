@@ -134,8 +134,8 @@
     text-transform:uppercase; letter-spacing:0.07em;
     margin-bottom:10px;
   }
-  .chart-wrap { position:relative; height:165px; }
-  canvas { width:100% !important; height:100% !important; }
+  .chart-wrap { position:relative; width:100%; height:165px; }
+  canvas { display:block; }
 
   .table-area { display:none; padding:6px 22px 16px; }
   .table-area.visible { display:block; }
@@ -211,7 +211,7 @@
       <div class="chart-loading" id="chart-loading">
         <div class="spinner"></div> A carregar dados BCE...
       </div>
-      <canvas id="euribor-chart" style="display:none"></canvas>
+      <canvas id="euribor-chart" width="600" height="165" style="display:none; width:100%; height:165px;"></canvas>
     </div>
   </div>
 
@@ -327,6 +327,12 @@ function renderChart() {
   document.getElementById("chart-loading").style.display = "none";
   const canvas = document.getElementById("euribor-chart");
   canvas.style.display = "";
+
+  // Forçar dimensões se o canvas ainda tiver 0x0
+  if (!canvas.offsetWidth) {
+    setTimeout(renderChart, 100);
+    return;
+  }
 
   if (chartInst) { chartInst.destroy(); chartInst = null; }
 
