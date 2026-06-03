@@ -436,7 +436,17 @@ function setTab(tab) {
   });
   document.getElementById("chart-area").style.display  = tab === "chart" ? "" : "none";
   document.getElementById("table-area").classList.toggle("visible", tab === "table");
-  if (tab === "chart") renderChart();
+  if (tab === "chart") {
+    if (chartJsReady) {
+      renderChart();
+    } else {
+      document.getElementById("chart-loading").style.display = "";
+      document.getElementById("euribor-chart").style.display = "none";
+      const wait = setInterval(() => {
+        if (chartJsReady) { clearInterval(wait); renderChart(); }
+      }, 100);
+    }
+  }
   if (tab === "table") { renderTable(); setTimeout(reportHeight, 50); }
 }
 
