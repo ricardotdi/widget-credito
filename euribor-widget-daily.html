@@ -44,7 +44,6 @@
     box-shadow: 0 32px 80px rgba(0,0,0,0.5);
   }
 
-  /* ── Header ── */
   .widget-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 16px 22px 14px;
@@ -71,7 +70,6 @@
     font-size:0.68rem; color:var(--muted);
   }
 
-  /* ── Rates grid ── */
   .rates-grid {
     display:grid; grid-template-columns:repeat(3,1fr);
     gap:1px; background:var(--border);
@@ -112,7 +110,6 @@
     margin-top:3px; font-family:'DM Mono',monospace;
   }
 
-  /* ── Tabs ── */
   .tabs {
     display:flex; gap:4px;
     padding:10px 22px 0;
@@ -131,8 +128,7 @@
     border-color:var(--border); border-bottom-color:var(--dark3);
   }
 
-  /* ── Chart ── */
-  .chart-area { padding:18px 22px 14px; }
+  .chart-area { padding:18px 22px 14px; display:none; }
   .chart-sublabel {
     font-size:0.68rem; color:var(--muted);
     text-transform:uppercase; letter-spacing:0.07em;
@@ -141,7 +137,6 @@
   .chart-wrap { position:relative; height:165px; }
   canvas { width:100% !important; height:100% !important; }
 
-  /* ── Table ── */
   .table-area { display:none; padding:6px 22px 16px; }
   .table-area.visible { display:block; }
   .history-table {
@@ -164,7 +159,6 @@
   .td-down { color:var(--down); }
   .td-flat { color:var(--muted); }
 
-  /* ── Footer ── */
   .widget-footer {
     padding:9px 22px; border-top:1px solid var(--border);
     display:flex; justify-content:space-between; align-items:center;
@@ -173,7 +167,6 @@
   .widget-footer a { color:var(--gold); text-decoration:none; opacity:0.7; }
   .widget-footer a:hover { opacity:1; }
 
-  /* ── Loading / Error ── */
   .chart-loading {
     display:flex; align-items:center; justify-content:center;
     height:165px; color:var(--muted); font-size:0.8rem; gap:8px;
@@ -194,7 +187,6 @@
 <body>
 <div class="widget">
 
-  <!-- Header -->
   <div class="widget-header">
     <div class="header-left">
       <div class="dot"></div>
@@ -203,19 +195,14 @@
     <div class="bce-badge"></div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════
-       TAXAS DIÁRIAS — edite aqui manualmente quando necessário
-       Formato: { e3m, e6m, e12m em percentagem, date em YYYY-MM-DD }
-       ═══════════════════════════════════════════════════════ -->
   <div class="rates-grid" id="rates-grid"></div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active" onclick="setTab('chart')">Gráfico 12 meses</div>
-    <div class="tab"        onclick="setTab('table')">Tabela mensal</div>
+    <div class="tab"        onclick="setTab('chart')">Gráfico 12 meses</div>
+    <div class="tab active" onclick="setTab('table')">Tabela mensal</div>
   </div>
 
-  <!-- Gráfico -->
+  <!-- Gráfico (oculto por defeito) -->
   <div class="chart-area" id="chart-area">
     <div class="chart-sublabel" id="chart-sublabel">
       Euribor 3 meses — médias mensais · Fonte: BCE
@@ -228,8 +215,8 @@
     </div>
   </div>
 
-  <!-- Tabela -->
-  <div class="table-area" id="table-area">
+  <!-- Tabela (visível por defeito) -->
+  <div class="table-area visible" id="table-area">
     <table class="history-table">
       <thead><tr>
         <th>Mês</th><th>3M</th><th>6M</th><th>12M</th><th>Var. 3M</th>
@@ -238,7 +225,6 @@
     </table>
   </div>
 
-  <!-- Footer -->
   <div class="widget-footer">
     <span><span id="bce-badge"></span> Gráfico: <a href="https://data.ecb.europa.eu" target="_blank">BCE</a> · Médias mensais</span>
     <span id="footer-daily">Taxas diárias: atualização manual</span>
@@ -247,18 +233,12 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// TAXAS DIÁRIAS — EDITE AQUI
-// Atualize e3m, e6m, e12m e date sempre que quiser
-// date formato: "YYYY-MM-DD"
-// ═══════════════════════════════════════════════════════════════
 const DAILY = {
-  e3m:  "2.204",   // ← Euribor 3 meses
-  e6m:  "2.619",   // ← Euribor 6 meses
-  e12m: "2.848",   // ← Euribor 12 meses
-  date: "2026-05-22"  // ← Data de referência
+  e3m:  "2.204",
+  e6m:  "2.619",
+  e12m: "2.848",
+  date: "2026-05-22"
 };
-// ═══════════════════════════════════════════════════════════════
 
 const WORKER_URL = "https://euribor-daily.ricardotdi.workers.dev";
 
@@ -267,8 +247,9 @@ const MESES_PT = ["jan","fev","mar","abr","mai","jun",
 
 let monthlyData = null;
 let activeMat   = "e3m";
-let activeTab   = "chart";
+let activeTab   = "table";
 let chartInst   = null;
+let chartJsReady = false;
 
 function fmtMonth(yyyymm) {
   if (!yyyymm) return "";
@@ -293,7 +274,6 @@ function chgLabel(v) {
   return (v > 0 ? "▲ +" : "▼ ") + Math.abs(v).toFixed(3);
 }
 
-// ── Render taxas diárias ──────────────────────────────────────
 function renderRates() {
   const mats = [
     { key:"e3m",  label:"3 meses"  },
@@ -301,7 +281,6 @@ function renderRates() {
     { key:"e12m", label:"12 meses" }
   ];
 
-  // Variação vs mês anterior (dados BCE)
   function monthlyChange(key) {
     const hist = monthlyData?.[key] || [];
     if (hist.length < 2) return null;
@@ -334,10 +313,9 @@ function renderRates() {
     "Taxas diárias: " + fmtDatePT(DAILY.date);
 }
 
-// ── Render gráfico ────────────────────────────────────────────
 function renderChart() {
   const hist = monthlyData?.[activeMat] || [];
-  if (!hist.length) return;
+  if (!hist.length || !chartJsReady) return;
 
   document.getElementById("chart-loading").style.display = "none";
   const canvas = document.getElementById("euribor-chart");
@@ -416,7 +394,6 @@ function renderChart() {
   });
 }
 
-// ── Render tabela ─────────────────────────────────────────────
 function renderTable() {
   const m3  = monthlyData?.e3m  || [];
   const m6  = monthlyData?.e6m  || [];
@@ -445,12 +422,8 @@ function renderTable() {
   document.getElementById("history-body").innerHTML = rows;
 }
 
-// ── Setters ───────────────────────────────────────────────────
 function setMat(key) {
   activeMat = key;
-  document.querySelectorAll(".rate-card").forEach(el => {
-    el.classList.toggle("active", el.onclick.toString().includes("'"+key+"'"));
-  });
   renderRates();
   if (activeTab === "chart") renderChart();
 }
@@ -464,32 +437,34 @@ function setTab(tab) {
   document.getElementById("chart-area").style.display  = tab === "chart" ? "" : "none";
   document.getElementById("table-area").classList.toggle("visible", tab === "table");
   if (tab === "chart") renderChart();
-  if (tab === "table") renderTable();
+  if (tab === "table") { renderTable(); setTimeout(reportHeight, 50); }
+}
+
+function reportHeight() {
+  const h = document.querySelector(".widget").scrollHeight + 40;
+  window.parent.postMessage({ type: "setHeight", value: h + "px" }, "*");
 }
 
 // ── Init ──────────────────────────────────────────────────────
+
+// Render taxas hardcoded imediatamente
+renderRates();
+
+// Carregar dados BCE — popular tabela assim que chegam
+fetch(WORKER_URL)
+  .then(r => r.json())
+  .then(json => {
+    if (json.error) throw new Error(json.error);
+    monthlyData = json;
+    renderRates();
+    renderTable();
+  })
+  .catch(err => console.error(err));
+
+// Carregar Chart.js em background
 const chartScript = document.createElement("script");
 chartScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js";
-chartScript.onload = function() {
-
-  // Render taxas imediatamente (são hardcoded)
-  renderRates();
-
-  // Carregar dados mensais BCE para o gráfico
-  fetch(WORKER_URL)
-    .then(r => r.json())
-    .then(json => {
-      if (json.error) throw new Error(json.error);
-      monthlyData = json;
-      renderRates(); // atualizar variações mensais
-      renderChart();
-    })
-    .catch(err => {
-      document.getElementById("chart-loading").innerHTML =
-        '<span style="color:var(--down)">⚠ Não foi possível carregar o gráfico.</span>';
-      console.error(err);
-    });
-};
+chartScript.onload = function() { chartJsReady = true; };
 document.head.appendChild(chartScript);
 </script>
 </body>
