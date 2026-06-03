@@ -315,7 +315,14 @@ function renderRates() {
 
 function renderChart() {
   const hist = monthlyData?.[activeMat] || [];
-  if (!hist.length || !chartJsReady) return;
+
+  // Se dados ou Chart.js não estão prontos, aguarda e tenta de novo
+  if (!hist.length || !chartJsReady) {
+    document.getElementById("chart-loading").style.display = "";
+    document.getElementById("euribor-chart").style.display = "none";
+    setTimeout(renderChart, 150);
+    return;
+  }
 
   document.getElementById("chart-loading").style.display = "none";
   const canvas = document.getElementById("euribor-chart");
