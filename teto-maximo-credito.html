@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Teto Máximo de Crédito – Fin+</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #A19276;
+      --primary-dark: #8a7d65;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 14px;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #f5f0ea, #f9fafb);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    .widget-root { max-width: 860px; margin: 30px auto; padding: 20px; }
+    @media (max-width: 480px) { .widget-root { margin: 10px auto; padding: 10px; } }
+
+    .widget-card {
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    @media (max-width: 480px) { .widget-card { padding: 16px; border-radius: 16px; } }
+
+    .widget-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 8px;
+    }
+    .widget-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    @media (max-width: 480px) { .widget-title { font-size: 1.15rem; } }
+    .widget-subtitle { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+    .badge {
+      font-size: 0.75rem; padding: 4px 10px; border-radius: 999px;
+      background: rgba(161, 146, 118, 0.08); color: #8a7d65;
+      border: 1px solid rgba(161, 146, 118, 0.35); white-space: nowrap;
+    }
+
+    .section-title {
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    .inputs-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 640px) { .inputs-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) and (min-width: 641px) { .inputs-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+    .field small { font-size: 0.75rem; color: var(--muted); }
+
+    /* Stepper input */
+    .stepper {
+      display: flex; align-items: center;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: #f9fafb; overflow: hidden;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .stepper:focus-within {
+      border-color: var(--primary); background: #fff;
+      box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.35);
+    }
+    .stepper button {
+      background: none; border: none; cursor: pointer;
+      padding: 10px 14px; font-size: 1.1rem; color: var(--primary);
+      font-weight: 700; line-height: 1; flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .stepper button:hover { background: rgba(161,146,118,0.08); }
+    .stepper input {
+      flex: 1; border: none; outline: none; text-align: center;
+      font-size: 0.95rem; font-weight: 600; background: transparent;
+      color: var(--text); min-width: 0; padding: 10px 0;
+    }
+    /* Remove arrows from number input */
+    .stepper input::-webkit-outer-spin-button,
+    .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .stepper input[type=number] { -moz-appearance: textfield; }
+
+    /* Euribor tag */
+    .euribor-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; color: var(--primary-dark);
+      background: rgba(161,146,118,0.08); border: 1px solid rgba(161,146,118,0.25);
+      border-radius: 999px; padding: 3px 10px; margin-bottom: 20px;
+    }
+    .euribor-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--primary);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+
+    /* Botão calcular */
+    .btn-calcular {
+      width: 100%; padding: 14px; border-radius: 999px; border: none;
+      background: var(--primary); color: #fff; font-size: 1rem; font-weight: 600;
+      letter-spacing: 0.04em; cursor: pointer; text-transform: uppercase;
+      box-shadow: 0 10px 25px rgba(161, 146, 118, 0.35);
+      transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
+      margin-bottom: 24px;
+    }
+    .btn-calcular:hover {
+      background: var(--primary-dark); transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(161, 146, 118, 0.4);
+    }
+
+    /* Results */
+    .results-box {
+      background: rgba(15, 23, 42, 0.02); border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.35); padding: 18px;
+      display: block;
+    }
+
+    .results-top {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;
+    }
+    @media (max-width: 480px) { .results-top { grid-template-columns: 1fr; } }
+
+    .result-main {
+      background: #fff; border-radius: 14px; padding: 14px 16px;
+      border: 1px solid rgba(226,232,240,0.9);
+    }
+    .result-main-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+    .result-main-value { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+    .result-main-sub { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+    .result-secondary {
+      background: #fff; border-radius: 14px; padding: 14px 16px;
+      border: 1px solid rgba(226,232,240,0.9);
+    }
+    .result-secondary-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+    .result-secondary-value { font-size: 1.3rem; font-weight: 700; color: #0f172a; }
+
+    .pressupostos {
+      background: rgba(161,146,118,0.04); border-radius: 12px;
+      padding: 12px 14px; border: 1px solid rgba(161,146,118,0.15);
+      margin-top: 14px;
+    }
+    .pressupostos-title { font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .pressupostos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    @media (max-width: 480px) { .pressupostos-grid { grid-template-columns: repeat(2, 1fr); } }
+    .pressuposto-item { font-size: 0.78rem; color: var(--muted); }
+    .pressuposto-item span { color: var(--text); font-weight: 600; }
+
+    /* Nota */
+    .nota {
+      margin-top: 16px; padding: 12px 14px; border-radius: 12px;
+      background: rgba(59, 130, 246, 0.04); border: 1px solid rgba(59,130,246,0.12);
+      font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+    }
+    .nota strong { color: var(--text); }
+
+    /* Lead card */
+    .lead-card {
+      background: #0f172a; color: #e5e7eb; border-radius: 18px;
+      padding: 18px; margin-top: 20px; position: relative; overflow: hidden;
+    }
+    .lead-card::before {
+      content: ""; position: absolute; inset: -40%;
+      background: radial-gradient(circle at top right, rgba(161,146,118,0.18), transparent 55%);
+      pointer-events: none;
+    }
+    .lead-inner { position: relative; z-index: 1; }
+    .lead-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+    .lead-subtitle { font-size: 0.8rem; color: #9ca3af; margin-bottom: 12px; }
+    .lead-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 480px) { .lead-grid { grid-template-columns: 1fr; } }
+    .lead-field label { font-size: 0.75rem; color: #9ca3af; margin-bottom: 3px; display: block; }
+    .lead-field input {
+      width: 100%; padding: 8px 10px; border-radius: 9px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: rgba(15,23,42,0.9); color: #e5e7eb; font-size: 0.85rem; outline: none;
+      box-sizing: border-box;
+    }
+    .lead-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px rgba(161,146,118,0.4); }
+    .rgpd-wrap {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin: 12px 0 8px; padding: 10px 12px;
+      background: rgba(255,255,255,0.04); border-radius: 9px;
+      border: 1px solid rgba(148,163,184,0.2);
+    }
+    .rgpd-wrap input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; accent-color: var(--primary); width: 15px; height: 15px; cursor: pointer; }
+    .rgpd-wrap label { font-size: 0.72rem; color: #9ca3af; line-height: 1.5; cursor: pointer; }
+    .rgpd-wrap label a { color: var(--primary); text-decoration: underline; }
+    .lead-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .lead-note { font-size: 0.7rem; color: #9ca3af; }
+    .lead-btn {
+      border-radius: 999px; border: none; padding: 8px 18px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      background: var(--primary); color: #fff;
+      transition: background 0.15s;
+    }
+    .lead-btn:hover { background: var(--primary-dark); }
+    .status { margin-top: 8px; font-size: 0.8rem; }
+    .status.ok { color: #16a34a; }
+    .status.err { color: #dc2626; }
+
+    .branding { text-align: center; margin-top: 18px; font-size: 0.75rem; color: var(--muted); }
+    .branding a { color: var(--primary); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="widget-root">
+  <div class="widget-card">
+
+    <div class="widget-header">
+      <div>
+        <div class="widget-title">Teto Máximo de Crédito</div>
+        <div class="widget-subtitle">Calcule o montante máximo que pode pedir ao banco com base no seu rendimento.</div>
+      </div>
+      <div class="badge">Simulação indicativa</div>
+    </div>
+
+    <!-- Euribor tag -->
+    <div class="euribor-tag">
+      <div class="euribor-dot"></div>
+      <span id="euribor-tag-text">A carregar Euribor 6M…</span>
+    </div>
+
+    <!-- Inputs -->
+    <div class="section-title">Dados do agregado</div>
+    <div class="inputs-grid">
+      <div class="field">
+        <label>Rendimento líquido mensal (€)</label>
+        <div class="stepper">
+          <button type="button" onclick="step('rendimento', -100)">−</button>
+          <input type="number" id="rendimento" value="2000" min="0" step="100" />
+          <button type="button" onclick="step('rendimento', 100)">+</button>
+        </div>
+        <small>Total líquido do agregado familiar</small>
+      </div>
+      <div class="field">
+        <label>Outras prestações mensais (€)</label>
+        <div class="stepper">
+          <button type="button" onclick="step('outras', -50)">−</button>
+          <input type="number" id="outras" value="0" min="0" step="50" />
+          <button type="button" onclick="step('outras', 50)">+</button>
+        </div>
+        <small>Crédito automóvel, pessoal, etc.</small>
+      </div>
+      <div class="field">
+        <label>Idade do titular mais velho</label>
+        <div class="stepper">
+          <button type="button" onclick="step('idade', -1)">−</button>
+          <input type="number" id="idade" value="35" min="18" max="75" step="1" />
+          <button type="button" onclick="step('idade', 1)">+</button>
+        </div>
+        <small>Determina o prazo máximo</small>
+      </div>
+    </div>
+
+    <button class="btn-calcular" onclick="calcular()">CALCULAR TETO MÁXIMO</button>
+
+    <!-- Resultados -->
+    <div class="results-box" id="results-box">
+      <div class="results-top">
+        <div class="result-main">
+          <div class="result-main-label">Montante máximo financiável</div>
+          <div class="result-main-value" id="res-montante">—</div>
+          <div class="result-main-sub" id="res-prazo-label">Prazo: —</div>
+        </div>
+        <div class="result-secondary">
+          <div class="result-secondary-label">Prestação estimada</div>
+          <div class="result-secondary-value" id="res-prestacao">—</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Taxa de esforço: <span id="res-dsti" style="font-weight:700;">—</span></div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.4;">Taxa de esforço calculada à taxa atual. O teto é apurado com taxa stressada (+1,5pp) conforme metodologia BdP.</div>
+        </div>
+      </div>
+
+      <div class="pressupostos">
+        <div class="pressupostos-title">Pressupostos utilizados no cálculo</div>
+        <div class="pressupostos-grid">
+          <div class="pressuposto-item">Spread: <span>0,70%</span></div>
+          <div class="pressuposto-item">Euribor 6M: <span id="p-euribor">—</span></div>
+          <div class="pressuposto-item">TAN base: <span id="p-tan">—</span></div>
+          <div class="pressuposto-item">TAN stressada: <span id="p-tan-stress">—</span></div>
+          <div class="pressuposto-item">Taxa de esforço máxima: <span>45%</span></div>
+          <div class="pressuposto-item">Prazo máximo: <span id="p-prazo">—</span> <span style="font-size:0.7rem;">(BdP)</span></div>
+        </div>
+      </div>
+
+      <div class="nota">
+        <strong>Nota:</strong> <span id="nota-text"></span>
+      </div>
+    </div>
+
+    <!-- Lead card -->
+    <div class="lead-card" style="margin-top:20px;">
+      <div class="lead-inner">
+        <div class="lead-title">Quer saber o que os bancos realmente aprovam?</div>
+        <div class="lead-subtitle">Deixe os seus dados e analisamos gratuitamente a sua situação.</div>
+        <div class="lead-grid">
+          <div class="lead-field">
+            <label>Nome</label>
+            <input type="text" id="lead-nome" placeholder="O seu nome" />
+          </div>
+          <div class="lead-field">
+            <label>Telemóvel</label>
+            <input type="tel" id="lead-tel" placeholder="+351 9XX XXX XXX" />
+          </div>
+        </div>
+        <div class="rgpd-wrap">
+          <input type="checkbox" id="rgpd-consent" />
+          <label for="rgpd-consent">
+            Li e aceito a <a href="https://www.finmais.pt/politica-de-privacidade" target="_blank">Política de Privacidade</a>. Autorizo o tratamento dos meus dados pessoais para efeitos de simulação e contacto de crédito.
+          </label>
+        </div>
+        <div class="lead-footer">
+          <div class="lead-note">Análise gratuita e sem compromisso.</div>
+          <button class="lead-btn" onclick="enviarLead()">Submeter</button>
+        </div>
+        <div id="status-lead" class="status"></div>
+      </div>
+    </div>
+
+    <div class="branding">
+      <a href="https://www.finmais.pt" target="_blank">finmais.pt</a> · Intermediário de Crédito n.º 0008693
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const SPREAD = 0.70;
+  const DSTI_MAX = 0.45;
+  const STRESS_DELTA = 1.50; // BdP: TAN stress = TAN base + 1.5pp
+  let euriborValor = null;
+
+  // ── Fetch Euribor 6M do Cloudflare Worker ──
+  async function fetchEuribor() {
+    try {
+      const res = await fetch("https://euribor-daily.ricardotdi.workers.dev/");
+      const data = await res.json();
+      // Worker devolve { euribor6m: 2.454, date: "2025-04" } ou similar
+      const val = data.euribor6m ?? data.rate ?? data.value ?? null;
+      if (val !== null) {
+        euriborValor = parseFloat(val);
+        document.getElementById("euribor-tag-text").textContent =
+          "Euribor 6M: " + euriborValor.toFixed(3) + "% · atualizado automaticamente";
+      } else {
+        throw new Error("campo não encontrado");
+      }
+    } catch (e) {
+      // Fallback: valor médio recente
+      euriborValor = 2.454;
+      document.getElementById("euribor-tag-text").textContent =
+        "Euribor 6M: " + euriborValor.toFixed(3) + "% (valor de referência)";
+    }
+  }
+  fetchEuribor();
+
+  // ── Stepper ──
+  function step(id, delta) {
+    const el = document.getElementById(id);
+    const val = parseFloat(el.value) || 0;
+    const min = parseFloat(el.min ?? -Infinity);
+    const max = parseFloat(el.max ?? Infinity);
+    el.value = Math.max(min, Math.min(max, val + delta));
+  }
+
+  // ── Cálculo ──
+  function calcular() {
+    const rendimento = parseFloat(document.getElementById("rendimento").value) || 0;
+    const outras = parseFloat(document.getElementById("outras").value) || 0;
+    const idade = parseInt(document.getElementById("idade").value) || 35;
+
+    if (rendimento <= 0) {
+      alert("Por favor introduza o rendimento líquido mensal.");
+      return;
+    }
+
+    const euribor = euriborValor ?? 2.454;
+
+    // Prazo máximo: mínimo entre escalão de idade (BdP) e limite de 75 anos no fim do contrato
+    let prazoEscalao;
+    if (idade <= 30) prazoEscalao = 40;
+    else if (idade <= 35) prazoEscalao = 37;
+    else if (idade <= 45) prazoEscalao = 35;
+    else prazoEscalao = 30;
+    const prazoAnos = Math.min(prazoEscalao, 75 - idade);
+    const prazoMeses = prazoAnos * 12;
+
+    if (prazoAnos <= 0) {
+      alert("Idade demasiado elevada para crédito habitação.");
+      return;
+    }
+
+    // TAN base e stressada
+    const tanBase = euribor + SPREAD;
+    const tanStress = tanBase + STRESS_DELTA;
+
+    // Prestação máxima disponível (com taxa stressada para calcular o capital máximo)
+    const prestacaoMaxima = (rendimento * DSTI_MAX) - outras;
+
+    if (prestacaoMaxima <= 0) {
+      
+      document.getElementById("res-montante").textContent = "0 €";
+      document.getElementById("res-prestacao").textContent = "—";
+      document.getElementById("res-dsti").textContent = ">";
+      document.getElementById("res-prazo-label").textContent = "Outras prestações excedem o DSTI máximo";
+      return;
+    }
+
+    // Capital máximo: VP de anuidade usando TAN stressada
+    const rMensalStress = tanStress / 100 / 12;
+    let capitalMaximo;
+    if (rMensalStress === 0) {
+      capitalMaximo = prestacaoMaxima * prazoMeses;
+    } else {
+      capitalMaximo = prestacaoMaxima * (1 - Math.pow(1 + rMensalStress, -prazoMeses)) / rMensalStress;
+    }
+
+    // Prestação estimada com TAN base (o que o cliente paga inicialmente)
+    const rMensalBase = tanBase / 100 / 12;
+    let prestacaoBase;
+    if (rMensalBase === 0) {
+      prestacaoBase = capitalMaximo / prazoMeses;
+    } else {
+      prestacaoBase = capitalMaximo * (rMensalBase / (1 - Math.pow(1 + rMensalBase, -prazoMeses)));
+    }
+
+    // DSTI real com taxa base
+    const dstiReal = ((prestacaoBase + outras) / rendimento) * 100;
+
+    // Mostrar resultados
+    
+    document.getElementById("res-montante").textContent = formatEuro(capitalMaximo);
+    document.getElementById("res-prestacao").textContent = formatEuro(prestacaoBase);
+    document.getElementById("res-prazo-label").textContent = "Prazo: " + prazoAnos + " anos";
+    document.getElementById("res-dsti").textContent = dstiReal.toFixed(1) + "%";
+    document.getElementById("res-dsti").style.color = dstiReal > 45 ? "#ef4444" : dstiReal > 35 ? "#f59e0b" : "#16a34a";
+
+    // Pressupostos
+    document.getElementById("p-euribor").textContent = euribor.toFixed(3) + "%";
+    document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "%";
+    document.getElementById("p-tan-stress").textContent = tanStress.toFixed(3) + "%";
+    document.getElementById("p-prazo").textContent = prazoAnos + " anos (idade " + idade + ")";
+  }
+
+  function formatEuro(v) {
+    return v.toLocaleString("pt-PT", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  document.getElementById("nota-text").textContent = "Os valores calculados são uma estimativa baseada nos pressupostos apresentados. O montante final aprovado varia consoante o perfil financeiro do titular, as condições de cada instituição e o contexto de mercado. Consulte-nos para uma análise personalizada.";
+
+  // ── Lead ──
+  async function enviarLead() {
+    const status = document.getElementById("status-lead");
+    status.textContent = ""; status.className = "status";
+    const nome = document.getElementById("lead-nome").value.trim();
+    const tel = document.getElementById("lead-tel").value.trim();
+    const rgpd = document.getElementById("rgpd-consent").checked;
+    if (!nome || !tel) { status.textContent = "Preencha nome e telemóvel."; status.classList.add("err"); return; }
+    if (!rgpd) { status.textContent = "Por favor aceite a Política de Privacidade."; status.classList.add("err"); return; }
+    const rendimento = document.getElementById("rendimento").value;
+    const outras = document.getElementById("outras").value;
+    const montante = document.getElementById("res-montante").textContent;
+    try {
+      const res = await fetch("https://credito-backend-ffnk.onrender.com/send-email", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          simulador: "Teto Máximo de Crédito",
+          nome, telefone: tel,
+          rendimento: rendimento + " €",
+          outrasPrestacoes: outras + " €",
+          montanteMaximo: montante
+        })
+      });
+      if (!res.ok) throw new Error();
+      status.textContent = "Lead enviada com sucesso. Será contactado em breve.";
+      status.classList.add("ok");
+    } catch(e) {
+      status.textContent = "Erro ao enviar. Tente novamente.";
+      status.classList.add("err");
+    }
+  }
+</script>
+</body>
+</html>
