@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulador IMT e IS – Fin+</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #A19276;
+      --primary-dark: #8a7d65;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #f5f0ea, #f9fafb);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    .widget-root { max-width: 860px; margin: 30px auto; padding: 20px; }
+    @media (max-width: 480px) { .widget-root { margin: 10px auto; padding: 10px; } }
+
+    .widget-card {
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    @media (max-width: 480px) { .widget-card { padding: 16px; border-radius: 16px; } }
+
+    .widget-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 8px;
+    }
+    .widget-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    @media (max-width: 480px) { .widget-title { font-size: 1.15rem; } }
+    .widget-subtitle { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+    .badge {
+      font-size: 0.75rem; padding: 4px 10px; border-radius: 999px;
+      background: rgba(161, 146, 118, 0.08); color: #8a7d65;
+      border: 1px solid rgba(161, 146, 118, 0.35); white-space: nowrap;
+    }
+
+    .section-title {
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    .inputs-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 600px) { .inputs-grid { grid-template-columns: 1fr; } }
+
+    .inputs-grid-3 {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 640px) { .inputs-grid-3 { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) and (min-width: 641px) { .inputs-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+    .field small { font-size: 0.75rem; color: var(--muted); }
+
+    .field input, .field select {
+      padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+      font-size: 0.9rem; outline: none; background: #f9fafb;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--primary); background: #fff;
+      box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.35);
+    }
+
+    /* Toggle */
+    .toggle-group {
+      display: flex; gap: 0; border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; margin-bottom: 20px;
+    }
+    .toggle-btn {
+      flex: 1; padding: 9px 8px; text-align: center; cursor: pointer;
+      font-size: 0.82rem; font-weight: 500; color: var(--muted);
+      background: #f9fafb; border: none; transition: all 0.2s;
+      border-right: 1px solid var(--border);
+    }
+    .toggle-btn:last-child { border-right: none; }
+    .toggle-btn.active { background: var(--primary); color: #fff; }
+    .toggle-btn:hover:not(.active) { background: rgba(161,146,118,0.08); }
+
+    /* Botão calcular */
+    .btn-calcular {
+      width: 100%; padding: 14px; border-radius: 999px; border: none;
+      background: var(--primary); color: #fff; font-size: 1rem; font-weight: 600;
+      letter-spacing: 0.04em; cursor: pointer; text-transform: uppercase;
+      box-shadow: 0 10px 25px rgba(161, 146, 118, 0.35);
+      transition: background 0.15s, transform 0.1s;
+      margin-bottom: 24px;
+    }
+    .btn-calcular:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    /* Results */
+    .results-box {
+      background: rgba(15, 23, 42, 0.02); border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.35); padding: 18px;
+    }
+
+    .results-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 480px) { .results-grid { grid-template-columns: 1fr; } }
+
+    .result-item {
+      background: #fff; border-radius: 14px; padding: 14px 16px;
+      border: 1px solid rgba(226,232,240,0.9);
+    }
+    .result-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+    .result-value { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+    .result-sub { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+
+    .result-total {
+      background: var(--primary); border-radius: 14px; padding: 16px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      margin-top: 14px;
+    }
+    .result-total-item { color: #fff; }
+    .result-total-label { font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px; }
+    .result-total-value { font-size: 1.3rem; font-weight: 700; }
+    @media (max-width: 480px) { .result-total { grid-template-columns: 1fr; } }
+
+    .pressupostos {
+      background: rgba(161,146,118,0.04); border-radius: 12px;
+      padding: 12px 14px; border: 1px solid rgba(161,146,118,0.15);
+      margin-top: 14px; font-size: 0.78rem; color: var(--muted); line-height: 1.6;
+    }
+    .pressupostos strong { color: var(--text); }
+
+    .nota {
+      margin-top: 16px; padding: 12px 14px; border-radius: 12px;
+      background: rgba(59, 130, 246, 0.04); border: 1px solid rgba(59,130,246,0.12);
+      font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+    }
+
+    /* Lead */
+    .lead-card {
+      background: #0f172a; color: #e5e7eb; border-radius: 18px;
+      padding: 18px; margin-top: 20px; position: relative; overflow: hidden;
+    }
+    .lead-card::before {
+      content: ""; position: absolute; inset: -40%;
+      background: radial-gradient(circle at top right, rgba(161,146,118,0.18), transparent 55%);
+      pointer-events: none;
+    }
+    .lead-inner { position: relative; z-index: 1; }
+    .lead-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+    .lead-subtitle { font-size: 0.8rem; color: #9ca3af; margin-bottom: 12px; }
+    .lead-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 480px) { .lead-grid { grid-template-columns: 1fr; } }
+    .lead-field label { font-size: 0.75rem; color: #9ca3af; margin-bottom: 3px; display: block; }
+    .lead-field input {
+      width: 100%; padding: 8px 10px; border-radius: 9px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: rgba(15,23,42,0.9); color: #e5e7eb; font-size: 0.85rem; outline: none;
+    }
+    .lead-field input:focus { border-color: var(--primary); }
+    .rgpd-wrap {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin: 12px 0 8px; padding: 10px 12px;
+      background: rgba(255,255,255,0.04); border-radius: 9px;
+      border: 1px solid rgba(148,163,184,0.2);
+    }
+    .rgpd-wrap input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; accent-color: var(--primary); width: 15px; height: 15px; }
+    .rgpd-wrap label { font-size: 0.72rem; color: #9ca3af; line-height: 1.5; }
+    .rgpd-wrap label a { color: var(--primary); text-decoration: underline; }
+    .lead-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .lead-note { font-size: 0.7rem; color: #9ca3af; }
+    .lead-btn {
+      border-radius: 999px; border: none; padding: 8px 18px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      background: var(--primary); color: #fff; transition: background 0.15s;
+    }
+    .lead-btn:hover { background: var(--primary-dark); }
+    .status { margin-top: 8px; font-size: 0.8rem; }
+    .status.ok { color: #16a34a; }
+    .status.err { color: #dc2626; }
+
+    .branding { text-align: center; margin-top: 18px; font-size: 0.75rem; color: var(--muted); }
+    .branding a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  </style>
+</head>
+<body>
+<div class="widget-root">
+  <div class="widget-card">
+
+    <div class="widget-header">
+      <div>
+        <div class="widget-title">Simulador IMT e Imposto de Selo</div>
+        <div class="widget-subtitle">Calcule os impostos na compra de imóvel em Portugal — tabelas em vigor desde 01/01/2026.</div>
+      </div>
+      <div class="badge">Ofício Circulado n.º 40129/2026</div>
+    </div>
+
+    <!-- Tipo de habitação -->
+    <div class="section-title">Tipo de imóvel</div>
+    <div class="toggle-group" style="margin-bottom:20px;">
+      <button class="toggle-btn active" onclick="setTipo('hpp')" id="btn-hpp">HPP</button>
+      <button class="toggle-btn" onclick="setTipo('hpp-jovem')" id="btn-hpp-jovem">HPP Jovem ≤ 35 anos</button>
+      <button class="toggle-btn" onclick="setTipo('habitacao')" id="btn-habitacao">Habitação Secundária</button>
+    </div>
+
+    <!-- Região -->
+    <div class="section-title">Região</div>
+    <div class="toggle-group" style="margin-bottom:20px;">
+      <button class="toggle-btn active" onclick="setRegiao('continente')" id="btn-continente">Continente</button>
+      <button class="toggle-btn" onclick="setRegiao('autonomas')" id="btn-autonomas">Açores / Madeira</button>
+    </div>
+
+    <!-- Inputs -->
+    <div class="section-title">Dados da transação</div>
+    <div class="inputs-grid-3">
+      <div class="field">
+        <label>Valor de compra (€)</label>
+        <input type="number" id="valor-compra" value="200000" min="0" step="1000" />
+        <small>Valor escriturado do imóvel</small>
+      </div>
+      <div class="field">
+        <label>Valor do crédito (€)</label>
+        <input type="number" id="valor-credito" value="160000" min="0" step="1000" />
+        <small>Montante financiado pelo banco</small>
+      </div>
+      <div class="field" id="field-idade" style="display:none;">
+        <label>Idade do comprador</label>
+        <input type="number" id="idade-comprador" value="30" min="18" max="35" step="1" />
+        <small>Deve ser ≤ 35 anos</small>
+      </div>
+    </div>
+
+    <button class="btn-calcular" onclick="calcular()">CALCULAR IMT E IMPOSTO DE SELO</button>
+
+    <!-- Resultados -->
+    <div class="results-box">
+      <div class="results-grid">
+        <div class="result-item">
+          <div class="result-label">IMT</div>
+          <div class="result-value" id="res-imt">—</div>
+          <div class="result-sub" id="res-imt-taxa">Taxa: —</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">IS sobre compra (0,8%)</div>
+          <div class="result-value" id="res-is-compra">—</div>
+          <div class="result-sub">Sobre o valor de compra</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">IS sobre crédito (0,6%)</div>
+          <div class="result-value" id="res-is-credito">—</div>
+          <div class="result-sub">Sobre o montante financiado</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Total de impostos</div>
+          <div class="result-value" id="res-total-impostos" style="color:var(--primary);">—</div>
+          <div class="result-sub">IMT + IS compra + IS crédito</div>
+        </div>
+      </div>
+
+      <div class="result-total">
+        <div class="result-total-item">
+          <div class="result-total-label">Custo total da aquisição</div>
+          <div class="result-total-value" id="res-total-aquisicao">—</div>
+        </div>
+        <div class="result-total-item">
+          <div class="result-total-label">Tabela aplicada</div>
+          <div class="result-total-value" id="res-tabela" style="font-size:0.85rem;">—</div>
+        </div>
+      </div>
+
+      <div class="pressupostos" id="pressupostos-box" style="display:none;">
+        <strong>Pressupostos:</strong> <span id="pressupostos-text"></span>
+      </div>
+
+      <div class="nota">
+        <strong>Nota:</strong> Os valores calculados são uma estimativa baseada nos pressupostos apresentados. O montante final pode variar consoante o valor patrimonial tributário (VPT) do imóvel, se superior ao valor de compra. Consulte-nos para uma análise personalizada.
+      </div>
+    </div>
+
+    <!-- Lead -->
+    <div class="lead-card">
+      <div class="lead-inner">
+        <div class="lead-title">Quer saber o custo total da sua compra?</div>
+        <div class="lead-subtitle">Analisamos gratuitamente a sua situação, incluindo despesas notariais e de registo.</div>
+        <div class="lead-grid">
+          <div class="lead-field">
+            <label>Nome</label>
+            <input type="text" id="lead-nome" placeholder="O seu nome" />
+          </div>
+          <div class="lead-field">
+            <label>Telemóvel</label>
+            <input type="tel" id="lead-tel" placeholder="+351 9XX XXX XXX" />
+          </div>
+        </div>
+        <div class="rgpd-wrap">
+          <input type="checkbox" id="rgpd-consent" />
+          <label for="rgpd-consent">
+            Li e aceito a <a href="https://www.finmais.pt/politica-de-privacidade" target="_blank">Política de Privacidade</a>. Autorizo o tratamento dos meus dados pessoais para efeitos de simulação e contacto.
+          </label>
+        </div>
+        <div class="lead-footer">
+          <div class="lead-note">Análise gratuita e sem compromisso.</div>
+          <button class="lead-btn" onclick="enviarLead()">Submeter</button>
+        </div>
+        <div id="status-lead" class="status"></div>
+      </div>
+    </div>
+
+    <div class="branding">
+      <a href="https://www.finmais.pt" target="_blank">finmais.pt</a> · Intermediário de Crédito n.º 0008693
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── Estado ──
+  let tipoAtual = 'hpp';
+  let regiaoAtual = 'continente';
+
+  // ── Tabelas IMT (Ofício Circulado n.º 40129/2026) ──
+  // Formato: { limite, taxa, parcela } — taxa em decimal, parcela a abater em €
+  // Para taxa única: { limite, taxaUnica }
+
+  const TABELAS = {
+    // TABELA I — Continente HPP
+    'continente-hpp': [
+      { limite: 106346,   taxa: 0.00, parcela: 0 },
+      { limite: 145470,   taxa: 0.02, parcela: 2126.92 },
+      { limite: 198347,   taxa: 0.05, parcela: 6491.02 },
+      { limite: 330539,   taxa: 0.07, parcela: 10457.96 },
+      { limite: 660982,   taxa: 0.08, parcela: 13763.35 },
+      { limite: 1150853,  taxaUnica: 0.06 },
+      { limite: Infinity, taxaUnica: 0.075 },
+    ],
+    // TABELA II — Continente HPP Jovem ≤ 35 anos
+    'continente-hpp-jovem': [
+      { limite: 330539,   taxa: 0.00, parcela: 0 },
+      { limite: 660982,   taxa: 0.08, parcela: 26443.12 },
+      { limite: 1150853,  taxaUnica: 0.06 },
+      { limite: Infinity, taxaUnica: 0.075 },
+    ],
+    // TABELA III — Continente Habitação (secundária/outros)
+    'continente-habitacao': [
+      { limite: 106346,   taxa: 0.01, parcela: 0 },
+      { limite: 145470,   taxa: 0.02, parcela: 1063.46 },
+      { limite: 198347,   taxa: 0.05, parcela: 5427.56 },
+      { limite: 330539,   taxa: 0.07, parcela: 9394.50 },
+      { limite: 633931,   taxa: 0.08, parcela: 12699.89 },
+      { limite: 1150853,  taxaUnica: 0.06 },
+      { limite: Infinity, taxaUnica: 0.075 },
+    ],
+    // TABELA IV — Regiões Autónomas HPP
+    'autonomas-hpp': [
+      { limite: 132933,   taxa: 0.00, parcela: 0 },
+      { limite: 181838,   taxa: 0.02, parcela: 2658.66 },
+      { limite: 247934,   taxa: 0.05, parcela: 8113.80 },
+      { limite: 413174,   taxa: 0.07, parcela: 13072.48 },
+      { limite: 826228,   taxa: 0.08, parcela: 17204.22 },
+      { limite: 1438566,  taxaUnica: 0.06 },
+      { limite: Infinity, taxaUnica: 0.075 },
+    ],
+    // TABELA V — Regiões Autónomas HPP Jovem ≤ 35 anos
+    'autonomas-hpp-jovem': [
+      { limite: 413174,   taxa: 0.00, parcela: 0 },
+      { limite: 826228,   taxa: 0.08, parcela: 33053.92 },
+      { limite: 1438566,  taxaUnica: 0.06 },
+      { limite: Infinity, taxaUnica: 0.075 },
+    ],
+    // TABELA VI — Regiões Autónomas Habitação (secundária/outros)
+    'autonomas-habitacao': [
+      { limite: 132933,   taxa: 0.01, parcela: 0 },
+      { limite: 181838,   taxa: 0.02, parcela: 1329.33 },
+      { limite: 247934,   taxa: 0.05, parcela: 6784.47 },
+      { limite: 413174,   taxa: 0.07, parcela: 11743.15 },
+      { limite: 792414,   taxa: 0.08, parcela: 15874.89 },
+      { limite: 1438566,  taxaUnica: 0.06 },
+      { limite: Infinity, taxaUnica: 0.075 },
+    ],
+  };
+
+  const NOMES_TABELAS = {
+    'continente-hpp':        'Tabela I — Continente HPP',
+    'continente-hpp-jovem':  'Tabela II — Continente HPP Jovem',
+    'continente-habitacao':  'Tabela III — Continente Habitação',
+    'autonomas-hpp':         'Tabela IV — Regiões Autónomas HPP',
+    'autonomas-hpp-jovem':   'Tabela V — Regiões Autónomas HPP Jovem',
+    'autonomas-habitacao':   'Tabela VI — Regiões Autónomas Habitação',
+  };
+
+  function calcularIMT(valor, tabela) {
+    for (const escalao of tabela) {
+      if (valor <= escalao.limite) {
+        if (escalao.taxaUnica !== undefined) {
+          return { imt: valor * escalao.taxaUnica, taxa: (escalao.taxaUnica * 100).toFixed(1) + '% (taxa única)' };
+        }
+        const imt = Math.max(0, valor * escalao.taxa - escalao.parcela);
+        return { imt, taxa: (escalao.taxa * 100).toFixed(0) + '% (marginal)' };
+      }
+    }
+    return { imt: 0, taxa: '—' };
+  }
+
+  function setTipo(tipo) {
+    tipoAtual = tipo;
+    ['hpp','hpp-jovem','habitacao'].forEach(t => {
+      document.getElementById('btn-' + t).classList.toggle('active', t === tipo);
+    });
+    document.getElementById('field-idade').style.display = tipo === 'hpp-jovem' ? '' : 'none';
+  }
+
+  function setRegiao(regiao) {
+    regiaoAtual = regiao;
+    ['continente','autonomas'].forEach(r => {
+      document.getElementById('btn-' + r).classList.toggle('active', r === regiao);
+    });
+  }
+
+  function calcular() {
+    const valorCompra  = parseFloat(document.getElementById('valor-compra').value)  || 0;
+    const valorCredito = parseFloat(document.getElementById('valor-credito').value) || 0;
+
+    if (valorCompra <= 0) {
+      alert('Por favor introduza o valor de compra.');
+      return;
+    }
+
+    // Validação jovem
+    if (tipoAtual === 'hpp-jovem') {
+      const idade = parseInt(document.getElementById('idade-comprador').value) || 0;
+      if (idade > 35 || idade < 18) {
+        alert('Para a tabela de jovens a idade deve ser entre 18 e 35 anos.');
+        return;
+      }
+    }
+
+    // Selecionar tabela
+    const chave = regiaoAtual + '-' + tipoAtual;
+    const tabela = TABELAS[chave];
+    const nomeTabela = NOMES_TABELAS[chave];
+
+    // Calcular IMT
+    // Base de incidência: o maior entre valor de compra e VPT (aqui usamos valor de compra)
+    const { imt, taxa } = calcularIMT(valorCompra, tabela);
+
+    // IS sobre compra: 0,8%
+    const isCompra = valorCompra * 0.008;
+
+    // IS sobre crédito: 0,6%
+    const isCredito = valorCredito * 0.006;
+
+    // Totais
+    const totalImpostos = imt + isCompra + isCredito;
+    const totalAquisicao = valorCompra + totalImpostos;
+
+    // Mostrar resultados
+    document.getElementById('res-imt').textContent = formatEuro(imt);
+    document.getElementById('res-imt-taxa').textContent = 'Taxa: ' + taxa;
+    document.getElementById('res-is-compra').textContent = formatEuro(isCompra);
+    document.getElementById('res-is-credito').textContent = valorCredito > 0 ? formatEuro(isCredito) : '—';
+    document.getElementById('res-total-impostos').textContent = formatEuro(totalImpostos);
+    document.getElementById('res-total-aquisicao').textContent = formatEuro(totalAquisicao);
+    document.getElementById('res-tabela').textContent = nomeTabela;
+
+    // Pressupostos
+    const pbox = document.getElementById('pressupostos-box');
+    pbox.style.display = '';
+    document.getElementById('pressupostos-text').textContent =
+      `Valor de compra: ${formatEuro(valorCompra)} · ` +
+      (valorCredito > 0 ? `Crédito: ${formatEuro(valorCredito)} · ` : '') +
+      `${nomeTabela} · IS compra: 0,8% · IS crédito: 0,6%`;
+  }
+
+  function formatEuro(v) {
+    return v.toLocaleString('pt-PT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // ── Lead ──
+  async function enviarLead() {
+    const status = document.getElementById('status-lead');
+    status.textContent = ''; status.className = 'status';
+    const nome = document.getElementById('lead-nome').value.trim();
+    const tel  = document.getElementById('lead-tel').value.trim();
+    const rgpd = document.getElementById('rgpd-consent').checked;
+    if (!nome || !tel) { status.textContent = 'Preencha nome e telemóvel.'; status.classList.add('err'); return; }
+    if (!rgpd) { status.textContent = 'Por favor aceite a Política de Privacidade.'; status.classList.add('err'); return; }
+    const imt    = document.getElementById('res-imt').textContent;
+    const total  = document.getElementById('res-total-impostos').textContent;
+    const tabela = document.getElementById('res-tabela').textContent;
+    try {
+      const res = await fetch('https://credito-backend-ffnk.onrender.com/send-email', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          simulador: 'Simulador IMT e IS',
+          nome, telefone: tel,
+          valorCompra: document.getElementById('valor-compra').value + ' €',
+          valorCredito: document.getElementById('valor-credito').value + ' €',
+          imt, totalImpostos: total, tabelaAplicada: tabela
+        })
+      });
+      if (!res.ok) throw new Error();
+      status.textContent = 'Lead enviada com sucesso. Será contactado em breve.';
+      status.classList.add('ok');
+    } catch(e) {
+      status.textContent = 'Erro ao enviar. Tente novamente.';
+      status.classList.add('err');
+    }
+  }
+</script>
+</body>
+</html>
