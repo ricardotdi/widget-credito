@@ -190,6 +190,7 @@
       box-sizing: border-box;
     }
     .lead-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px rgba(161,146,118,0.4); }
+    #horario-dropdown label:hover { background: rgba(161,146,118,0.15); color: #e5e7eb; }
     .rgpd-wrap {
       display: flex; align-items: flex-start; gap: 10px;
       margin: 12px 0 8px; padding: 10px 12px;
@@ -279,7 +280,7 @@
         <div class="result-secondary">
           <div class="result-secondary-label">Prestação estimada</div>
           <div class="result-secondary-value" id="res-prestacao">—</div>
-          <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">DSTI: <span id="res-dsti" style="font-weight:700;">—</span></div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Taxa de esforço: <span id="res-dsti" style="font-weight:700;">—</span></div>
           <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.4;">Taxa de esforço calculada à taxa atual. O teto é apurado com taxa stressada (+1,5pp) conforme metodologia BdP.</div>
         </div>
       </div>
@@ -287,7 +288,7 @@
       <div class="pressupostos">
         <div class="pressupostos-title">Pressupostos utilizados no cálculo</div>
         <div class="pressupostos-grid">
-          <div class="pressuposto-item">Spread: <span>0,60%</span></div>
+          <div class="pressuposto-item">Spread: <span>0,70%</span></div>
           <div class="pressuposto-item">Euribor 6M: <span id="p-euribor">—</span></div>
           <div class="pressuposto-item">TAN base: <span id="p-tan">—</span></div>
           <div class="pressuposto-item">TAN stressada: <span id="p-tan-stress">—</span></div>
@@ -312,8 +313,43 @@
             <input type="text" id="lead-nome" placeholder="O seu nome" />
           </div>
           <div class="lead-field">
+            <label>Email</label>
+            <input type="email" id="lead-email" placeholder="ex: nome@exemplo.pt" />
+          </div>
+          <div class="lead-field">
             <label>Telemóvel</label>
-            <input type="tel" id="lead-tel" placeholder="+351 9XX XXX XXX" />
+            <input type="tel" id="lead-tel" placeholder="ex: 9xx xxx xxx" />
+          </div>
+          <div class="lead-field">
+            <label>Horário Preferencial de Contacto</label>
+            <div style="position:relative; margin-top:4px;">
+              <button type="button" id="horario-btn" onclick="toggleHorario()" style="
+                width:100%; padding:7px 9px; border-radius:9px;
+                border:1px solid rgba(148,163,184,0.7);
+                background:rgba(15,23,42,0.9); color:#9ca3af;
+                font-size:0.85rem; outline:none; cursor:pointer;
+                display:flex; justify-content:space-between; align-items:center;
+                text-align:left; box-sizing:border-box; min-width:0;">
+                <span id="horario-label">Qualquer hora</span>
+                <span id="horario-arrow" style="transition:transform 0.3s ease; display:inline-block;">▾</span>
+              </button>
+              <div id="horario-dropdown" style="
+                overflow:hidden; max-height:0;
+                transition:max-height 0.35s ease, opacity 0.25s ease;
+                opacity:0;
+                border-radius:0 0 9px 9px;
+                border:0px solid rgba(148,163,184,0.7);
+                background:rgba(15,23,42,0.95);
+                position:absolute; z-index:99; width:100%; max-width:100%; left:0;">
+                <div id="horario-inner">
+                  <label onclick="selectHorario('qualquer','Qualquer hora')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">Qualquer hora</label>
+                  <label onclick="selectHorario('manha','De manhã')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">De manhã</label>
+                  <label onclick="selectHorario('almoco','Hora de Almoço')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">Hora de Almoço</label>
+                  <label onclick="selectHorario('tarde','De tarde')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; transition:background 0.15s;">De tarde</label>
+                </div>
+              </div>
+              <input type="hidden" id="horario-value" value="qualquer" />
+            </div>
           </div>
         </div>
         <div class="rgpd-wrap">
@@ -338,7 +374,7 @@
 </div>
 
 <script>
-  const SPREAD = 0.60;
+  const SPREAD = 0.70;
   const DSTI_MAX = 0.45;
   const STRESS_DELTA = 1.50; // BdP: TAN stress = TAN base + 1.5pp
   let euriborValor = null;
@@ -465,10 +501,14 @@
     const status = document.getElementById("status-lead");
     status.textContent = ""; status.className = "status";
     const nome = document.getElementById("lead-nome").value.trim();
+    const email = document.getElementById("lead-email").value.trim();
     const tel = document.getElementById("lead-tel").value.trim();
     const rgpd = document.getElementById("rgpd-consent").checked;
     if (!nome || !tel) { status.textContent = "Preencha nome e telemóvel."; status.classList.add("err"); return; }
     if (!rgpd) { status.textContent = "Por favor aceite a Política de Privacidade."; status.classList.add("err"); return; }
+    const horarioValue = document.getElementById("horario-value").value;
+    const horarioLabels = { qualquer: "Qualquer hora", manha: "De manhã", almoco: "Hora de Almoço", tarde: "De tarde" };
+    const horario = horarioLabels[horarioValue] || "Qualquer hora";
     const rendimento = document.getElementById("rendimento").value;
     const outras = document.getElementById("outras").value;
     const montante = document.getElementById("res-montante").textContent;
@@ -477,7 +517,7 @@
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           simulador: "Teto Máximo de Crédito",
-          nome, telefone: tel,
+          nome, email, telefone: tel, horario,
           rendimento: rendimento + " €",
           outrasPrestacoes: outras + " €",
           montanteMaximo: montante
@@ -490,6 +530,45 @@
       status.textContent = "Erro ao enviar. Tente novamente.";
       status.classList.add("err");
     }
+  }
+
+  // ── Horário dropdown ──
+  document.addEventListener("click", function(e) {
+    const hBtn = document.getElementById("horario-btn");
+    const hDd = document.getElementById("horario-dropdown");
+    if (hBtn && hDd && !hBtn.contains(e.target) && !hDd.contains(e.target)) {
+      if (hDd.style.maxHeight && hDd.style.maxHeight !== "0px") {
+        hDd.style.maxHeight = "0"; hDd.style.opacity = "0"; hDd.style.borderWidth = "0";
+        document.getElementById("horario-arrow").style.transform = "rotate(0deg)";
+        hBtn.style.borderRadius = "9px";
+      }
+    }
+  });
+
+  function toggleHorario() {
+    const dropdown = document.getElementById("horario-dropdown");
+    const arrow = document.getElementById("horario-arrow");
+    const btn = document.getElementById("horario-btn");
+    const isOpen = dropdown.style.maxHeight !== "0px" && dropdown.style.maxHeight !== "";
+    if (isOpen) {
+      dropdown.style.maxHeight = "0"; dropdown.style.opacity = "0"; dropdown.style.borderWidth = "0";
+      arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "9px";
+    } else {
+      dropdown.style.maxHeight = dropdown.scrollHeight + "px"; dropdown.style.opacity = "1";
+      dropdown.style.borderWidth = "1px"; dropdown.style.borderTopWidth = "0";
+      arrow.style.transform = "rotate(180deg)"; btn.style.borderRadius = "9px 9px 0 0";
+    }
+  }
+
+  function selectHorario(value, label) {
+    document.getElementById("horario-value").value = value;
+    document.getElementById("horario-label").textContent = label;
+    document.getElementById("horario-label").style.color = "#e5e7eb";
+    const dropdown = document.getElementById("horario-dropdown");
+    const arrow = document.getElementById("horario-arrow");
+    const btn = document.getElementById("horario-btn");
+    dropdown.style.maxHeight = "0"; dropdown.style.opacity = "0"; dropdown.style.borderWidth = "0";
+    arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "9px";
   }
 </script>
 </body>
