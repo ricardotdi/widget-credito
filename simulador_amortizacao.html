@@ -464,7 +464,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       --primary: #1d4ed8;
       --primary-dark: #1e40af;
       --accent: #16a34a;
-      --accent-soft: #dcfce7;
       --warn: #dc2626;
       --bg: #f3f4f6;
       --card-bg: #ffffff;
@@ -492,7 +491,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       border: 1px solid rgba(148, 163, 184, 0.25);
     }
     @media (max-width: 480px) { .widget-card { padding: 14px; border-radius: 16px; } }
-    .widget-header { margin-bottom: 18px; }
+    .widget-header { margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
     .widget-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
     @media (max-width: 480px) { .widget-title { font-size: 1.2rem; } }
     .widget-subtitle { font-size: 0.92rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
@@ -501,6 +500,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       background: rgba(29, 78, 216, 0.08); color: var(--primary);
       border: 1px solid rgba(29, 78, 216, 0.3); margin-top: 8px;
     }
+    .lang-toggle {
+      display: inline-flex; background: #eef2ff; border-radius: 999px; padding: 3px 4px;
+      border: 1px solid rgba(29,78,216,0.2); flex-shrink: 0;
+    }
+    .lang-toggle span {
+      font-size: 0.8rem; font-weight: 600; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+      color: var(--muted); white-space: nowrap; transition: .2s; user-select: none;
+    }
+    .lang-toggle span.active { background: var(--primary); color: #fff; }
     .layout {
       display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 26px;
     }
@@ -563,21 +571,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
     .btn-ghost { background: rgba(15, 23, 42, 0.02); color: var(--muted); border: 1px solid var(--border); }
     .btn-ghost:hover { background: rgba(15, 23, 42, 0.05); }
-
-    /* Amortização block */
     .amort-card {
       margin-top: 16px; padding: 14px 16px; border-radius: 16px;
       background: #f8fafc; border: 1px solid rgba(148,163,184,0.3);
     }
     .switch-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .switch {
-      position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0;
-    }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
     .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; cursor: pointer; inset: 0;
-      background: #cbd5e1; transition: .3s; border-radius: 999px;
-    }
+    .slider { position: absolute; cursor: pointer; inset: 0; background: #cbd5e1; transition: .3s; border-radius: 999px; }
     .slider:before {
       position: absolute; content: ""; height: 18px; width: 18px;
       left: 3px; bottom: 3px; background: #fff; transition: .3s; border-radius: 50%;
@@ -595,22 +596,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       color: var(--muted); white-space: nowrap; transition: .2s; user-select: none;
     }
     .toggle-mini span.active { background: var(--primary); color: #fff; }
-
-    /* Results */
     .results-card {
       background: rgba(15, 23, 42, 0.02); border-radius: 18px;
       padding: 16px; border: 1px solid rgba(148, 163, 184, 0.35);
     }
-    .results-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    @media (max-width: 380px) { .results-grid { grid-template-columns: 1fr; } }
-    .result-item {
-      padding: 10px 12px; border-radius: 12px;
-      background: #fff; border: 1px solid rgba(226, 232, 240, 0.9);
-    }
-    .result-label { font-size: 0.74rem; color: var(--muted); margin-bottom: 3px; }
-    .result-value { font-size: 1.05rem; font-weight: 700; }
-
-    /* Highlight savings */
     .savings-banner {
       margin-top: 14px; padding: 16px; border-radius: 16px;
       background: linear-gradient(135deg, #ecfdf5, #d1fae5);
@@ -624,349 +613,538 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     .savings-item .lbl { font-size: 0.72rem; color: #166534; }
     .savings-item .val { font-size: 1.25rem; font-weight: 800; color: #15803d; line-height: 1.2; margin-top: 2px; }
     .savings-item .sub { font-size: 0.72rem; color: #166534; margin-top: 2px; }
-
-    /* Comparison table */
     .compare-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.85rem; }
     .compare-table th, .compare-table td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--border); }
     .compare-table th:first-child, .compare-table td:first-child { text-align: left; }
     .compare-table thead th { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
     .compare-table .col-com { color: var(--accent); font-weight: 700; }
-
-    /* Chart */
     .chart-wrap { margin-top: 16px; background: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border); }
     .chart-wrap.hidden { display: none; }
     .chart-title { font-size: 0.82rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
     .chart-box { position: relative; height: 240px; }
-
-    /* Inverse calc */
+    .chart-caption { font-size: 0.78rem; color: var(--muted); margin-top: 8px; line-height: 1.5; }
     .inverse-card {
       margin-top: 16px; padding: 14px 16px; border-radius: 16px;
       background: #fff7ed; border: 1px solid rgba(234, 88, 12, 0.3);
     }
-    .inverse-result {
-      margin-top: 10px; font-size: 0.95rem; color: #9a3412; font-weight: 600; line-height: 1.5;
-    }
+    .inverse-result { margin-top: 10px; font-size: 0.95rem; color: #9a3412; font-weight: 600; line-height: 1.5; }
     .inverse-result.hidden { display: none; }
-
-    /* Educational box */
     .edu-box {
       margin-top: 16px; padding: 14px 16px; border-radius: 14px;
       background: #eff6ff; border: 1px solid rgba(29,78,216,0.2);
       font-size: 0.85rem; color: #1e3a8a; line-height: 1.6;
     }
     .edu-box strong { color: #1d4ed8; }
-
     .status { margin-top: 8px; font-size: 0.82rem; }
     .status.ok { color: #16a34a; }
     .status.err { color: #dc2626; }
     .disclaimer { font-size: 0.76rem; color: var(--muted); margin-top: 12px; line-height: 1.5; }
-
-    /* dropdown for mista (reused) */
-    .mista-dd-btn {
-      width:100%; padding:9px 11px; border-radius:10px; border:1px solid var(--border);
-      font-size:0.9rem; outline:none; background:#f9fafb; cursor:pointer;
-      display:flex; justify-content:space-between; align-items:center; text-align:left;
-      color:#6b7280; transition: border-color 0.15s; min-width: 0; box-sizing: border-box;
-    }
-    .mista-dd-btn:hover { border-color:var(--primary); }
   </style>
 </head>
 <body>
   <div class="widget-root">
     <div class="widget-card">
       <div class="widget-header">
-        <div class="widget-title">Simulador de Amortização — Crédito Habitação</div>
-        <div class="widget-subtitle">
-          Descubra quanto pode poupar em juros e em quantos anos pode terminar o seu empréstimo
-          mais cedo, fazendo entregas periódicas de capital.
+        <div>
+          <div class="widget-title" data-i18n="title">Simulador de Amortização — Crédito Habitação</div>
+          <div class="widget-subtitle" data-i18n="subtitle">Descubra quanto pode poupar em juros e em quantos anos pode terminar o seu empréstimo mais cedo, fazendo entregas periódicas de capital.</div>
+          <span class="badge" data-i18n="badge">Ferramenta educativa · uso offline</span>
         </div>
-        <span class="badge">Ferramenta educativa · uso offline</span>
+        <div class="lang-toggle">
+          <span id="lang-pt" class="active" onclick="setLang('pt')">PT</span>
+          <span id="lang-en" onclick="setLang('en')">EN</span>
+        </div>
       </div>
 
       <div class="layout">
-        <!-- ESQUERDA: INPUTS -->
+        <!-- ESQUERDA -->
         <div>
-          <div class="section-title">Tipo de taxa</div>
+          <div class="section-title" data-i18n="taxType">Tipo de taxa</div>
           <div class="taxa-toggle" style="margin-bottom:16px;">
-            <span id="toggle-variavel" class="active" onclick="setTaxa('variavel')">Taxa Variável</span>
-            <span id="toggle-fixa" onclick="setTaxa('fixa')">Taxa Fixa</span>
-            <span id="toggle-mista" onclick="setTaxa('mista')">Taxa Mista</span>
+            <span id="toggle-variavel" class="active" onclick="setTaxa('variavel')" data-i18n="rateVar">Taxa Variável</span>
+            <span id="toggle-fixa" onclick="setTaxa('fixa')" data-i18n="rateFix">Taxa Fixa</span>
+            <span id="toggle-mista" onclick="setTaxa('mista')" data-i18n="rateMix">Taxa Mista</span>
           </div>
 
-          <div class="section-title">Dados do empréstimo</div>
+          <div class="section-title" data-i18n="loanData">Dados do empréstimo</div>
           <div class="inputs-grid">
             <div class="field">
-              <label>Valor em dívida (€)</label>
+              <label data-i18n="amountOwed">Valor em dívida (€)</label>
               <input id="valor" type="number" min="1000" step="500" placeholder="ex: 180000" oninput="autoSim()" />
-              <small>Capital atual / montante a financiar.</small>
+              <small data-i18n="amountOwedHelp">Capital atual / montante a financiar.</small>
             </div>
             <div class="field">
-              <label>Prazo restante (anos)</label>
+              <label data-i18n="termLeft">Prazo restante (anos)</label>
               <input id="anos" type="number" min="1" max="50" step="1" placeholder="ex: 30" oninput="calcPrazoVariavel(); autoSim()" />
-              <small>Anos que faltam pagar.</small>
+              <small data-i18n="termLeftHelp">Anos que faltam pagar.</small>
             </div>
           </div>
 
-          <!-- Variável / Fixa -->
           <div id="taxa-extra-fields" class="inputs-grid" style="margin-top:14px;">
             <div class="field" id="field-euribor">
-              <label id="label-euribor">Euribor (%)</label>
+              <label id="label-euribor" data-i18n="euribor">Euribor (%)</label>
               <input id="euribor" type="number" step="0.01" placeholder="ex: 2.50" oninput="autoSim()" />
-              <small id="small-euribor">Taxa de referência (ex: 12M).</small>
+              <small id="small-euribor" data-i18n="euriborHelp">Taxa de referência (ex: 12M).</small>
             </div>
             <div class="field">
-              <label id="label-spread">Spread (%)</label>
+              <label id="label-spread" data-i18n="spread">Spread (%)</label>
               <input id="spread" type="number" step="0.01" placeholder="ex: 1.00" oninput="autoSim()" />
-              <small id="small-spread">Margem do banco.</small>
+              <small id="small-spread" data-i18n="spreadHelp">Margem do banco.</small>
             </div>
           </div>
 
-          <!-- Mista -->
           <div id="mista-grid" style="display:none; margin-top:10px;">
             <div class="mista-inner-grid">
               <div>
-                <div class="sub-head">Período Taxa Fixa</div>
+                <div class="sub-head" data-i18n="fixedPeriod">Período Taxa Fixa</div>
                 <div class="field" style="margin-bottom:10px;">
-                  <label>Prazo da taxa fixa (anos)</label>
+                  <label data-i18n="fixedTerm">Prazo da taxa fixa (anos)</label>
                   <input id="mista-prazo-value" type="number" min="1" max="49" step="1" placeholder="ex: 5" oninput="calcPrazoVariavel(); autoSim()" />
-                  <small>Anos em taxa fixa.</small>
+                  <small data-i18n="fixedTermHelp">Anos em taxa fixa.</small>
                 </div>
                 <div class="field">
-                  <label>TAN período fixo (%)</label>
+                  <label data-i18n="fixedTan">TAN período fixo (%)</label>
                   <input id="mista-tan-value" type="number" step="0.01" placeholder="ex: 3.20" oninput="autoSim()" />
-                  <small>Taxa Anual Nominal fixa.</small>
+                  <small data-i18n="fixedTanHelp">Taxa Anual Nominal fixa.</small>
                 </div>
               </div>
               <div>
-                <div class="sub-head">Período Taxa Variável</div>
+                <div class="sub-head" data-i18n="varPeriod">Período Taxa Variável</div>
                 <div class="field" style="margin-bottom:10px;">
-                  <label>Prazo variável (calculado)</label>
+                  <label data-i18n="varTerm">Prazo variável (calculado)</label>
                   <input id="mista-prazo-variavel" type="text" placeholder="— anos" readonly disabled />
-                  <small>Prazo total menos período fixo.</small>
+                  <small data-i18n="varTermHelp">Prazo total menos período fixo.</small>
                 </div>
                 <div class="field" style="margin-bottom:10px;">
-                  <label>Euribor (%)</label>
+                  <label data-i18n="euribor">Euribor (%)</label>
                   <input id="mista-euribor" type="number" step="0.01" placeholder="ex: 2.50" oninput="autoSim()" />
-                  <small>Taxa de referência.</small>
+                  <small data-i18n="euriborHelp2">Taxa de referência.</small>
                 </div>
                 <div class="field">
-                  <label>Spread (%)</label>
+                  <label data-i18n="spread">Spread (%)</label>
                   <input id="mista-spread" type="number" step="0.01" placeholder="ex: 1.00" oninput="autoSim()" />
-                  <small>Margem do banco.</small>
+                  <small data-i18n="spreadHelp">Margem do banco.</small>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- AMORTIZAÇÕES -->
           <div class="amort-card">
             <div class="switch-row">
               <label class="switch">
                 <input type="checkbox" id="amort-ativa" checked onchange="toggleAmort(); autoSim()" />
                 <span class="slider"></span>
               </label>
-              <span class="switch-label">Fazer entregas periódicas de capital</span>
+              <span class="switch-label" data-i18n="makePayments">Fazer entregas periódicas de capital</span>
             </div>
-
             <div id="amort-fields">
               <div class="inputs-grid">
                 <div class="field">
-                  <label>Valor de cada entrega (€)</label>
+                  <label data-i18n="paymentAmount">Valor de cada entrega (€)</label>
                   <input id="amort-valor" type="number" min="0" step="100" placeholder="ex: 5000" oninput="autoSim()" />
-                  <small>Quanto entrega de cada vez.</small>
+                  <small data-i18n="paymentAmountHelp">Quanto entrega de cada vez.</small>
                 </div>
                 <div class="field">
-                  <label>Periodicidade</label>
+                  <label data-i18n="frequency">Periodicidade</label>
                   <select id="amort-periodicidade" onchange="autoSim()">
-                    <option value="6">A cada 6 meses</option>
-                    <option value="12" selected>A cada 1 ano</option>
-                    <option value="24">A cada 2 anos</option>
-                    <option value="36">A cada 3 anos</option>
-                    <option value="48">A cada 4 anos</option>
-                    <option value="60">A cada 5 anos</option>
+                    <option value="6" data-i18n="every6m">A cada 6 meses</option>
+                    <option value="12" selected data-i18n="every1y">A cada 1 ano</option>
+                    <option value="24" data-i18n="every2y">A cada 2 anos</option>
+                    <option value="36" data-i18n="every3y">A cada 3 anos</option>
+                    <option value="48" data-i18n="every4y">A cada 4 anos</option>
+                    <option value="60" data-i18n="every5y">A cada 5 anos</option>
                   </select>
-                  <small>De quanto em quanto tempo.</small>
+                  <small data-i18n="frequencyHelp">De quanto em quanto tempo.</small>
                 </div>
               </div>
               <div class="field" style="margin-top:12px;">
-                <label>A partir de que ano começa a amortizar?</label>
+                <label data-i18n="startYear">A partir de que ano começa a amortizar?</label>
                 <input id="amort-inicio" type="number" min="1" max="50" step="1" value="1" placeholder="ex: 1" oninput="autoSim()" />
-                <small>Ano em que faz a primeira entrega (1 = primeiro ano).</small>
+                <small data-i18n="startYearHelp">Ano em que faz a primeira entrega (1 = primeiro ano).</small>
               </div>
-
               <div style="margin-top:14px;">
-                <div class="help" style="margin-bottom:4px;">Efeito da amortização:</div>
+                <div class="help" style="margin-bottom:4px;" data-i18n="effectLabel">Efeito da amortização:</div>
                 <div class="toggle-mini">
-                  <span id="efeito-prazo" class="active" onclick="setEfeito('prazo')">Reduzir prazo (poupa mais)</span>
-                  <span id="efeito-prestacao" onclick="setEfeito('prestacao')">Reduzir prestação</span>
+                  <span id="efeito-prazo" class="active" onclick="setEfeito('prazo')" data-i18n="effectTerm">Reduzir prazo (poupa mais)</span>
+                  <span id="efeito-prestacao" onclick="setEfeito('prestacao')" data-i18n="effectPayment">Reduzir prestação</span>
                 </div>
               </div>
-
               <div class="switch-row" style="margin-top:16px; margin-bottom:6px;">
                 <label class="switch">
                   <input type="checkbox" id="comissao-ativa" onchange="autoSim()" />
                   <span class="slider"></span>
                 </label>
-                <span class="switch-label" style="font-size:0.84rem;">Incluir comissão de amortização antecipada</span>
+                <span class="switch-label" style="font-size:0.84rem;" data-i18n="includeFee">Incluir comissão de amortização antecipada</span>
               </div>
-              <div class="help">
-                Por lei: <strong>0,5%</strong> sobre o capital amortizado em taxa variável e
-                <strong>2%</strong> em taxa fixa. Na taxa mista, é aplicada a taxa correta consoante
-                a entrega ocorra na fase fixa ou variável.
-              </div>
+              <div class="help" data-i18n="feeHelp">Por lei: <strong>0,5%</strong> sobre o capital amortizado em taxa variável e <strong>2%</strong> em taxa fixa. Na taxa mista, é aplicada a taxa correta consoante a entrega ocorra na fase fixa ou variável.</div>
             </div>
           </div>
 
           <div class="actions-row">
-            <button class="btn btn-primary" onclick="simular()" style="flex:1; justify-content:center;">
-              Calcular poupança
-            </button>
-            <button class="btn btn-ghost" onclick="limpar()" style="padding:0 16px;">✕ Limpar</button>
+            <button class="btn btn-primary" onclick="simular()" style="flex:1; justify-content:center;" data-i18n="calcBtn">Calcular poupança</button>
+            <button class="btn btn-ghost" onclick="limpar()" style="padding:0 16px;" data-i18n="clearBtn">✕ Limpar</button>
           </div>
           <div id="status-sim" class="status"></div>
         </div>
 
-        <!-- DIREITA: RESULTADOS -->
+        <!-- DIREITA -->
         <div>
-          <!-- Banner poupança -->
           <div id="savings-banner" class="savings-banner hidden">
-            <div class="savings-title">A sua poupança com amortizações</div>
+            <div class="savings-title" data-i18n="savingsTitle">A sua poupança com amortizações</div>
             <div class="savings-grid">
               <div class="savings-item">
-                <div class="lbl">Juros poupados</div>
+                <div class="lbl" data-i18n="interestSaved">Juros poupados</div>
                 <div class="val" id="poup-juros">—</div>
                 <div class="sub" id="poup-juros-sub"></div>
               </div>
               <div class="savings-item">
-                <div class="lbl">Tempo poupado</div>
+                <div class="lbl" data-i18n="timeSaved">Tempo poupado</div>
                 <div class="val" id="poup-tempo">—</div>
                 <div class="sub" id="poup-tempo-sub"></div>
               </div>
             </div>
           </div>
 
-          <!-- Comparação -->
-          <div class="section-title" style="margin-top:18px;">Comparação dos cenários</div>
+          <div class="section-title" style="margin-top:18px;" data-i18n="comparison">Comparação dos cenários</div>
           <div class="results-card">
             <table class="compare-table">
               <thead>
                 <tr>
                   <th></th>
-                  <th>Sem amortizar</th>
-                  <th class="col-com">Com amortizações</th>
+                  <th data-i18n="withoutPay">Sem amortizar</th>
+                  <th class="col-com" data-i18n="withPay">Com amortizações</th>
                 </tr>
               </thead>
               <tbody id="compare-body">
-                <tr><td colspan="3" style="text-align:center; color:var(--muted); padding:16px;">Preencha os dados e clique em "Calcular poupança".</td></tr>
+                <tr><td colspan="3" style="text-align:center; color:var(--muted); padding:16px;" data-i18n="fillPrompt">Preencha os dados e clique em "Calcular poupança".</td></tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Gráfico -->
           <div id="chart-wrap" class="chart-wrap hidden">
-            <div class="chart-title">Evolução da dívida ao longo do tempo</div>
+            <div class="chart-title" data-i18n="chartDebtTitle">Evolução da dívida ao longo do tempo</div>
             <div class="chart-box"><canvas id="divida-chart"></canvas></div>
           </div>
 
-          <!-- Cálculo inverso -->
+          <div id="chart-juros-wrap" class="chart-wrap hidden">
+            <div class="chart-title" data-i18n="chartIntTitle">Peso dos juros na prestação, ano a ano</div>
+            <div class="chart-box"><canvas id="juros-chart"></canvas></div>
+            <div class="chart-caption" id="juros-caption"></div>
+          </div>
+
           <div class="inverse-card">
-            <div class="sub-head" style="color:#c2410c; border-color:rgba(234,88,12,0.3);">Quanto preciso de entregar?</div>
-            <div class="help" style="margin-bottom:8px;">
-              Defina em quantos anos quer terminar o empréstimo e descubra o valor de cada entrega.
-            </div>
+            <div class="sub-head" style="color:#c2410c; border-color:rgba(234,88,12,0.3);" data-i18n="inverseTitle">Quanto preciso de entregar?</div>
+            <div class="help" style="margin-bottom:8px;" data-i18n="inverseHelp">Defina em quantos anos quer terminar o empréstimo e descubra o valor de cada entrega.</div>
             <div class="inputs-grid">
               <div class="field">
-                <label>Quero terminar em (anos)</label>
+                <label data-i18n="finishIn">Quero terminar em (anos)</label>
                 <input id="inv-anos" type="number" min="1" max="50" step="1" placeholder="ex: 20" />
-                <small>Menos do que o prazo atual.</small>
+                <small data-i18n="finishInHelp">Menos do que o prazo atual.</small>
               </div>
               <div class="field">
-                <label>Periodicidade das entregas</label>
+                <label data-i18n="paymentFreq">Periodicidade das entregas</label>
                 <select id="inv-periodicidade">
-                  <option value="6">A cada 6 meses</option>
-                  <option value="12" selected>A cada 1 ano</option>
-                  <option value="24">A cada 2 anos</option>
-                  <option value="36">A cada 3 anos</option>
-                  <option value="48">A cada 4 anos</option>
-                  <option value="60">A cada 5 anos</option>
+                  <option value="6" data-i18n="every6m">A cada 6 meses</option>
+                  <option value="12" selected data-i18n="every1y">A cada 1 ano</option>
+                  <option value="24" data-i18n="every2y">A cada 2 anos</option>
+                  <option value="36" data-i18n="every3y">A cada 3 anos</option>
+                  <option value="48" data-i18n="every4y">A cada 4 anos</option>
+                  <option value="60" data-i18n="every5y">A cada 5 anos</option>
                 </select>
               </div>
             </div>
             <div class="actions-row" style="margin-top:12px;">
-              <button class="btn btn-ghost" onclick="calcularInverso()" style="border-color:rgba(234,88,12,0.4); color:#c2410c;">
-                Calcular entrega necessária
-              </button>
+              <button class="btn btn-ghost" onclick="calcularInverso()" style="border-color:rgba(234,88,12,0.4); color:#c2410c;" data-i18n="inverseBtn">Calcular entrega necessária</button>
             </div>
             <div id="inverse-result" class="inverse-result hidden"></div>
           </div>
 
-          <!-- Caixa educativa -->
-          <div class="edu-box">
+          <div class="edu-box" data-i18n="eduBox">
             <strong>Porque é que amortizar cedo poupa mais?</strong><br>
-            No início do empréstimo, a maior parte da prestação são <strong>juros</strong> e só uma
-            pequena parte abate ao capital. Quando entrega capital nesta fase, está a eliminar juros
-            que de outra forma pagaria durante muitos anos. A mesma entrega feita no fim do empréstimo
-            poupa muito menos. Por isso, <strong>quanto mais cedo amortizar, mais juros evita</strong> —
-            e escolher "reduzir prazo" (em vez de reduzir a prestação) maximiza essa poupança.
+            No início do empréstimo, a maior parte da prestação são <strong>juros</strong> e só uma pequena parte abate ao capital. Quando entrega capital nesta fase, está a eliminar juros que de outra forma pagaria durante muitos anos. A mesma entrega feita no fim do empréstimo poupa muito menos. Por isso, <strong>quanto mais cedo amortizar, mais juros evita</strong> — e escolher "reduzir prazo" (em vez de reduzir a prestação) maximiza essa poupança.
           </div>
 
-          <!-- Exportar -->
           <div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">
-            <button class="btn btn-ghost" style="flex:1; justify-content:center;" onclick="exportarExcel()">
-              Descarregar plano em Excel
-            </button>
-            <button class="btn btn-ghost" style="flex:1; justify-content:center;" onclick="exportarPDF()">
-              Descarregar plano em PDF
-            </button>
+            <button class="btn btn-ghost" style="flex:1; justify-content:center;" onclick="exportarExcel()" data-i18n="exportExcel">Descarregar plano em Excel</button>
+            <button class="btn btn-ghost" style="flex:1; justify-content:center;" onclick="exportarPDF()" data-i18n="exportPdf">Descarregar plano em PDF</button>
           </div>
           <div id="status-export" class="status"></div>
 
-          <div class="disclaimer">
-            Valores meramente indicativos, calculados com as taxas e condições que introduziu.
-            Não substituem a informação oficial da sua instituição de crédito. As condições reais
-            de amortização (comissões, mínimos, prazos de aviso prévio) devem ser confirmadas no
-            seu contrato e junto do banco.
-          </div>
+          <div class="disclaimer" data-i18n="disclaimer">Valores meramente indicativos, calculados com as taxas e condições que introduziu. Não substituem a informação oficial da sua instituição de crédito. As condições reais de amortização (comissões, mínimos, prazos de aviso prévio) devem ser confirmadas no seu contrato e junto do banco.</div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
+    // ===================== I18N =====================
+    const I18N = {
+      pt: {
+        htmlTitle: "Simulador de Amortização de Crédito Habitação",
+        title: "Simulador de Amortização — Crédito Habitação",
+        subtitle: "Descubra quanto pode poupar em juros e em quantos anos pode terminar o seu empréstimo mais cedo, fazendo entregas periódicas de capital.",
+        badge: "Ferramenta educativa · uso offline",
+        taxType: "Tipo de taxa",
+        rateVar: "Taxa Variável", rateFix: "Taxa Fixa", rateMix: "Taxa Mista",
+        loanData: "Dados do empréstimo",
+        amountOwed: "Valor em dívida (€)", amountOwedHelp: "Capital atual / montante a financiar.",
+        termLeft: "Prazo restante (anos)", termLeftHelp: "Anos que faltam pagar.",
+        euribor: "Euribor (%)", euriborHelp: "Taxa de referência (ex: 12M).", euriborHelp2: "Taxa de referência.",
+        spread: "Spread (%)", spreadHelp: "Margem do banco.",
+        tanLabel: "TAN (%)", tanHelp: "Taxa Anual Nominal fixa.",
+        fixedPeriod: "Período Taxa Fixa",
+        fixedTerm: "Prazo da taxa fixa (anos)", fixedTermHelp: "Anos em taxa fixa.",
+        fixedTan: "TAN período fixo (%)", fixedTanHelp: "Taxa Anual Nominal fixa.",
+        varPeriod: "Período Taxa Variável",
+        varTerm: "Prazo variável (calculado)", varTermHelp: "Prazo total menos período fixo.",
+        makePayments: "Fazer entregas periódicas de capital",
+        paymentAmount: "Valor de cada entrega (€)", paymentAmountHelp: "Quanto entrega de cada vez.",
+        frequency: "Periodicidade", frequencyHelp: "De quanto em quanto tempo.",
+        every6m: "A cada 6 meses", every1y: "A cada 1 ano", every2y: "A cada 2 anos",
+        every3y: "A cada 3 anos", every4y: "A cada 4 anos", every5y: "A cada 5 anos",
+        startYear: "A partir de que ano começa a amortizar?", startYearHelp: "Ano em que faz a primeira entrega (1 = primeiro ano).",
+        effectLabel: "Efeito da amortização:",
+        effectTerm: "Reduzir prazo (poupa mais)", effectPayment: "Reduzir prestação",
+        includeFee: "Incluir comissão de amortização antecipada",
+        feeHelp: "Por lei: <strong>0,5%</strong> sobre o capital amortizado em taxa variável e <strong>2%</strong> em taxa fixa. Na taxa mista, é aplicada a taxa correta consoante a entrega ocorra na fase fixa ou variável.",
+        calcBtn: "Calcular poupança", clearBtn: "✕ Limpar",
+        savingsTitle: "A sua poupança com amortizações",
+        interestSaved: "Juros poupados", timeSaved: "Tempo poupado",
+        comparison: "Comparação dos cenários",
+        withoutPay: "Sem amortizar", withPay: "Com amortizações",
+        fillPrompt: "Preencha os dados e clique em \"Calcular poupança\".",
+        chartDebtTitle: "Evolução da dívida ao longo do tempo",
+        chartIntTitle: "Peso dos juros na prestação, ano a ano",
+        inverseTitle: "Quanto preciso de entregar?",
+        inverseHelp: "Defina em quantos anos quer terminar o empréstimo e descubra o valor de cada entrega.",
+        finishIn: "Quero terminar em (anos)", finishInHelp: "Menos do que o prazo atual.",
+        paymentFreq: "Periodicidade das entregas",
+        inverseBtn: "Calcular entrega necessária",
+        eduBox: "<strong>Porque é que amortizar cedo poupa mais?</strong><br>No início do empréstimo, a maior parte da prestação são <strong>juros</strong> e só uma pequena parte abate ao capital. Quando entrega capital nesta fase, está a eliminar juros que de outra forma pagaria durante muitos anos. A mesma entrega feita no fim do empréstimo poupa muito menos. Por isso, <strong>quanto mais cedo amortizar, mais juros evita</strong> — e escolher \"reduzir prazo\" (em vez de reduzir a prestação) maximiza essa poupança.",
+        exportExcel: "Descarregar plano em Excel", exportPdf: "Descarregar plano em PDF",
+        disclaimer: "Valores meramente indicativos, calculados com as taxas e condições que introduziu. Não substituem a informação oficial da sua instituição de crédito. As condições reais de amortização (comissões, mínimos, prazos de aviso prévio) devem ser confirmadas no seu contrato e junto do banco.",
+        // dinâmicos
+        locale: "pt-PT",
+        rowTerm: "Prazo até liquidar", rowInitPay: "Prestação inicial", rowTotInt: "Total de juros",
+        rowExtra: "Capital entregue (extra)", rowFees: "Comissões de amortização", rowTotCost: "Custo total do crédito",
+        rowFeesShort: "Comissões",
+        subFeesDiscounted: "(já descontadas as comissões)", subInterestAvoided: "em juros que deixa de pagar",
+        subFinishEarlier: "termina mais cedo o empréstimo", subEffectPayment: "(efeito: reduzir prestação)",
+        yearsWord: "anos", yearWord: "ano", monthsWord: "meses", monthWord: "mês", andWord: "e",
+        statusUpdated: "Simulação atualizada.",
+        errFillLoan: "Preencha o valor em dívida e o prazo restante.",
+        errFillMix: "Preencha todos os campos da taxa mista.",
+        errFixLtTotal: "O prazo da taxa fixa deve ser inferior ao prazo total.",
+        errFillRate: "Preencha a taxa de juro.",
+        errCalcFirst: "Calcule primeiro a simulação.",
+        excelDone: "Plano exportado em Excel.", pdfDone: "Plano exportado em PDF.",
+        invFillFirst: "Preencha primeiro os dados do empréstimo à esquerda.",
+        invHowMany: "Indique em quantos anos quer terminar.",
+        invMustBeLess: "Para poupar tempo, o prazo-alvo (#A# anos) tem de ser inferior ao prazo atual (#B# anos).",
+        invImpossible: "Mesmo com entregas muito elevadas não é possível chegar a #A# anos com esta periodicidade. Experimente uma periodicidade mais frequente.",
+        invResult: "Para terminar em <strong>#A# anos</strong>, precisa de entregar cerca de <strong>#B#</strong> a cada <strong>#C#</strong> (a partir do 1.º ano).<br>Pouparia aproximadamente <strong>#D#</strong> em juros#E#.",
+        invFeesNote: " (já com comissões descontadas)",
+        period6: "6 meses", period12: "1 ano", period24: "2 anos", period36: "3 anos", period48: "4 anos", period60: "5 anos",
+        labelMixed: "Mista — Fixa #A#a (TAN #B#%) / Variável #C#%",
+        labelFixed: "Fixa — TAN #A#%", labelVar: "Variável — Euribor #A#% + Spread #B#%",
+        chartWithout: "Sem amortizar", chartWith: "Com amortizações",
+        axisYears: "Anos", axisDebt: "Dívida (€)", axisPct: "% da prestação",
+        intInPay: "Juros na prestação", capInPay: "Capital na prestação", tooltipYear: "Ano",
+        jurosCaption: "A linha mostra que parte de cada prestação são juros. No início, os juros dominam — só por volta de metade do prazo é que passam a ser menos do que o capital amortizado. Por isso uma entrega feita cedo elimina muito mais juros.",
+        // PDF
+        pdfTitle: "Plano de Amortização — Crédito Habitação", pdfSimOf: "Simulação de ",
+        pdfParam: "Parâmetro", pdfValue: "Valor",
+        pdfAmount: "Valor em dívida", pdfTerm: "Prazo restante", pdfRateType: "Tipo de taxa",
+        pdfPeriodicPay: "Entrega periódica", pdfFromMonth: "A partir do mês", pdfEffect: "Efeito", pdfFee: "Comissão de amortização",
+        pdfYearsUnit: " anos", pdfEvery: " a cada ", pdfYearN: " (ano ",
+        pdfEffectTerm: "Reduzir prazo", pdfEffectPay: "Reduzir prestação",
+        pdfFeeIncl: "Incluída", pdfFeeNot: "Não incluída",
+        pdfCompare: "Comparação dos cenários",
+        pdfSavingsTitle: "A sua poupança com amortizações",
+        pdfInterestSaved: "Juros poupados: ", pdfTimeSaved: "Tempo poupado: ",
+        pdfChartDebt: "Evolução da dívida ao longo do tempo",
+        pdfChartInt: "Peso dos juros na prestação (sem amortizar)",
+        pdfMap: "Mapa de amortização (com entregas periódicas)",
+        pdfColMonth: "Mês", pdfColPhase: "Fase", pdfColPay: "Prestação", pdfColInt: "Juros",
+        pdfColAmort: "Amort.", pdfColExtra: "Entrega", pdfColFee: "Comissão", pdfColBalance: "Saldo",
+        pdfFooter: "Documento meramente indicativo · não substitui informação oficial da instituição de crédito",
+        pdfPage: "Pág. ",
+        phaseFixed: "Fixa", phaseVar: "Variável",
+        // Excel
+        xlsTitle: "Simulação de Amortização — Crédito Habitação",
+        xlsEffectLbl: "Efeito da amortização", xlsPeriodicPay: "Entrega periódica",
+        xlsFreqM: "Periodicidade (meses)", xlsStartM: "Início (mês)", xlsFeeRow: "Comissão de amortização",
+        xlsFeeIncl: "Incluída", xlsFeeNot: "Não incluída",
+        xlsCompare: "Comparação", xlsTermM: "Prazo até liquidar (meses)",
+        xlsSavingsInt: "Poupança em juros", xlsTimeM: "Tempo poupado (meses)",
+        xlsColMonth: "Mês", xlsColPhase: "Fase", xlsColPay: "Prestação (€)", xlsColInt: "Juros (€)",
+        xlsColAmort: "Amortização (€)", xlsColExtra: "Entrega extra (€)", xlsColFee: "Comissão (€)", xlsColBalance: "Saldo (€)",
+        xlsSheetResume: "Resumo", xlsSheetWith: "Plano com amortizações", xlsSheetWithout: "Plano sem amortizar",
+        fileXls: "Plano_Amortizacao_Credito_Habitacao.xlsx", filePdf: "Plano_Amortizacao_Credito_Habitacao.pdf"
+      },
+      en: {
+        htmlTitle: "Mortgage Overpayment Simulator",
+        title: "Overpayment Simulator — Home Loan",
+        subtitle: "Find out how much you can save in interest and how many years sooner you can pay off your mortgage by making regular capital overpayments.",
+        badge: "Educational tool · offline use",
+        taxType: "Rate type",
+        rateVar: "Variable Rate", rateFix: "Fixed Rate", rateMix: "Mixed Rate",
+        loanData: "Loan details",
+        amountOwed: "Outstanding balance (€)", amountOwedHelp: "Current capital / amount to finance.",
+        termLeft: "Term remaining (years)", termLeftHelp: "Years left to pay.",
+        euribor: "Euribor (%)", euriborHelp: "Reference rate (e.g. 12M).", euriborHelp2: "Reference rate.",
+        spread: "Spread (%)", spreadHelp: "Bank's margin.",
+        tanLabel: "Nominal rate (%)", tanHelp: "Fixed nominal annual rate.",
+        fixedPeriod: "Fixed-Rate Period",
+        fixedTerm: "Fixed-rate term (years)", fixedTermHelp: "Years at fixed rate.",
+        fixedTan: "Nominal rate, fixed period (%)", fixedTanHelp: "Fixed nominal annual rate.",
+        varPeriod: "Variable-Rate Period",
+        varTerm: "Variable term (calculated)", varTermHelp: "Total term minus fixed period.",
+        makePayments: "Make regular capital overpayments",
+        paymentAmount: "Amount of each overpayment (€)", paymentAmountHelp: "How much you pay each time.",
+        frequency: "Frequency", frequencyHelp: "How often.",
+        every6m: "Every 6 months", every1y: "Every year", every2y: "Every 2 years",
+        every3y: "Every 3 years", every4y: "Every 4 years", every5y: "Every 5 years",
+        startYear: "From which year do you start overpaying?", startYearHelp: "Year of the first overpayment (1 = first year).",
+        effectLabel: "Effect of the overpayment:",
+        effectTerm: "Reduce term (saves more)", effectPayment: "Reduce instalment",
+        includeFee: "Include early-repayment fee",
+        feeHelp: "By law: <strong>0.5%</strong> on capital repaid at variable rate and <strong>2%</strong> at fixed rate. For a mixed rate, the correct fee is applied depending on whether the overpayment falls in the fixed or variable phase.",
+        calcBtn: "Calculate savings", clearBtn: "✕ Clear",
+        savingsTitle: "Your savings with overpayments",
+        interestSaved: "Interest saved", timeSaved: "Time saved",
+        comparison: "Scenario comparison",
+        withoutPay: "Without overpaying", withPay: "With overpayments",
+        fillPrompt: "Fill in the details and click \"Calculate savings\".",
+        chartDebtTitle: "Debt evolution over time",
+        chartIntTitle: "Share of interest in the instalment, year by year",
+        inverseTitle: "How much do I need to overpay?",
+        inverseHelp: "Set in how many years you want to finish the loan and find out the amount of each overpayment.",
+        finishIn: "I want to finish in (years)", finishInHelp: "Less than the current term.",
+        paymentFreq: "Overpayment frequency",
+        inverseBtn: "Calculate required overpayment",
+        eduBox: "<strong>Why does overpaying early save more?</strong><br>At the start of the loan, most of the instalment is <strong>interest</strong> and only a small part reduces the capital. When you pay capital in this phase, you eliminate interest you would otherwise pay for many years. The same overpayment made at the end of the loan saves much less. That's why <strong>the earlier you overpay, the more interest you avoid</strong> — and choosing \"reduce term\" (instead of reducing the instalment) maximises that saving.",
+        exportExcel: "Download plan as Excel", exportPdf: "Download plan as PDF",
+        disclaimer: "Indicative values only, calculated with the rates and conditions you entered. They do not replace the official information from your lender. The actual overpayment conditions (fees, minimums, notice periods) must be confirmed in your contract and with the bank.",
+        locale: "en-GB",
+        rowTerm: "Time to pay off", rowInitPay: "Initial instalment", rowTotInt: "Total interest",
+        rowExtra: "Capital overpaid (extra)", rowFees: "Early-repayment fees", rowTotCost: "Total cost of the loan",
+        rowFeesShort: "Fees",
+        subFeesDiscounted: "(fees already deducted)", subInterestAvoided: "in interest you no longer pay",
+        subFinishEarlier: "you finish the loan sooner", subEffectPayment: "(effect: reduce instalment)",
+        yearsWord: "years", yearWord: "year", monthsWord: "months", monthWord: "month", andWord: "and",
+        statusUpdated: "Simulation updated.",
+        errFillLoan: "Enter the outstanding balance and the remaining term.",
+        errFillMix: "Fill in all the mixed-rate fields.",
+        errFixLtTotal: "The fixed-rate term must be shorter than the total term.",
+        errFillRate: "Enter the interest rate.",
+        errCalcFirst: "Run the simulation first.",
+        excelDone: "Plan exported to Excel.", pdfDone: "Plan exported to PDF.",
+        invFillFirst: "First fill in the loan details on the left.",
+        invHowMany: "Enter in how many years you want to finish.",
+        invMustBeLess: "To save time, the target term (#A# years) must be shorter than the current term (#B# years).",
+        invImpossible: "Even with very large overpayments it is not possible to reach #A# years with this frequency. Try a more frequent schedule.",
+        invResult: "To finish in <strong>#A# years</strong>, you need to overpay about <strong>#B#</strong> every <strong>#C#</strong> (from year 1).<br>You would save approximately <strong>#D#</strong> in interest#E#.",
+        invFeesNote: " (fees already deducted)",
+        period6: "6 months", period12: "year", period24: "2 years", period36: "3 years", period48: "4 years", period60: "5 years",
+        labelMixed: "Mixed — Fixed #A#y (rate #B#%) / Variable #C#%",
+        labelFixed: "Fixed — rate #A#%", labelVar: "Variable — Euribor #A#% + Spread #B#%",
+        chartWithout: "Without overpaying", chartWith: "With overpayments",
+        axisYears: "Years", axisDebt: "Debt (€)", axisPct: "% of instalment",
+        intInPay: "Interest in instalment", capInPay: "Capital in instalment", tooltipYear: "Year",
+        jurosCaption: "The line shows what share of each instalment is interest. At the start, interest dominates — only around half-way through the term does it become less than the capital being repaid. That is why an overpayment made early eliminates far more interest.",
+        pdfTitle: "Overpayment Plan — Home Loan", pdfSimOf: "Simulation of ",
+        pdfParam: "Parameter", pdfValue: "Value",
+        pdfAmount: "Outstanding balance", pdfTerm: "Term remaining", pdfRateType: "Rate type",
+        pdfPeriodicPay: "Regular overpayment", pdfFromMonth: "From month", pdfEffect: "Effect", pdfFee: "Early-repayment fee",
+        pdfYearsUnit: " years", pdfEvery: " every ", pdfYearN: " (year ",
+        pdfEffectTerm: "Reduce term", pdfEffectPay: "Reduce instalment",
+        pdfFeeIncl: "Included", pdfFeeNot: "Not included",
+        pdfCompare: "Scenario comparison",
+        pdfSavingsTitle: "Your savings with overpayments",
+        pdfInterestSaved: "Interest saved: ", pdfTimeSaved: "Time saved: ",
+        pdfChartDebt: "Debt evolution over time",
+        pdfChartInt: "Share of interest in the instalment (without overpaying)",
+        pdfMap: "Amortisation schedule (with regular overpayments)",
+        pdfColMonth: "Month", pdfColPhase: "Phase", pdfColPay: "Instalment", pdfColInt: "Interest",
+        pdfColAmort: "Capital", pdfColExtra: "Overpay", pdfColFee: "Fee", pdfColBalance: "Balance",
+        pdfFooter: "Indicative document only · does not replace official information from the lender",
+        pdfPage: "P. ",
+        phaseFixed: "Fixed", phaseVar: "Variable",
+        xlsTitle: "Overpayment Simulation — Home Loan",
+        xlsEffectLbl: "Overpayment effect", xlsPeriodicPay: "Regular overpayment",
+        xlsFreqM: "Frequency (months)", xlsStartM: "Start (month)", xlsFeeRow: "Early-repayment fee",
+        xlsFeeIncl: "Included", xlsFeeNot: "Not included",
+        xlsCompare: "Comparison", xlsTermM: "Time to pay off (months)",
+        xlsSavingsInt: "Interest saved", xlsTimeM: "Time saved (months)",
+        xlsColMonth: "Month", xlsColPhase: "Phase", xlsColPay: "Instalment (€)", xlsColInt: "Interest (€)",
+        xlsColAmort: "Capital (€)", xlsColExtra: "Overpayment (€)", xlsColFee: "Fee (€)", xlsColBalance: "Balance (€)",
+        xlsSheetResume: "Summary", xlsSheetWith: "Plan with overpayments", xlsSheetWithout: "Plan without overpaying",
+        fileXls: "Overpayment_Plan_Home_Loan.xlsx", filePdf: "Overpayment_Plan_Home_Loan.pdf"
+      }
+    };
+
+    let lang = "pt";
+    function t(key) { return (I18N[lang] && I18N[lang][key] !== undefined) ? I18N[lang][key] : (I18N.pt[key] || key); }
+    function fill(str, map) { let s = str; for (const k in map) s = s.split("#" + k + "#").join(map[k]); return s; }
+
+    function setLang(l) {
+      lang = l;
+      document.documentElement.lang = l;
+      document.getElementById("lang-pt").classList.toggle("active", l === "pt");
+      document.getElementById("lang-en").classList.toggle("active", l === "en");
+      document.title = t("htmlTitle");
+      // aplica a todos os elementos com data-i18n
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        const key = el.getAttribute("data-i18n");
+        if (I18N[l][key] !== undefined) el.innerHTML = I18N[l][key];
+      });
+      // ajustar labels dinâmicos da taxa fixa (spread vira "TAN")
+      if (tipoTaxaAtual === "fixa") {
+        document.getElementById("label-spread").textContent = t("tanLabel");
+        document.getElementById("small-spread").textContent = t("tanHelp");
+      }
+      calcPrazoVariavel();
+      // re-renderiza resultados se já houver simulação
+      if (ultimaSimulacao) simular(true);
+      else document.getElementById("compare-body").innerHTML =
+        "<tr><td colspan='3' style='text-align:center; color:var(--muted); padding:16px;'>" + t("fillPrompt") + "</td></tr>";
+    }
+
+    // ===================== MOTOR =====================
     let tipoTaxaAtual = "variavel";
     let efeitoAtual = "prazo";
     let dividaChart = null;
-    let ultimaSimulacao = null; // guarda dados para exportação
+    let jurosChart = null;
+    let ultimaSimulacao = null;
 
     function fmtEuro(v) {
-      return (v || 0).toLocaleString("pt-PT", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return (v || 0).toLocaleString(t("locale"), { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     function fmtNum(v) {
-      return (v || 0).toLocaleString("pt-PT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return (v || 0).toLocaleString(t("locale"), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function setTaxa(tipo) {
       tipoTaxaAtual = tipo;
-      ["variavel", "fixa", "mista"].forEach(function (t) {
-        document.getElementById("toggle-" + t).classList.toggle("active", t === tipo);
+      ["variavel", "fixa", "mista"].forEach(function (x) {
+        document.getElementById("toggle-" + x).classList.toggle("active", x === tipo);
       });
       const extra = document.getElementById("taxa-extra-fields");
       const mista = document.getElementById("mista-grid");
       const fieldEuribor = document.getElementById("field-euribor");
       if (tipo === "mista") {
-        extra.style.display = "none";
-        mista.style.display = "block";
+        extra.style.display = "none"; mista.style.display = "block";
       } else {
-        extra.style.display = "grid";
-        mista.style.display = "none";
+        extra.style.display = "grid"; mista.style.display = "none";
         if (tipo === "fixa") {
           fieldEuribor.style.display = "none";
-          document.getElementById("label-spread").textContent = "TAN (%)";
-          document.getElementById("small-spread").textContent = "Taxa Anual Nominal fixa.";
+          document.getElementById("label-spread").textContent = t("tanLabel");
+          document.getElementById("small-spread").textContent = t("tanHelp");
         } else {
           fieldEuribor.style.display = "flex";
-          document.getElementById("label-spread").textContent = "Spread (%)";
-          document.getElementById("small-spread").textContent = "Margem do banco.";
+          document.getElementById("label-spread").textContent = t("spread");
+          document.getElementById("small-spread").textContent = t("spreadHelp");
         }
       }
       calcPrazoVariavel();
@@ -991,158 +1169,98 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (!campo) return;
       const anosTotal = parseInt(document.getElementById("anos").value);
       const prazoFixo = parseInt(document.getElementById("mista-prazo-value").value);
+      const unit = lang === "pt" ? " anos" : " years";
       if (!isNaN(anosTotal) && !isNaN(prazoFixo) && prazoFixo < anosTotal) {
-        campo.value = (anosTotal - prazoFixo) + " anos";
+        campo.value = (anosTotal - prazoFixo) + unit;
       } else if (!isNaN(anosTotal) && !isNaN(prazoFixo) && prazoFixo >= anosTotal) {
-        campo.value = "⚠ prazo fixo ≥ total";
-      } else {
-        campo.value = "";
-      }
+        campo.value = "⚠";
+      } else { campo.value = ""; }
     }
 
-    // Devolve a taxa mensal aplicável a um determinado mês (1-indexado)
-    // Para mista: fixa até mesesFixos, variável depois.
     function taxaMensalNoMes(cfg, mes) {
-      if (cfg.tipo === "mista") {
-        return mes <= cfg.mesesFixos ? cfg.taxaMensalFixa : cfg.taxaMensalVariavel;
-      }
+      if (cfg.tipo === "mista") return mes <= cfg.mesesFixos ? cfg.taxaMensalFixa : cfg.taxaMensalVariavel;
       return cfg.taxaMensal;
     }
-    // Taxa de comissão (decimal) consoante a fase em que ocorre a entrega
     function comissaoNoMes(cfg, mes) {
       if (!cfg.comissaoAtiva) return 0;
-      if (cfg.tipo === "mista") {
-        return mes <= cfg.mesesFixos ? 0.02 : 0.005; // fixa 2%, variável 0,5%
-      }
+      if (cfg.tipo === "mista") return mes <= cfg.mesesFixos ? 0.02 : 0.005;
       return cfg.tipo === "fixa" ? 0.02 : 0.005;
     }
-
-    // Calcula a prestação de amortização constante para um saldo, taxa mensal e nº de meses
     function prestacaoPMT(saldo, taxaMensal, nMeses) {
       if (nMeses <= 0) return saldo;
       if (taxaMensal === 0) return saldo / nMeses;
       return saldo * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -nMeses)));
     }
 
-    // Para taxa mista, a prestação inicial é calculada para que o capital
-    // seja totalmente amortizado ao longo de todo o prazo, considerando a mudança de taxa.
-    // Usamos a aproximação padrão do widget original: prestação fixa baseada na taxa fixa
-    // sobre o prazo total, depois recalcula a prestação variável sobre o saldo remanescente.
-    // Aqui simulamos mês-a-mês para captar amortizações.
-
-    // ===== MOTOR PRINCIPAL: simulação mês-a-mês =====
-    // amort: { ativa, valor, periodicidadeMeses, inicioMes, efeito }
     function simularPlano(cfg, amort) {
       const linhas = [];
-      let saldo = cfg.valor;
-      let totalJuros = 0, totalAmortExtra = 0, totalComissoes = 0;
-      let mes = 0;
-      const maxMeses = cfg.mesesTotal + 1200; // margem de segurança
-
-      // Prestação corrente. Recalculada quando se reduz prazo? Não — em "reduzir prazo"
-      // a prestação mantém-se e o prazo encurta. Em "reduzir prestação", recalcula-se.
-      let prestacaoCorrente = cfg.tipo === "mista"
-        ? cfg.prestacaoFixaInicial
-        : prestacaoPMT(cfg.valor, cfg.taxaMensal, cfg.mesesTotal);
-
-      // Para mista, precisamos recalcular a prestação ao entrar na fase variável.
+      let saldo = cfg.valor, totalJuros = 0, totalAmortExtra = 0, totalComissoes = 0, mes = 0;
+      const maxMeses = cfg.mesesTotal + 1200;
+      let prestacaoCorrente = cfg.tipo === "mista" ? cfg.prestacaoFixaInicial : prestacaoPMT(cfg.valor, cfg.taxaMensal, cfg.mesesTotal);
       let recalcouVariavel = false;
-
       while (saldo > 0.005 && mes < maxMeses) {
         mes++;
         const tx = taxaMensalNoMes(cfg, mes);
-
-        // Mista: ao entrar na fase variável, recalcular prestação sobre saldo atual
-        // distribuída pelos meses variáveis restantes do prazo original (se efeito=prestacao
-        // ou se ainda não recalculou). Em "reduzir prazo" mantemos a lógica de prestação
-        // recalculada apenas na transição de fase (comportamento normal do contrato).
         if (cfg.tipo === "mista" && mes === cfg.mesesFixos + 1 && !recalcouVariavel) {
-          const mesesVarRest = cfg.mesesTotal - cfg.mesesFixos;
-          prestacaoCorrente = prestacaoPMT(saldo, cfg.taxaMensalVariavel, mesesVarRest);
+          prestacaoCorrente = prestacaoPMT(saldo, cfg.taxaMensalVariavel, cfg.mesesTotal - cfg.mesesFixos);
           recalcouVariavel = true;
         }
-
         let juros = saldo * tx;
         let amortizacaoNormal = prestacaoCorrente - juros;
         if (amortizacaoNormal > saldo) amortizacaoNormal = saldo;
         let prestacaoMes = juros + amortizacaoNormal;
-
-        saldo = saldo - amortizacaoNormal;
-        totalJuros += juros;
-
-        // Entrega periódica de capital?
+        saldo = saldo - amortizacaoNormal; totalJuros += juros;
         let entregaExtra = 0, comissaoMes = 0;
         if (amort && amort.ativa && amort.valor > 0 && saldo > 0.005) {
-          const dentroDaJanela = mes >= amort.inicioMes;
           const noPeriodo = ((mes - amort.inicioMes) % amort.periodicidadeMeses) === 0;
-          if (dentroDaJanela && noPeriodo) {
+          if (mes >= amort.inicioMes && noPeriodo) {
             entregaExtra = Math.min(amort.valor, saldo);
-            saldo = saldo - entregaExtra;
-            totalAmortExtra += entregaExtra;
-            // comissão sobre o capital amortizado
-            const taxaCom = comissaoNoMes(cfg, mes);
-            comissaoMes = entregaExtra * taxaCom;
-            totalComissoes += comissaoMes;
-
-            // Recalcular prestação se efeito = reduzir prestação
+            saldo -= entregaExtra; totalAmortExtra += entregaExtra;
+            comissaoMes = entregaExtra * comissaoNoMes(cfg, mes); totalComissoes += comissaoMes;
             if (amort.efeito === "prestacao" && saldo > 0.005) {
-              const txAtual = taxaMensalNoMes(cfg, mes);
               const mesesRest = cfg.mesesTotal - mes;
-              if (mesesRest > 0) {
-                prestacaoCorrente = prestacaoPMT(saldo, txAtual, mesesRest);
-              }
+              if (mesesRest > 0) prestacaoCorrente = prestacaoPMT(saldo, taxaMensalNoMes(cfg, mes), mesesRest);
             }
-            // Se efeito = reduzir prazo: prestação mantém-se, o prazo encurta naturalmente.
           }
         }
-
         if (saldo < 0.005) saldo = 0;
-
         linhas.push({
           mes: mes,
-          fase: (cfg.tipo === "mista") ? (mes <= cfg.mesesFixos ? "Fixa" : "Variável") : (cfg.tipo === "fixa" ? "Fixa" : "Variável"),
-          prestacao: prestacaoMes,
-          juros: juros,
-          amortizacao: amortizacaoNormal,
-          entregaExtra: entregaExtra,
-          comissao: comissaoMes,
-          saldo: saldo
+          fase: (cfg.tipo === "mista") ? (mes <= cfg.mesesFixos ? "fix" : "var") : (cfg.tipo === "fixa" ? "fix" : "var"),
+          prestacao: prestacaoMes, juros: juros, amortizacao: amortizacaoNormal,
+          entregaExtra: entregaExtra, comissao: comissaoMes, saldo: saldo
         });
       }
-
       return {
-        linhas: linhas,
-        mesesTotais: linhas.length,
-        totalJuros: totalJuros,
-        totalAmortExtra: totalAmortExtra,
-        totalComissoes: totalComissoes,
+        linhas: linhas, mesesTotais: linhas.length, totalJuros: totalJuros,
+        totalAmortExtra: totalAmortExtra, totalComissoes: totalComissoes,
         prestacaoInicial: linhas.length ? linhas[0].prestacao : 0
       };
     }
 
-    // Lê e valida os campos; devolve cfg ou null (com mensagem de erro)
+    function faseLabel(f) { return f === "fix" ? t("phaseFixed") : t("phaseVar"); }
+
     function lerConfig(statusEl) {
       const valor = parseFloat(document.getElementById("valor").value);
       const anos = parseInt(document.getElementById("anos").value);
       if (!valor || valor <= 0 || !anos || anos <= 0) {
-        if (statusEl) { statusEl.textContent = "Preencha o valor em dívida e o prazo restante."; statusEl.className = "status err"; }
+        if (statusEl) { statusEl.textContent = t("errFillLoan"); statusEl.className = "status err"; }
         return null;
       }
       const mesesTotal = anos * 12;
       const cfg = { valor: valor, anos: anos, mesesTotal: mesesTotal, tipo: tipoTaxaAtual };
       cfg.comissaoAtiva = document.getElementById("comissao-ativa").checked;
-
       if (tipoTaxaAtual === "mista") {
         const tanFixa = parseFloat(document.getElementById("mista-tan-value").value);
         const prazoFixaAnos = parseInt(document.getElementById("mista-prazo-value").value);
         const euriborMista = parseFloat(document.getElementById("mista-euribor").value);
         const spreadMista = parseFloat(document.getElementById("mista-spread").value);
         if (isNaN(tanFixa) || isNaN(prazoFixaAnos) || isNaN(euriborMista) || isNaN(spreadMista)) {
-          if (statusEl) { statusEl.textContent = "Preencha todos os campos da taxa mista."; statusEl.className = "status err"; }
+          if (statusEl) { statusEl.textContent = t("errFillMix"); statusEl.className = "status err"; }
           return null;
         }
         if (prazoFixaAnos >= anos) {
-          if (statusEl) { statusEl.textContent = "O prazo da taxa fixa deve ser inferior ao prazo total."; statusEl.className = "status err"; }
+          if (statusEl) { statusEl.textContent = t("errFixLtTotal"); statusEl.className = "status err"; }
           return null;
         }
         cfg.mesesFixos = prazoFixaAnos * 12;
@@ -1150,49 +1268,43 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         cfg.taxaVariavelAnual = euriborMista + spreadMista;
         cfg.taxaMensalFixa = tanFixa / 100 / 12;
         cfg.taxaMensalVariavel = cfg.taxaVariavelAnual / 100 / 12;
-        // prestação inicial (fase fixa) — distribuída por todo o prazo
         cfg.prestacaoFixaInicial = prestacaoPMT(valor, cfg.taxaMensalFixa, mesesTotal);
-        cfg.labelTaxa = "Mista — Fixa " + prazoFixaAnos + "a (TAN " + tanFixa.toFixed(2) + "%) / Variável " + cfg.taxaVariavelAnual.toFixed(2) + "%";
+        cfg.labelTaxa = fill(t("labelMixed"), { A: prazoFixaAnos, B: tanFixa.toFixed(2), C: cfg.taxaVariavelAnual.toFixed(2) });
       } else {
         const euribor = tipoTaxaAtual === "fixa" ? 0 : parseFloat(document.getElementById("euribor").value);
         const spread = parseFloat(document.getElementById("spread").value);
         if ((tipoTaxaAtual === "variavel" && isNaN(euribor)) || isNaN(spread)) {
-          if (statusEl) { statusEl.textContent = "Preencha a taxa de juro."; statusEl.className = "status err"; }
+          if (statusEl) { statusEl.textContent = t("errFillRate"); statusEl.className = "status err"; }
           return null;
         }
         cfg.taxaAnual = tipoTaxaAtual === "fixa" ? spread : euribor + spread;
         cfg.taxaMensal = cfg.taxaAnual / 100 / 12;
         cfg.labelTaxa = tipoTaxaAtual === "fixa"
-          ? "Fixa — TAN " + spread.toFixed(2) + "%"
-          : "Variável — Euribor " + euribor.toFixed(2) + "% + Spread " + spread.toFixed(2) + "%";
+          ? fill(t("labelFixed"), { A: spread.toFixed(2) })
+          : fill(t("labelVar"), { A: euribor.toFixed(2), B: spread.toFixed(2) });
       }
       return cfg;
     }
 
     function lerAmort() {
-      const ativa = document.getElementById("amort-ativa").checked;
-      const valor = parseFloat(document.getElementById("amort-valor").value) || 0;
-      const periodicidade = parseInt(document.getElementById("amort-periodicidade").value);
       const anoInicio = parseInt(document.getElementById("amort-inicio").value) || 1;
       return {
-        ativa: ativa,
-        valor: valor,
-        periodicidadeMeses: periodicidade,
+        ativa: document.getElementById("amort-ativa").checked,
+        valor: parseFloat(document.getElementById("amort-valor").value) || 0,
+        periodicidadeMeses: parseInt(document.getElementById("amort-periodicidade").value),
         inicioMes: (anoInicio - 1) * 12 + 1,
         efeito: efeitoAtual
       };
     }
 
     function mesesParaTexto(meses) {
-      const anos = Math.floor(meses / 12);
-      const m = meses % 12;
-      if (anos === 0) return m + (m === 1 ? " mês" : " meses");
-      if (m === 0) return anos + (anos === 1 ? " ano" : " anos");
-      return anos + (anos === 1 ? " ano " : " anos ") + "e " + m + (m === 1 ? " mês" : " meses");
+      const anos = Math.floor(meses / 12), m = meses % 12;
+      if (anos === 0) return m + " " + (m === 1 ? t("monthWord") : t("monthsWord"));
+      if (m === 0) return anos + " " + (anos === 1 ? t("yearWord") : t("yearsWord"));
+      return anos + " " + (anos === 1 ? t("yearWord") : t("yearsWord")) + " " + t("andWord") + " " + m + " " + (m === 1 ? t("monthWord") : t("monthsWord"));
     }
 
     function autoSim() {
-      // Simulação automática silenciosa quando há dados suficientes
       const cfg = lerConfig(null);
       if (cfg) simular(true);
     }
@@ -1202,36 +1314,25 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       status.textContent = ""; status.className = "status";
       const cfg = lerConfig(silencioso ? null : status);
       if (!cfg) { if (silencioso) limparResultados(); return; }
-
       const amort = lerAmort();
-
-      // Cenário base (sem amortizar)
       const base = simularPlano(cfg, { ativa: false });
-      // Cenário com amortizações
       const com = simularPlano(cfg, amort);
-
       ultimaSimulacao = { cfg: cfg, amort: amort, base: base, com: com };
 
-      // ── Tabela comparativa ──
-      const jurosBase = base.totalJuros;
-      const jurosCom = com.totalJuros;
+      const jurosBase = base.totalJuros, jurosCom = com.totalJuros;
       const custoBase = cfg.valor + jurosBase;
       const custoCom = cfg.valor + jurosCom + com.totalComissoes;
-      const tbody = document.getElementById("compare-body");
       const temAmort = amort.ativa && amort.valor > 0;
 
-      let linhasTabela = "";
-      linhasTabela += linhaComp("Prazo até liquidar", mesesParaTexto(base.mesesTotais), mesesParaTexto(com.mesesTotais));
-      linhasTabela += linhaComp("Prestação inicial", fmtEuro(base.prestacaoInicial), fmtEuro(com.prestacaoInicial));
-      linhasTabela += linhaComp("Total de juros", fmtEuro(jurosBase), fmtEuro(jurosCom));
-      linhasTabela += linhaComp("Capital entregue (extra)", "—", temAmort ? fmtEuro(com.totalAmortExtra) : "—");
-      if (cfg.comissaoAtiva && com.totalComissoes > 0) {
-        linhasTabela += linhaComp("Comissões de amortização", "—", fmtEuro(com.totalComissoes));
-      }
-      linhasTabela += linhaComp("Custo total do crédito", fmtEuro(custoBase), fmtEuro(custoCom));
-      tbody.innerHTML = linhasTabela;
+      let html = "";
+      html += linhaComp(t("rowTerm"), mesesParaTexto(base.mesesTotais), mesesParaTexto(com.mesesTotais));
+      html += linhaComp(t("rowInitPay"), fmtEuro(base.prestacaoInicial), fmtEuro(com.prestacaoInicial));
+      html += linhaComp(t("rowTotInt"), fmtEuro(jurosBase), fmtEuro(jurosCom));
+      html += linhaComp(t("rowExtra"), "—", temAmort ? fmtEuro(com.totalAmortExtra) : "—");
+      if (cfg.comissaoAtiva && com.totalComissoes > 0) html += linhaComp(t("rowFees"), "—", fmtEuro(com.totalComissoes));
+      html += linhaComp(t("rowTotCost"), fmtEuro(custoBase), fmtEuro(custoCom));
+      document.getElementById("compare-body").innerHTML = html;
 
-      // ── Banner poupança ──
       const banner = document.getElementById("savings-banner");
       const jurosPoupados = jurosBase - jurosCom - com.totalComissoes;
       const mesesPoupados = base.mesesTotais - com.mesesTotais;
@@ -1239,32 +1340,28 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         banner.classList.remove("hidden");
         document.getElementById("poup-juros").textContent = fmtEuro(Math.max(jurosPoupados, 0));
         document.getElementById("poup-juros-sub").textContent =
-          cfg.comissaoAtiva && com.totalComissoes > 0 ? "(já descontadas as comissões)" : "em juros que deixa de pagar";
+          cfg.comissaoAtiva && com.totalComissoes > 0 ? t("subFeesDiscounted") : t("subInterestAvoided");
         document.getElementById("poup-tempo").textContent = mesesParaTexto(Math.max(mesesPoupados, 0));
         document.getElementById("poup-tempo-sub").textContent =
-          efeitoAtual === "prazo" ? "termina mais cedo o empréstimo" : "(efeito: reduzir prestação)";
-      } else {
-        banner.classList.add("hidden");
-      }
+          efeitoAtual === "prazo" ? t("subFinishEarlier") : t("subEffectPayment");
+      } else { banner.classList.add("hidden"); }
 
-      // ── Gráfico ──
       desenharGrafico(base, com, temAmort);
+      desenharGraficoJuros(base);
 
-      if (!silencioso) {
-        status.textContent = "Simulação atualizada.";
-        status.className = "status ok";
-      }
+      if (!silencioso) { status.textContent = t("statusUpdated"); status.className = "status ok"; }
     }
 
-    function linhaComp(label, semVal, comVal) {
-      return "<tr><td>" + label + "</td><td>" + semVal + "</td><td class='col-com'>" + comVal + "</td></tr>";
+    function linhaComp(label, a, b) {
+      return "<tr><td>" + label + "</td><td>" + a + "</td><td class='col-com'>" + b + "</td></tr>";
     }
 
     function limparResultados() {
       document.getElementById("savings-banner").classList.add("hidden");
       document.getElementById("chart-wrap").classList.add("hidden");
+      document.getElementById("chart-juros-wrap").classList.add("hidden");
       document.getElementById("compare-body").innerHTML =
-        "<tr><td colspan='3' style='text-align:center; color:var(--muted); padding:16px;'>Preencha os dados e clique em \"Calcular poupança\".</td></tr>";
+        "<tr><td colspan='3' style='text-align:center; color:var(--muted); padding:16px;'>" + t("fillPrompt") + "</td></tr>";
       ultimaSimulacao = null;
     }
 
@@ -1272,126 +1369,137 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       const wrap = document.getElementById("chart-wrap");
       if (!temAmort) { wrap.classList.add("hidden"); if (dividaChart) { dividaChart.destroy(); dividaChart = null; } return; }
       wrap.classList.remove("hidden");
-
-      // Amostragem anual para legibilidade
-      function amostrarAnual(linhas) {
+      function amostrar(linhas) {
         const pts = [{ x: 0, y: linhas.length ? (linhas[0].saldo + linhas[0].amortizacao + linhas[0].entregaExtra) : 0 }];
         for (let i = 11; i < linhas.length; i += 12) pts.push({ x: (i + 1) / 12, y: linhas[i].saldo });
         const ult = linhas[linhas.length - 1];
         if (ult && (linhas.length % 12 !== 0)) pts.push({ x: linhas.length / 12, y: ult.saldo });
         return pts;
       }
-      const ptsBase = amostrarAnual(base.linhas);
-      const ptsCom = amostrarAnual(com.linhas);
-
       const ctx = document.getElementById("divida-chart").getContext("2d");
       if (dividaChart) dividaChart.destroy();
       dividaChart = new Chart(ctx, {
         type: "line",
         data: {
           datasets: [
-            {
-              label: "Sem amortizar",
-              data: ptsBase,
-              borderColor: "#94a3b8",
-              backgroundColor: "rgba(148,163,184,0.08)",
-              borderWidth: 2, tension: 0.25, pointRadius: 0, fill: true
-            },
-            {
-              label: "Com amortizações",
-              data: ptsCom,
-              borderColor: "#16a34a",
-              backgroundColor: "rgba(22,163,74,0.10)",
-              borderWidth: 2.5, tension: 0.25, pointRadius: 0, fill: true
-            }
+            { label: t("chartWithout"), data: amostrar(base.linhas), borderColor: "#94a3b8", backgroundColor: "rgba(148,163,184,0.08)", borderWidth: 2, tension: 0.25, pointRadius: 0, fill: true },
+            { label: t("chartWith"), data: amostrar(com.linhas), borderColor: "#16a34a", backgroundColor: "rgba(22,163,74,0.10)", borderWidth: 2.5, tension: 0.25, pointRadius: 0, fill: true }
           ]
         },
         options: {
-          responsive: true, maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false, animation: false,
           interaction: { mode: "index", intersect: false },
           plugins: {
             legend: { labels: { font: { size: 12 }, usePointStyle: true } },
-            tooltip: {
-              callbacks: {
-                title: function (items) { return "Ano " + Math.round(items[0].parsed.x); },
-                label: function (item) { return item.dataset.label + ": " + fmtEuro(item.parsed.y); }
-              }
-            }
+            tooltip: { callbacks: {
+              title: function (it) { return t("tooltipYear") + " " + Math.round(it[0].parsed.x); },
+              label: function (it) { return it.dataset.label + ": " + fmtEuro(it.parsed.y); }
+            } }
           },
           scales: {
-            x: { type: "linear", title: { display: true, text: "Anos" }, ticks: { precision: 0 } },
-            y: {
-              title: { display: true, text: "Dívida (€)" },
-              ticks: { callback: function (v) { return (v / 1000).toLocaleString("pt-PT") + "k"; } }
-            }
+            x: { type: "linear", title: { display: true, text: t("axisYears") }, ticks: { precision: 0 } },
+            y: { title: { display: true, text: t("axisDebt") }, ticks: { callback: function (v) { return (v / 1000).toLocaleString(t("locale")) + "k"; } } }
           }
         }
       });
     }
 
-    // ===== CÁLCULO INVERSO =====
+    // Segundo gráfico: % de juros na prestação ao longo do tempo (cenário SEM amortizar)
+    function desenharGraficoJuros(base) {
+      const wrap = document.getElementById("chart-juros-wrap");
+      if (!base || !base.linhas.length) { wrap.classList.add("hidden"); if (jurosChart) { jurosChart.destroy(); jurosChart = null; } return; }
+      wrap.classList.remove("hidden");
+
+      // Agregar por ano: % juros = soma juros do ano / soma prestações do ano
+      const pts = [];
+      const totalAnos = Math.ceil(base.linhas.length / 12);
+      for (let a = 0; a < totalAnos; a++) {
+        let somaJuros = 0, somaPrest = 0;
+        for (let m = a * 12; m < Math.min((a + 1) * 12, base.linhas.length); m++) {
+          somaJuros += base.linhas[m].juros;
+          somaPrest += base.linhas[m].prestacao;
+        }
+        const pct = somaPrest > 0 ? (somaJuros / somaPrest) * 100 : 0;
+        pts.push({ x: a + 1, y: pct });
+      }
+
+      const ctx = document.getElementById("juros-chart").getContext("2d");
+      if (jurosChart) jurosChart.destroy();
+      jurosChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          datasets: [{
+            label: t("intInPay"),
+            data: pts,
+            borderColor: "#dc2626",
+            backgroundColor: "rgba(220,38,38,0.10)",
+            borderWidth: 2.5, tension: 0.25, pointRadius: 0, fill: true
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: {
+              title: function (it) { return t("tooltipYear") + " " + Math.round(it[0].parsed.x); },
+              label: function (it) { return t("intInPay") + ": " + it.parsed.y.toFixed(0) + "%"; }
+            } },
+            annotation: false
+          },
+          scales: {
+            x: { type: "linear", title: { display: true, text: t("axisYears") }, ticks: { precision: 0 } },
+            y: {
+              title: { display: true, text: t("axisPct") },
+              min: 0, max: 100,
+              ticks: { callback: function (v) { return v + "%"; } },
+              grid: {
+                color: function (c) { return c.tick.value === 50 ? "rgba(220,38,38,0.45)" : "rgba(0,0,0,0.06)"; },
+                lineWidth: function (c) { return c.tick.value === 50 ? 2 : 1; }
+              }
+            }
+          }
+        }
+      });
+      document.getElementById("juros-caption").textContent = t("jurosCaption");
+    }
+
+    // ===================== CÁLCULO INVERSO =====================
     function calcularInverso() {
       const resEl = document.getElementById("inverse-result");
       const cfg = lerConfig(null);
-      if (!cfg) {
-        resEl.classList.remove("hidden");
-        resEl.textContent = "Preencha primeiro os dados do empréstimo à esquerda.";
-        return;
-      }
+      if (!cfg) { resEl.classList.remove("hidden"); resEl.textContent = t("invFillFirst"); return; }
       const anosAlvo = parseInt(document.getElementById("inv-anos").value);
       const periodicidade = parseInt(document.getElementById("inv-periodicidade").value);
-      if (!anosAlvo || anosAlvo <= 0) {
-        resEl.classList.remove("hidden");
-        resEl.textContent = "Indique em quantos anos quer terminar.";
-        return;
-      }
+      if (!anosAlvo || anosAlvo <= 0) { resEl.classList.remove("hidden"); resEl.textContent = t("invHowMany"); return; }
       if (anosAlvo >= cfg.anos) {
         resEl.classList.remove("hidden");
-        resEl.textContent = "Para poupar tempo, o prazo-alvo (" + anosAlvo + " anos) tem de ser inferior ao prazo atual (" + cfg.anos + " anos).";
+        resEl.textContent = fill(t("invMustBeLess"), { A: anosAlvo, B: cfg.anos });
         return;
       }
       const mesesAlvo = anosAlvo * 12;
-
-      // Procura binária sobre o valor da entrega periódica que faz o empréstimo
-      // terminar em <= mesesAlvo. Efeito = reduzir prazo (constante).
       function mesesComEntrega(entrega) {
-        const amort = {
-          ativa: true, valor: entrega, periodicidadeMeses: periodicidade,
-          inicioMes: 1, efeito: "prazo"
-        };
-        return simularPlano(cfg, amort).mesesTotais;
+        return simularPlano(cfg, { ativa: true, valor: entrega, periodicidadeMeses: periodicidade, inicioMes: 1, efeito: "prazo" }).mesesTotais;
       }
-
-      let lo = 0, hi = cfg.valor; // hi: entregar tudo numa vez já liquida
-      // Verifica se sequer é possível
+      let lo = 0, hi = cfg.valor;
       if (mesesComEntrega(hi) > mesesAlvo) {
         resEl.classList.remove("hidden");
-        resEl.textContent = "Mesmo com entregas muito elevadas não é possível chegar a " + anosAlvo + " anos com esta periodicidade. Experimente uma periodicidade mais frequente.";
+        resEl.textContent = fill(t("invImpossible"), { A: anosAlvo });
         return;
       }
-      for (let i = 0; i < 60; i++) {
-        const mid = (lo + hi) / 2;
-        if (mesesComEntrega(mid) <= mesesAlvo) hi = mid; else lo = mid;
-      }
-      const entregaNecessaria = Math.ceil(hi / 10) * 10; // arredonda para cima (10€)
-
-      // Simula com essa entrega para reportar poupança
+      for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2; if (mesesComEntrega(mid) <= mesesAlvo) hi = mid; else lo = mid; }
+      const entregaNecessaria = Math.ceil(hi / 10) * 10;
       const amortFinal = { ativa: true, valor: entregaNecessaria, periodicidadeMeses: periodicidade, inicioMes: 1, efeito: "prazo" };
       const base = simularPlano(cfg, { ativa: false });
       const com = simularPlano(cfg, amortFinal);
       const jurosPoupados = base.totalJuros - com.totalJuros - com.totalComissoes;
-
-      const labelPeriod = { 6: "6 meses", 12: "ano", 24: "2 anos", 36: "3 anos", 48: "4 anos", 60: "5 anos" }[periodicidade];
-
+      const labelPeriod = t("period" + periodicidade);
       resEl.classList.remove("hidden");
-      resEl.innerHTML =
-        "Para terminar em <strong>" + anosAlvo + " anos</strong>, precisa de entregar cerca de " +
-        "<strong>" + fmtEuro(entregaNecessaria) + "</strong> a cada <strong>" + labelPeriod + "</strong>" +
-        " (a partir do 1.º ano)." +
-        "<br>Pouparia aproximadamente <strong>" + fmtEuro(Math.max(jurosPoupados, 0)) + "</strong> em juros" +
-        (cfg.comissaoAtiva && com.totalComissoes > 0 ? " (já com comissões descontadas)" : "") + ".";
-
-      // Preenche os campos de amortização à esquerda para o cliente ver o cenário
+      resEl.innerHTML = fill(t("invResult"), {
+        A: anosAlvo, B: fmtEuro(entregaNecessaria), C: labelPeriod,
+        D: fmtEuro(Math.max(jurosPoupados, 0)),
+        E: (cfg.comissaoAtiva && com.totalComissoes > 0) ? t("invFeesNote") : ""
+      });
       document.getElementById("amort-ativa").checked = true;
       toggleAmort();
       document.getElementById("amort-valor").value = entregaNecessaria;
@@ -1404,8 +1512,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function limpar() {
       ["valor", "anos", "euribor", "spread", "mista-tan-value", "mista-prazo-value",
        "mista-euribor", "mista-spread", "amort-valor", "inv-anos"].forEach(function (id) {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
+        const el = document.getElementById(id); if (el) el.value = "";
       });
       document.getElementById("amort-inicio").value = "1";
       document.getElementById("amort-periodicidade").value = "12";
@@ -1416,79 +1523,71 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       limparResultados();
     }
 
-    // ===== EXPORTAÇÃO EXCEL (sem qualquer marca) =====
+    function round2(v) { return Math.round((v || 0) * 100) / 100; }
+
+    // ===================== EXCEL =====================
     function exportarExcel() {
       const status = document.getElementById("status-export");
       status.textContent = ""; status.className = "status";
-      if (!ultimaSimulacao) { simular(false); }
-      if (!ultimaSimulacao) { status.textContent = "Calcule primeiro a simulação."; status.className = "status err"; return; }
-
+      if (!ultimaSimulacao) simular(false);
+      if (!ultimaSimulacao) { status.textContent = t("errCalcFirst"); status.className = "status err"; return; }
       const { cfg, amort, base, com } = ultimaSimulacao;
       const wb = XLSX.utils.book_new();
-
-      // Folha 1: Resumo comparativo
       const jurosPoupados = base.totalJuros - com.totalJuros - com.totalComissoes;
       const mesesPoupados = base.mesesTotais - com.mesesTotais;
       const resumo = [
-        ["Simulação de Amortização — Crédito Habitação"],
+        [t("xlsTitle")], [],
+        [t("pdfParam"), t("pdfValue")],
+        [t("pdfAmount"), cfg.valor],
+        [t("termLeft"), cfg.anos],
+        [t("pdfRateType"), cfg.labelTaxa],
+        [t("xlsEffectLbl"), amort.efeito === "prazo" ? t("pdfEffectTerm") : t("pdfEffectPay")],
+        [t("xlsPeriodicPay"), amort.ativa ? amort.valor : 0],
+        [t("xlsFreqM"), amort.ativa ? amort.periodicidadeMeses : "—"],
+        [t("xlsStartM"), amort.ativa ? amort.inicioMes : "—"],
+        [t("xlsFeeRow"), cfg.comissaoAtiva ? t("xlsFeeIncl") : t("xlsFeeNot")],
         [],
-        ["Parâmetro", "Valor"],
-        ["Valor em dívida", cfg.valor],
-        ["Prazo restante (anos)", cfg.anos],
-        ["Tipo de taxa", cfg.labelTaxa],
-        ["Efeito da amortização", amort.efeito === "prazo" ? "Reduzir prazo" : "Reduzir prestação"],
-        ["Entrega periódica", amort.ativa ? amort.valor : 0],
-        ["Periodicidade (meses)", amort.ativa ? amort.periodicidadeMeses : "—"],
-        ["Início (mês)", amort.ativa ? amort.inicioMes : "—"],
-        ["Comissão de amortização", cfg.comissaoAtiva ? "Incluída" : "Não incluída"],
+        [t("xlsCompare"), t("withoutPay"), t("withPay")],
+        [t("xlsTermM"), base.mesesTotais, com.mesesTotais],
+        [t("rowInitPay"), base.prestacaoInicial, com.prestacaoInicial],
+        [t("rowTotInt"), base.totalJuros, com.totalJuros],
+        [t("rowExtra"), 0, com.totalAmortExtra],
+        [t("rowFees"), 0, com.totalComissoes],
+        [t("rowTotCost"), cfg.valor + base.totalJuros, cfg.valor + com.totalJuros + com.totalComissoes],
         [],
-        ["Comparação", "Sem amortizar", "Com amortizações"],
-        ["Prazo até liquidar (meses)", base.mesesTotais, com.mesesTotais],
-        ["Prestação inicial", base.prestacaoInicial, com.prestacaoInicial],
-        ["Total de juros", base.totalJuros, com.totalJuros],
-        ["Capital entregue (extra)", 0, com.totalAmortExtra],
-        ["Comissões de amortização", 0, com.totalComissoes],
-        ["Custo total do crédito", cfg.valor + base.totalJuros, cfg.valor + com.totalJuros + com.totalComissoes],
-        [],
-        ["Poupança em juros", Math.max(jurosPoupados, 0)],
-        ["Tempo poupado (meses)", Math.max(mesesPoupados, 0)]
+        [t("xlsSavingsInt"), Math.max(jurosPoupados, 0)],
+        [t("xlsTimeM"), Math.max(mesesPoupados, 0)]
       ];
       const wsR = XLSX.utils.aoa_to_sheet(resumo);
       wsR["!cols"] = [{ wch: 32 }, { wch: 18 }, { wch: 18 }];
-      XLSX.utils.book_append_sheet(wb, wsR, "Resumo");
+      XLSX.utils.book_append_sheet(wb, wsR, t("xlsSheetResume"));
 
-      // Folha 2: Plano com amortizações
-      const cab = ["Mês", "Fase", "Prestação (€)", "Juros (€)", "Amortização (€)", "Entrega extra (€)", "Comissão (€)", "Saldo (€)"];
+      const cab = [t("xlsColMonth"), t("xlsColPhase"), t("xlsColPay"), t("xlsColInt"), t("xlsColAmort"), t("xlsColExtra"), t("xlsColFee"), t("xlsColBalance")];
       const dados = [cab];
       com.linhas.forEach(function (l) {
-        dados.push([l.mes, l.fase, round2(l.prestacao), round2(l.juros), round2(l.amortizacao), round2(l.entregaExtra), round2(l.comissao), round2(l.saldo)]);
+        dados.push([l.mes, faseLabel(l.fase), round2(l.prestacao), round2(l.juros), round2(l.amortizacao), round2(l.entregaExtra), round2(l.comissao), round2(l.saldo)]);
       });
       const wsP = XLSX.utils.aoa_to_sheet(dados);
       wsP["!cols"] = cab.map(function () { return { wch: 14 }; });
-      XLSX.utils.book_append_sheet(wb, wsP, "Plano com amortizações");
+      XLSX.utils.book_append_sheet(wb, wsP, t("xlsSheetWith"));
 
-      // Folha 3: Plano base
-      const dadosBase = [cab.filter(function (_, i) { return i !== 5 && i !== 6; })];
+      const cabB = [t("xlsColMonth"), t("xlsColPhase"), t("xlsColPay"), t("xlsColInt"), t("xlsColAmort"), t("xlsColBalance")];
+      const dadosBase = [cabB];
       base.linhas.forEach(function (l) {
-        dadosBase.push([l.mes, l.fase, round2(l.prestacao), round2(l.juros), round2(l.amortizacao), round2(l.saldo)]);
+        dadosBase.push([l.mes, faseLabel(l.fase), round2(l.prestacao), round2(l.juros), round2(l.amortizacao), round2(l.saldo)]);
       });
-      const wsB = XLSX.utils.aoa_to_sheet(dadosBase);
-      XLSX.utils.book_append_sheet(wb, wsB, "Plano sem amortizar");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dadosBase), t("xlsSheetWithout"));
 
-      XLSX.writeFile(wb, "Plano_Amortizacao_Credito_Habitacao.xlsx");
-      status.textContent = "Plano exportado em Excel.";
-      status.className = "status ok";
+      XLSX.writeFile(wb, t("fileXls"));
+      status.textContent = t("excelDone"); status.className = "status ok";
     }
 
-    function round2(v) { return Math.round((v || 0) * 100) / 100; }
-
-    // ===== EXPORTAÇÃO PDF (sem qualquer marca / logótipo) =====
+    // ===================== PDF =====================
     function exportarPDF() {
       const status = document.getElementById("status-export");
       status.textContent = ""; status.className = "status";
-      if (!ultimaSimulacao) { simular(false); }
-      if (!ultimaSimulacao) { status.textContent = "Calcule primeiro a simulação."; status.className = "status err"; return; }
-
+      if (!ultimaSimulacao) simular(false);
+      if (!ultimaSimulacao) { status.textContent = t("errCalcFirst"); status.className = "status err"; return; }
       const { cfg, amort, base, com } = ultimaSimulacao;
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -1497,158 +1596,137 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
       const paginasComRodape = {};
       function rodape(pageNum) {
-        if (paginasComRodape[pageNum]) return; // evita desenhar duas vezes na mesma página
+        if (paginasComRodape[pageNum]) return;
         paginasComRodape[pageNum] = true;
         doc.setDrawColor(220, 220, 220);
         doc.line(10, pageH - 14, pageW - 10, pageH - 14);
         doc.setFontSize(8); doc.setTextColor(140, 140, 140);
-        doc.text("Documento meramente indicativo · não substitui informação oficial da instituição de crédito", pageW / 2, pageH - 9, { align: "center" });
-        doc.text("Pág. " + pageNum, pageW - 10, pageH - 9, { align: "right" });
+        doc.text(t("pdfFooter"), pageW / 2, pageH - 9, { align: "center" });
+        doc.text(t("pdfPage") + pageNum, pageW - 10, pageH - 9, { align: "right" });
       }
 
       doc.setFontSize(16); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
-      doc.text("Plano de Amortização — Crédito Habitação", pageW / 2, 20, { align: "center" });
+      doc.text(t("pdfTitle"), pageW / 2, 20, { align: "center" });
       doc.setFontSize(9); doc.setTextColor(110, 110, 110); doc.setFont(undefined, "normal");
-      const dataHoje = new Date().toLocaleDateString("pt-PT");
-      doc.text("Simulação de " + dataHoje, pageW / 2, 27, { align: "center" });
+      doc.text(t("pdfSimOf") + new Date().toLocaleDateString(t("locale")), pageW / 2, 27, { align: "center" });
 
       const jurosPoupados = base.totalJuros - com.totalJuros - com.totalComissoes;
       const mesesPoupados = base.mesesTotais - com.mesesTotais;
       const temAmort = amort.ativa && amort.valor > 0;
 
-      // Parâmetros
       const params = [
-        ["Valor em dívida", fmtEuro(cfg.valor)],
-        ["Prazo restante", cfg.anos + " anos"],
-        ["Tipo de taxa", cfg.labelTaxa]
+        [t("pdfAmount"), fmtEuro(cfg.valor)],
+        [t("pdfTerm"), cfg.anos + t("pdfYearsUnit")],
+        [t("pdfRateType"), cfg.labelTaxa]
       ];
       if (temAmort) {
-        const labelPeriod = { 6: "6 meses", 12: "1 ano", 24: "2 anos", 36: "3 anos", 48: "4 anos", 60: "5 anos" }[amort.periodicidadeMeses];
-        params.push(["Entrega periódica", fmtEuro(amort.valor) + " a cada " + labelPeriod]);
-        params.push(["A partir do mês", String(amort.inicioMes) + " (ano " + Math.ceil(amort.inicioMes / 12) + ")"]);
-        params.push(["Efeito", amort.efeito === "prazo" ? "Reduzir prazo" : "Reduzir prestação"]);
-        params.push(["Comissão de amortização", cfg.comissaoAtiva ? "Incluída" : "Não incluída"]);
+        const labelPeriod = t("period" + amort.periodicidadeMeses);
+        params.push([t("pdfPeriodicPay"), fmtEuro(amort.valor) + t("pdfEvery") + labelPeriod]);
+        params.push([t("pdfFromMonth"), String(amort.inicioMes) + t("pdfYearN") + Math.ceil(amort.inicioMes / 12) + ")"]);
+        params.push([t("pdfEffect"), amort.efeito === "prazo" ? t("pdfEffectTerm") : t("pdfEffectPay")]);
+        params.push([t("pdfFee"), cfg.comissaoAtiva ? t("pdfFeeIncl") : t("pdfFeeNot")]);
       }
-
       doc.autoTable({
-        startY: 34,
-        head: [["Parâmetro", "Valor"]],
-        body: params,
-        theme: "grid",
+        startY: 34, head: [[t("pdfParam"), t("pdfValue")]], body: params, theme: "grid",
         headStyles: { fillColor: [29, 78, 216], textColor: 255, fontStyle: "bold", fontSize: 10 },
         bodyStyles: { fontSize: 10 },
         columnStyles: { 0: { fontStyle: "bold", cellWidth: 70 }, 1: { cellWidth: 110 } },
-        margin: { left: 10, right: 10 },
-        didDrawPage: function (data) { rodape(data.pageNumber); }
+        margin: { left: 10, right: 10 }, didDrawPage: function (d) { rodape(d.pageNumber); }
       });
 
-      // Comparação
       let y = doc.lastAutoTable.finalY + 8;
       doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
-      doc.text("Comparação dos cenários", 10, y);
+      doc.text(t("pdfCompare"), 10, y);
       const compRows = [
-        ["Prazo até liquidar", mesesParaTexto(base.mesesTotais), mesesParaTexto(com.mesesTotais)],
-        ["Prestação inicial", fmtEuro(base.prestacaoInicial), fmtEuro(com.prestacaoInicial)],
-        ["Total de juros", fmtEuro(base.totalJuros), fmtEuro(com.totalJuros)]
+        [t("rowTerm"), mesesParaTexto(base.mesesTotais), mesesParaTexto(com.mesesTotais)],
+        [t("rowInitPay"), fmtEuro(base.prestacaoInicial), fmtEuro(com.prestacaoInicial)],
+        [t("rowTotInt"), fmtEuro(base.totalJuros), fmtEuro(com.totalJuros)]
       ];
-      if (temAmort) compRows.push(["Capital entregue (extra)", "—", fmtEuro(com.totalAmortExtra)]);
-      if (cfg.comissaoAtiva && com.totalComissoes > 0) compRows.push(["Comissões", "—", fmtEuro(com.totalComissoes)]);
-      compRows.push(["Custo total do crédito", fmtEuro(cfg.valor + base.totalJuros), fmtEuro(cfg.valor + com.totalJuros + com.totalComissoes)]);
-
+      if (temAmort) compRows.push([t("rowExtra"), "—", fmtEuro(com.totalAmortExtra)]);
+      if (cfg.comissaoAtiva && com.totalComissoes > 0) compRows.push([t("rowFeesShort"), "—", fmtEuro(com.totalComissoes)]);
+      compRows.push([t("rowTotCost"), fmtEuro(cfg.valor + base.totalJuros), fmtEuro(cfg.valor + com.totalJuros + com.totalComissoes)]);
       doc.autoTable({
-        startY: y + 3,
-        head: [["", "Sem amortizar", "Com amortizações"]],
-        body: compRows,
-        theme: "grid",
+        startY: y + 3, head: [["", t("withoutPay"), t("withPay")]], body: compRows, theme: "grid",
         headStyles: { fillColor: [29, 78, 216], textColor: 255, fontStyle: "bold", fontSize: 10 },
         bodyStyles: { fontSize: 10 },
         columnStyles: { 0: { fontStyle: "bold", cellWidth: 70 }, 2: { textColor: [22, 163, 74], fontStyle: "bold" } },
-        margin: { left: 10, right: 10 },
-        didDrawPage: function (data) { rodape(data.pageNumber); }
+        margin: { left: 10, right: 10 }, didDrawPage: function (d) { rodape(d.pageNumber); }
       });
 
-      // Banner poupança
       if (temAmort && (jurosPoupados > 0 || mesesPoupados > 0)) {
         y = doc.lastAutoTable.finalY + 8;
-        doc.setFillColor(220, 252, 231);
-        doc.setDrawColor(22, 163, 74);
+        doc.setFillColor(220, 252, 231); doc.setDrawColor(22, 163, 74);
         doc.roundedRect(10, y, pageW - 20, 22, 3, 3, "FD");
         doc.setFontSize(10); doc.setTextColor(21, 128, 61); doc.setFont(undefined, "bold");
-        doc.text("A sua poupança com amortizações", 14, y + 7);
+        doc.text(t("pdfSavingsTitle"), 14, y + 7);
         doc.setFontSize(11);
-        doc.text("Juros poupados: " + fmtEuro(Math.max(jurosPoupados, 0)), 14, y + 15);
-        doc.text("Tempo poupado: " + mesesParaTexto(Math.max(mesesPoupados, 0)), pageW / 2 + 5, y + 15);
+        doc.text(t("pdfInterestSaved") + fmtEuro(Math.max(jurosPoupados, 0)), 14, y + 15);
+        doc.text(t("pdfTimeSaved") + mesesParaTexto(Math.max(mesesPoupados, 0)), pageW / 2 + 5, y + 15);
         y = y + 22;
-      } else {
-        y = doc.lastAutoTable.finalY;
-      }
+      } else { y = doc.lastAutoTable.finalY; }
 
-      // Gráfico da evolução da dívida — capturado do Chart.js
+      // Gráfico 1: dívida
       if (temAmort && dividaChart) {
         try {
           const imgData = dividaChart.toBase64Image("image/png", 1);
           let gy = y + 8;
-          // título do gráfico
           doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
-          doc.text("Evolução da dívida ao longo do tempo", pageW / 2, gy, { align: "center" });
+          doc.text(t("pdfChartDebt"), pageW / 2, gy, { align: "center" });
           gy += 4;
-          // dimensões: mantém proporção do canvas, largura útil da página
           const imgW = pageW - 28;
-          const ratio = dividaChart.height / dividaChart.width;
-          let imgH = imgW * ratio;
-          // limitar altura para caber na página
-          const maxH = pageH - gy - 20;
-          if (imgH > maxH) { imgH = maxH; }
-          // se não couber, nova página
-          if (gy + imgH > pageH - 16) {
-            doc.addPage();
-            gy = 20;
-            doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
-            doc.text("Evolução da dívida ao longo do tempo", pageW / 2, gy, { align: "center" });
-            gy += 4;
-          }
+          let imgH = imgW * (dividaChart.height / dividaChart.width);
+          if (gy + imgH > pageH - 16) { doc.addPage(); gy = 20; doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold"); doc.text(t("pdfChartDebt"), pageW / 2, gy, { align: "center" }); gy += 4; }
           doc.addImage(imgData, "PNG", 14, gy, imgW, imgH);
-        } catch (e) { /* se falhar, segue sem gráfico */ }
+          y = gy + imgH;
+        } catch (e) {}
       }
 
-      // Mapa de amortização (com entregas) — página nova
+      // Gráfico 2: % juros na prestação (sem amortizar) — sempre que exista
+      if (jurosChart) {
+        try {
+          const imgData2 = jurosChart.toBase64Image("image/png", 1);
+          const imgW = pageW - 28;
+          let imgH = imgW * (jurosChart.height / jurosChart.width);
+          let gy = y + 10;
+          if (gy + imgH > pageH - 16) {
+            doc.addPage(); gy = 20;
+          }
+          doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
+          doc.text(t("pdfChartInt"), pageW / 2, gy, { align: "center" });
+          gy += 4;
+          doc.addImage(imgData2, "PNG", 14, gy, imgW, imgH);
+          // legenda curta abaixo
+          doc.setFontSize(8); doc.setTextColor(110, 110, 110); doc.setFont(undefined, "normal");
+          doc.text(doc.splitTextToSize(t("jurosCaption"), pageW - 28), 14, gy + imgH + 5);
+        } catch (e) {}
+      }
+
+      // Mapa de amortização
       doc.addPage();
       doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
-      doc.text("Mapa de amortização (com entregas periódicas)", pageW / 2, 16, { align: "center" });
-
+      doc.text(t("pdfMap"), pageW / 2, 16, { align: "center" });
       const rows = com.linhas.map(function (l) {
-        return [
-          l.mes, l.fase,
-          fmtNum(l.prestacao), fmtNum(l.juros), fmtNum(l.amortizacao),
-          l.entregaExtra > 0 ? fmtNum(l.entregaExtra) : "—",
-          l.comissao > 0 ? fmtNum(l.comissao) : "—",
-          fmtNum(l.saldo)
-        ];
+        return [l.mes, faseLabel(l.fase), fmtNum(l.prestacao), fmtNum(l.juros), fmtNum(l.amortizacao),
+                l.entregaExtra > 0 ? fmtNum(l.entregaExtra) : "—", l.comissao > 0 ? fmtNum(l.comissao) : "—", fmtNum(l.saldo)];
       });
       doc.autoTable({
         startY: 22,
-        head: [["Mês", "Fase", "Prestação", "Juros", "Amort.", "Entrega", "Comissão", "Saldo"]],
-        body: rows,
-        theme: "striped",
+        head: [[t("pdfColMonth"), t("pdfColPhase"), t("pdfColPay"), t("pdfColInt"), t("pdfColAmort"), t("pdfColExtra"), t("pdfColFee"), t("pdfColBalance")]],
+        body: rows, theme: "striped",
         headStyles: { fillColor: [29, 78, 216], textColor: 255, fontStyle: "bold", fontSize: 8 },
         bodyStyles: { fontSize: 7 },
-        columnStyles: {
-          0: { cellWidth: 12 }, 1: { cellWidth: 18 },
-          2: { halign: "right" }, 3: { halign: "right" }, 4: { halign: "right" },
-          5: { halign: "right" }, 6: { halign: "right" }, 7: { halign: "right" }
-        },
-        margin: { left: 10, right: 10 },
-        didDrawPage: function (data) { rodape(data.pageNumber); }
+        columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 18 }, 2: { halign: "right" }, 3: { halign: "right" }, 4: { halign: "right" }, 5: { halign: "right" }, 6: { halign: "right" }, 7: { halign: "right" } },
+        margin: { left: 10, right: 10 }, didDrawPage: function (d) { rodape(d.pageNumber); }
       });
 
-      doc.save("Plano_Amortizacao_Credito_Habitacao.pdf");
-      status.textContent = "Plano exportado em PDF.";
-      status.className = "status ok";
+      doc.save(t("filePdf"));
+      status.textContent = t("pdfDone"); status.className = "status ok";
     }
 
     // Inicialização
     toggleAmort();
     setTaxa("variavel");
+    setLang("pt");
   </script>
 </body>
 </html>
