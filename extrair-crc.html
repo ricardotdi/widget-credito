@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>FinMais — Extrator CRC</title>
+  <link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --gold:#A19276; --gold-dark:#8a7d65; --gold-light:#c4b49a;
+  --bg:#faf8f5; --card:#ffffff; --text:#1a1814;
+  --muted:#7a7162; --border:#e8e2d9; --success:#5a8a6a; --error:#c0392b;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:#0f172a;padding:18px 32px;display:flex;align-items:center;justify-content:center}
+.header img{height:80px;width:auto}
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1e2d40 100%);padding:40px 24px 48px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 50%,rgba(161,146,118,.15),transparent 60%);pointer-events:none}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:#fff;letter-spacing:-.01em;margin-bottom:10px;position:relative}
+.hero-title span{color:var(--gold-light)}
+.hero-sub{font-size:.9rem;color:#94a3b8;font-weight:300;max-width:480px;margin:0 auto;line-height:1.6;position:relative}
+.container{max-width:720px;margin:-20px auto 48px;padding:0 20px;position:relative;z-index:1}
+.card{background:var(--card);border-radius:20px;box-shadow:0 20px 60px rgba(15,23,42,.10);overflow:hidden}
+.card-body{padding:32px}
+
+/* LOGIN */
+.login-section{text-align:center}
+.login-section h2{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:500;margin-bottom:6px;color:var(--text)}
+.login-section p{font-size:.85rem;color:var(--muted);margin-bottom:24px}
+.form-group{margin-bottom:16px;text-align:left}
+.form-group label{display:block;font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
+.form-group input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.9rem;color:var(--text);background:#faf8f5;outline:none;transition:border-color .2s,box-shadow .2s}
+.form-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(161,146,118,.12);background:#fff}
+.gold-btn{width:100%;padding:13px;background:var(--gold);color:#fff;border:none;border-radius:999px;font-family:'Jost',sans-serif;font-size:.9rem;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:background .2s,transform .1s,box-shadow .2s;box-shadow:0 8px 24px rgba(161,146,118,.35)}
+.gold-btn:hover:not(:disabled){background:var(--gold-dark);transform:translateY(-1px);box-shadow:0 12px 30px rgba(161,146,118,.4)}
+.gold-btn:disabled{background:#c8bfb0;cursor:not-allowed;transform:none;box-shadow:none}
+.login-err{font-size:.82rem;color:var(--error);margin-top:10px;text-align:center;min-height:18px}
+
+/* USER BAR */
+.user-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:#0f172a;font-size:.8rem;color:#94a3b8}
+.user-bar span{font-weight:500;color:var(--gold-light)}
+.logout-btn{background:none;border:1px solid rgba(161,146,118,.4);color:var(--gold-light);padding:5px 14px;border-radius:999px;cursor:pointer;font-size:.75rem;font-family:'Jost',sans-serif;transition:background .15s}
+.logout-btn:hover{background:rgba(161,146,118,.15)}
+
+/* EXTRACTOR */
+.divider{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.divider-line{flex:1;height:1px;background:var(--border)}
+.divider-text{font-size:.72rem;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);white-space:nowrap}
+.drop-zone{border:1.5px dashed var(--border);border-radius:12px;padding:2rem 1.5rem;text-align:center;cursor:pointer;background:#faf8f5;position:relative;transition:border-color .15s,background .15s;margin-bottom:1rem}
+.drop-zone.drag-over{border-color:var(--gold);background:#fdf9f5}
+.drop-zone.has-file{border-color:var(--success);background:#f3faf5}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:26px;color:var(--muted);display:block;margin-bottom:6px}
+.drop-label{font-size:.9rem;font-weight:500}
+.drop-hint{font-size:.75rem;color:var(--muted);margin-top:3px}
+.file-ok{font-size:.75rem;font-weight:500;color:var(--success);margin-top:5px}
+.prog-wrap{margin-top:1rem;display:none}
+.prog-row{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:5px}
+.prog-bg{height:4px;border-radius:999px;background:var(--border);overflow:hidden}
+.prog-bar{height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:999px;width:0%;transition:width .4s ease}
+.status-msg{font-size:.8rem;margin-top:8px;min-height:16px;color:var(--muted)}
+.status-msg.err{color:var(--error)}
+.status-msg.ok{color:var(--success)}
+
+/* PREVIEW */
+.preview{margin-top:1.5rem;display:none}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1rem}
+.metric{background:#faf8f5;border-radius:10px;padding:11px 13px;border:1px solid var(--border)}
+.metric-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.metric-val{font-size:16px;font-weight:500;color:var(--text)}
+.tbl-scroll{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.75rem;min-width:600px}
+th{background:#faf8f5;padding:8px 9px;text-align:left;font-weight:500;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:7px 9px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#faf8f5}
+td.r{text-align:right;font-variant-numeric:tabular-nums}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:500;letter-spacing:.05em}
+.b-ok{background:#f3faf5;color:#3d6b4a}
+.b-due{background:#fef0ef;color:#a12020}
+.b-oth{background:#f5f2ee;color:#6b5e4e}
+.dl-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem}
+.blue-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:42px;border-radius:999px;border:none;font-size:.85rem;font-weight:500;cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:.04em;transition:background .15s,transform .1s}
+.btn-excel{background:#185FA5;color:#fff;box-shadow:0 6px 20px rgba(24,95,165,.3)}
+.btn-excel:hover{background:#0C447C}
+.btn-pdf{background:#c0392b;color:#fff;box-shadow:0 6px 20px rgba(192,57,43,.3)}
+.btn-pdf:hover{background:#a93226}
+.note{font-size:.75rem;color:var(--muted);background:#f5f0ea;border-radius:8px;padding:9px 13px;margin-bottom:20px;line-height:1.5}
+.footer{text-align:center;padding:0 20px 32px}
+.footer a{font-size:.78rem;color:var(--muted);text-decoration:none;letter-spacing:.05em}
+.footer a:hover{color:var(--gold)}
+@media(max-width:480px){.card-body{padding:24px 16px}.hero-title{font-size:1.6rem}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <!-- Substitua pelo caminho do seu logo FinMais -->
+  <img src="logo_finmais.png" alt="FinMais" onerror="this.style.display='none'; document.querySelector('.header-text').style.display='block'"/>
+  <span class="header-text" style="display:none;font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--gold-light);letter-spacing:.05em">FinMais</span>
+</div>
+
+<!-- Barra de utilizador (só visível após login) -->
+<div class="user-bar" id="userBar" style="display:none">
+  <span>Olá, <span id="userEmail"></span></span>
+  <button class="logout-btn" onclick="logout()">Terminar sessão</button>
+</div>
+
+<div class="hero">
+  <h1 class="hero-title">Extrator <span>CRC</span></h1>
+  <p class="hero-sub">Carregue o PDF da Central de Responsabilidades de Crédito e obtenha uma tabela organizada dos créditos.</p>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="card-body" id="cardBody">
+
+      <!-- SECÇÃO LOGIN -->
+      <div id="loginSection">
+        <div class="login-section">
+          <h2>Acesso Restrito</h2>
+          <p>Inicie sessão com as suas credenciais FinMais para continuar.</p>
+        </div>
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="email@finmais.pt" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label for="loginPass">Palavra-passe</label>
+          <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <button class="gold-btn" id="loginBtn" onclick="doLogin()">Entrar</button>
+        <div class="login-err" id="loginErr"></div>
+      </div>
+
+      <!-- SECÇÃO EXTRACTOR (só visível após login) -->
+      <div id="extractorSection" style="display:none">
+        <div class="divider">
+          <div class="divider-line"></div>
+          <div class="divider-text">Mapa CRC — Banco de Portugal</div>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="note">
+          📎 Faça upload do PDF da Central de Responsabilidades de Crédito emitido pelo Banco de Portugal. A análise é feita por IA e os dados não são guardados.
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="fileInput" accept=".pdf"/>
+          <span class="drop-icon">📄</span>
+          <p class="drop-label">Arraste o PDF aqui ou clique para selecionar</p>
+          <p class="drop-hint">Ficheiro CRC do Banco de Portugal (.pdf)</p>
+          <p class="file-ok" id="fileName"></p>
+        </div>
+
+        <button class="gold-btn" id="extractBtn" disabled onclick="doExtract()">
+          Analisar CRC com IA
+        </button>
+
+        <div class="prog-wrap" id="progWrap">
+          <div class="prog-row"><span id="progTxt">A processar...</span><span id="progPct">0%</span></div>
+          <div class="prog-bg"><div class="prog-bar" id="progBar"></div></div>
+          <div class="status-msg" id="statusEl"></div>
+        </div>
+
+        <div class="preview" id="preview">
+          <div class="metrics" id="metricsRow"></div>
+          <div class="tbl-scroll"><table id="tbl"></table></div>
+          <div class="dl-row">
+            <button class="blue-btn btn-excel" id="dlExcel" onclick="dlExcel()">⬇ Excel (.xlsx)</button>
+            <button class="blue-btn btn-pdf" id="dlPdf" onclick="dlPDF()">⬇ PDF Relatório</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="https://www.finmais.pt" target="_blank">www.finmais.pt</a>
+</div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- SheetJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- jsPDF + AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+// ============================================================
+// CONFIGURAÇÃO — substitua pelos valores do seu projeto Supabase
+// ============================================================
+const SUPABASE_URL    = "https://SEU_PROJETO.supabase.co";
+const SUPABASE_ANON   = "SUA_ANON_KEY_AQUI";
+const EDGE_FUNCTION   = SUPABASE_URL + "/functions/v1/extrair-crc";
+// ============================================================
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const $  = id => document.getElementById(id);
+
+let selFile = null;
+let data    = [];
+let session = null;
+
+// ── AUTH ──────────────────────────────────────────────────
+async function checkSession() {
+  const { data: { session: s } } = await sb.auth.getSession();
+  if (s) onLoggedIn(s);
+}
+
+async function doLogin() {
+  const email = $('loginEmail').value.trim();
+  const pass  = $('loginPass').value;
+  $('loginErr').textContent = '';
+  $('loginBtn').disabled = true;
+  $('loginBtn').textContent = 'A entrar...';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) {
+    $('loginErr').textContent = 'Email ou palavra-passe incorretos.';
+    $('loginBtn').disabled = false;
+    $('loginBtn').textContent = 'Entrar';
+    return;
+  }
+  onLoggedIn(data.session);
+}
+
+function onLoggedIn(s) {
+  session = s;
+  $('loginSection').style.display = 'none';
+  $('extractorSection').style.display = 'block';
+  $('userBar').style.display = 'flex';
+  $('userEmail').textContent = s.user.email;
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  session = null;
+  $('loginSection').style.display = 'block';
+  $('extractorSection').style.display = 'none';
+  $('userBar').style.display = 'none';
+  $('loginEmail').value = '';
+  $('loginPass').value = '';
+  $('preview').style.display = 'none';
+  $('progWrap').style.display = 'none';
+  selFile = null; data = [];
+}
+
+window.addEventListener('DOMContentLoaded', checkSession);
+
+$('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ── UPLOAD ────────────────────────────────────────────────
+$('dropZone').addEventListener('dragover', e => { e.preventDefault(); $('dropZone').classList.add('drag-over'); });
+$('dropZone').addEventListener('dragleave', () => $('dropZone').classList.remove('drag-over'));
+$('dropZone').addEventListener('drop', e => {
+  e.preventDefault(); $('dropZone').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type === 'application/pdf') setFile(f);
+});
+$('fileInput').addEventListener('change', () => { if ($('fileInput').files[0]) setFile($('fileInput').files[0]); });
+
+function setFile(f) {
+  selFile = f;
+  $('fileName').textContent = f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+  $('dropZone').classList.add('has-file');
+  $('extractBtn').disabled = false;
+  $('preview').style.display = 'none';
+  $('progWrap').style.display = 'none';
+}
+
+// ── EXTRAÇÃO ──────────────────────────────────────────────
+function setProg(pct, txt, stTxt, stCls) {
+  $('progBar').style.width = pct + '%';
+  $('progPct').textContent = pct + '%';
+  if (txt) $('progTxt').textContent = txt;
+  if (stTxt !== undefined) {
+    $('statusEl').textContent = stTxt;
+    $('statusEl').className = 'status-msg' + (stCls ? ' ' + stCls : '');
+  }
+}
+
+function readB64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = () => rej(new Error('Erro ao ler ficheiro'));
+    r.readAsDataURL(file);
+  });
+}
+
+async function doExtract() {
+  if (!selFile || !session) return;
+  $('extractBtn').disabled = true;
+  $('progWrap').style.display = 'block';
+  $('preview').style.display = 'none';
+
+  try {
+    setProg(15, 'A preparar o PDF...', '');
+    const b64 = await readB64(selFile);
+
+    setProg(40, 'A enviar para análise (IA)...', 'PDF carregado (' + (b64.length/1024).toFixed(0) + ' KB)');
+
+    const resp = await fetch(EDGE_FUNCTION, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token
+      },
+      body: JSON.stringify({ pdfBase64: b64 })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ' + resp.status);
+    }
+
+    data = await resp.json();
+    setProg(100, 'Concluído!', '', '');
+
+    if (!Array.isArray(data) || data.length === 0) {
+      setProg(100, 'Concluído', 'Nenhum registo encontrado. Verifique se é um PDF CRC válido.', 'err');
+    } else {
+      setProg(100, 'Concluído!', data.length + ' registo(s) extraído(s) com sucesso.', 'ok');
+      renderPreview(data);
+    }
+  } catch(e) {
+    setProg(0, 'Erro', 'Erro: ' + e.message, 'err');
+  }
+  $('extractBtn').disabled = false;
+}
+
+// ── PREVIEW ───────────────────────────────────────────────
+function fmtEur(v) {
+  if (v === null || v === undefined) return '—';
+  if (typeof v === 'number') return v.toLocaleString('pt-PT', { style:'currency', currency:'EUR', minimumFractionDigits:2 });
+  return v;
+}
+
+function renderPreview(rows) {
+  const totDiv   = rows.reduce((s,r) => s+(r.montante_utilizado||0), 0);
+  const totPot   = rows.reduce((s,r) => s+(r.montante_potencial||0), 0);
+  const totPrest = rows.reduce((s,r) => s+(r.prestacao||0), 0);
+  const venc     = rows.filter(r => r.situacao === 'Vencido').length;
+
+  $('metricsRow').innerHTML = `
+    <div class="metric"><div class="metric-lbl">Registos</div><div class="metric-val">${rows.length}</div></div>
+    <div class="metric"><div class="metric-lbl">Total em dívida</div><div class="metric-val" style="font-size:13px">${fmtEur(totDiv)}</div></div>
+    <div class="metric"><div class="metric-lbl">Plafond disponível</div><div class="metric-val" style="font-size:13px">${fmtEur(totPot)}</div></div>
+    <div class="metric"><div class="metric-lbl">Prestação mensal</div><div class="metric-val" style="font-size:13px">${fmtEur(totPrest)}</div></div>
+    <div class="metric"><div class="metric-lbl">Vencidos</div><div class="metric-val" style="color:${venc>0?'#c0392b':'#5a8a6a'}">${venc}</div></div>`;
+
+  $('tbl').innerHTML = '<thead><tr>' +
+    ['Instituição','Tipo','Início','Fim','Dívida Total','Potencial','Prestação','Situação','Titulares']
+      .map(c => `<th>${c}</th>`).join('') +
+  '</tr></thead>';
+
+  const tb = document.createElement('tbody');
+  rows.forEach(r => {
+    const cls = r.situacao === 'Regular' ? 'b-ok' : r.situacao === 'Vencido' ? 'b-due' : 'b-oth';
+    const tr  = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.instituicao||'—'}</td>
+      <td>${r.tipo_credito||'—'}</td>
+      <td>${r.inicio||'—'}</td>
+      <td>${r.fim||'—'}</td>
+      <td class="r">${fmtEur(r.montante_utilizado)}</td>
+      <td class="r">${fmtEur(r.montante_potencial)}</td>
+      <td class="r">${fmtEur(r.prestacao)}</td>
+      <td><span class="badge ${cls}">${r.situacao||'—'}</span></td>
+      <td style="text-align:center">${r.numero_titulares||'—'}</td>`;
+    tb.appendChild(tr);
+  });
+  $('tbl').appendChild(tb);
+  $('preview').style.display = 'block';
+}
+
+// ── EXCEL ─────────────────────────────────────────────────
+function dlExcel() {
+  if (!data.length) return;
+  const fname = selFile ? selFile.name : 'CRC.pdf';
+  const rows = data.map(r => ({
+    'Instituição': r.instituicao||'',
+    'Tipo de Crédito': r.tipo_credito||'',
+    'Situação': r.situacao||'',
+    'Início': r.inicio||'',
+    'Fim': r.fim||'',
+    'Total em Dívida (€)': r.montante_utilizado||0,
+    'Potencial/Plafond (€)': r.montante_potencial||0,
+    'Prestação Mensal (€)': r.prestacao||0,
+    'Nº Titulares': r.numero_titulares||'',
+    'Garantia': r.garantia||''
+  }));
+  rows.push({
+    'Instituição':'TOTAL','Tipo de Crédito':'','Situação':'','Início':'','Fim':'',
+    'Total em Dívida (€)': data.reduce((s,r)=>s+(r.montante_utilizado||0),0),
+    'Potencial/Plafond (€)': data.reduce((s,r)=>s+(r.montante_potencial||0),0),
+    'Prestação Mensal (€)': data.reduce((s,r)=>s+(r.prestacao||0),0),
+    'Nº Titulares':'','Garantia':''
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [40,28,12,12,12,20,20,20,12,30].map(w => ({wch:w}));
+  const meta = XLSX.utils.aoa_to_sheet([
+    ['Central de Responsabilidades de Crédito — Banco de Portugal'],
+    ['Ficheiro original:', fname],
+    ['Extração efetuada por:', session ? session.user.email : ''],
+    ['Data:', new Date().toLocaleDateString('pt-PT')]
+  ]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'CRC');
+  XLSX.utils.book_append_sheet(wb, meta, 'Info');
+  XLSX.writeFile(wb, 'CRC_' + new Date().toISOString().slice(0,10) + '.xlsx');
+}
+
+// ── PDF RELATÓRIO ─────────────────────────────────────────
+function dlPDF() {
+  if (!data.length) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  // Cabeçalho verde FinMais
+  doc.setFillColor(10, 21, 40);
+  doc.rect(0, 0, 297, 22, 'F');
+  doc.setFillColor(161, 146, 118);
+  doc.rect(0, 22, 297, 3, 'F');
+  doc.setTextColor(196, 180, 154);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FinMais — Central de Responsabilidades de Crédito', 14, 14);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(148, 163, 184);
+  doc.text('Extração: ' + new Date().toLocaleDateString('pt-PT') + '   |   ' +
+    (selFile ? selFile.name : '') + '   |   ' + (session ? session.user.email : ''), 14, 19.5);
+
+  // Métricas
+  const totDiv   = data.reduce((s,r)=>s+(r.montante_utilizado||0),0);
+  const totPrest = data.reduce((s,r)=>s+(r.prestacao||0),0);
+  const venc     = data.filter(r=>r.situacao==='Vencido').length;
+  doc.setTextColor(26,24,20);
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica','bold');
+  doc.text('Registos: ' + data.length, 14, 30);
+  doc.text('Total em dívida: ' + totDiv.toLocaleString('pt-PT',{style:'currency',currency:'EUR',minimumFractionDigits:2}), 60, 30);
+  doc.text('Prestação mensal: ' + totPrest.toLocaleString('pt-PT',{style:'currency',currency:'EUR',minimumFractionDigits:2}), 145, 30);
+  doc.text('Vencidos: ' + venc, 240, 30);
+
+  // Tabela
+  doc.autoTable({
+    startY: 36,
+    head: [['Instituição','Tipo de Crédito','Início','Fim','Dívida Total (€)','Potencial (€)','Prestação (€)','Situação','Titulares']],
+    body: data.map(r => [
+      r.instituicao||'—', r.tipo_credito||'—', r.inicio||'—', r.fim||'—',
+      (r.montante_utilizado||0).toLocaleString('pt-PT',{minimumFractionDigits:2}),
+      (r.montante_potencial||0).toLocaleString('pt-PT',{minimumFractionDigits:2}),
+      (r.prestacao||0).toLocaleString('pt-PT',{minimumFractionDigits:2}),
+      r.situacao||'—', r.numero_titulares||'—'
+    ]),
+    foot: [['TOTAL','','','',
+      data.reduce((s,r)=>s+(r.montante_utilizado||0),0).toLocaleString('pt-PT',{minimumFractionDigits:2}),
+      data.reduce((s,r)=>s+(r.montante_potencial||0),0).toLocaleString('pt-PT',{minimumFractionDigits:2}),
+      data.reduce((s,r)=>s+(r.prestacao||0),0).toLocaleString('pt-PT',{minimumFractionDigits:2}),
+      '','']],
+    styles: { fontSize: 7.5, cellPadding: 2.5 },
+    headStyles: { fillColor: [10,21,40], textColor: [196,180,154], fontStyle:'bold' },
+    footStyles: { fillColor: [245,240,234], textColor: [26,24,20], fontStyle:'bold' },
+    columnStyles: {
+      0:{cellWidth:52}, 1:{cellWidth:32}, 2:{cellWidth:18}, 3:{cellWidth:20},
+      4:{cellWidth:26,halign:'right'}, 5:{cellWidth:24,halign:'right'},
+      6:{cellWidth:24,halign:'right'}, 7:{cellWidth:16}, 8:{cellWidth:13,halign:'center'}
+    },
+    alternateRowStyles: { fillColor: [250,248,245] },
+    didParseCell: h => {
+      if (h.section==='body' && h.column.index===7) {
+        if (h.cell.raw==='Vencido') { h.cell.styles.textColor=[192,57,43]; h.cell.styles.fontStyle='bold'; }
+        else if (h.cell.raw==='Regular') h.cell.styles.textColor=[90,138,106];
+      }
+    }
+  });
+
+  doc.save('CRC_FinMais_' + new Date().toISOString().slice(0,10) + '.pdf');
+}
+</script>
+</body>
+</html>
