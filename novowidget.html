@@ -370,7 +370,12 @@
             <div class="field">
               <label>Rendimento líquido mensal (€) <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">— opcional</span></label>
               <input id="rendimento" type="number" min="0" step="1" placeholder="ex: 2500" oninput="calcularDSTI()" />
-              <small>Para cálculo da taxa de esforço (DSTI).</small>
+              <small>Para a taxa de esforço (TE) e o DSTI.</small>
+            </div>
+            <div class="field">
+              <label>Outros encargos mensais com créditos (€) <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">— opcional</span></label>
+              <input id="outros-encargos" type="number" min="0" step="1" placeholder="ex: 250" oninput="calcularDSTI()" />
+              <small>Prestações de outros créditos (auto, pessoal, cartões).</small>
             </div>
           </div>
           <div class="actions-row">
@@ -408,9 +413,15 @@
                 <div class="result-label">TAEG</div>
                 <div id="res-taeg" class="result-value">—</div>
               </div>
+              <div class="result-item" id="res-te-item" style="display:none;">
+                <div class="result-label">Taxa de Esforço (TE)</div>
+                <div id="res-te" class="result-value">—</div>
+                <div id="res-te-sub" style="font-size:0.72rem;color:var(--muted);margin-top:2px;"></div>
+              </div>
               <div class="result-item" id="res-dsti-item" style="display:none;">
-                <div class="result-label">Taxa de Esforço (DSTI)</div>
+                <div class="result-label">DSTI (stress BdP)</div>
                 <div id="res-dsti" class="result-value">—</div>
+                <div id="res-dsti-sub" style="font-size:0.72rem;color:var(--muted);margin-top:2px;"></div>
               </div>
             </div>
             <div class="result-tagline">
@@ -533,29 +544,71 @@
       document.getElementById("toggle-" + tipo).classList.add("active");
     }
 
+    function pmtDSTI(capital, taxaMensal, n) {
+      if (n <= 0) return capital;
+      if (taxaMensal === 0) return capital / n;
+      return capital * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -n)));
+    }
+    function corEsforco(v, amber, red) {
+      if (v > red) return "#ef4444";
+      if (v > amber) return "#f59e0b";
+      return "var(--primary)";
+    }
+
     function calcularDSTI() {
       var rendimento = parseFloat(document.getElementById("rendimento").value);
-      var prestacaoEl = document.getElementById("res-prestacao");
+      var outros = parseFloat(document.getElementById("outros-encargos").value) || 0;
+      var teItem = document.getElementById("res-te-item");
+      var teEl = document.getElementById("res-te");
+      var teSub = document.getElementById("res-te-sub");
       var dstiItem = document.getElementById("res-dsti-item");
       var dstiEl = document.getElementById("res-dsti");
-      if (!rendimento || rendimento <= 0 || !prestacaoEl || prestacaoEl.textContent === "—") {
-        dstiItem.style.display = "none";
-        dstiEl.textContent = "—";
+      var dstiSub = document.getElementById("res-dsti-sub");
+
+      if (!rendimento || rendimento <= 0 || !ultimaSim) {
+        teItem.style.display = "none"; teEl.textContent = "—";
+        dstiItem.style.display = "none"; dstiEl.textContent = "—";
         return;
       }
-      var prestacaoTexto = prestacaoEl.textContent.replace(/[^\d,]/g, "").replace(",", ".");
-      var prestacao = parseFloat(prestacaoTexto);
-      if (!prestacao || prestacao <= 0) {
-        dstiItem.style.display = "none";
-        return;
+
+      var s = ultimaSim;
+      var prestacaoReal = (s.tipo === "mista") ? s.prestacaoFixa : s.prestacao;
+
+      // TE — esforço real (prestação atual + outros encargos) / rendimento
+      var te = ((prestacaoReal + outros) / rendimento) * 100;
+      teEl.textContent = te.toFixed(1) + " %";
+      teEl.style.color = corEsforco(te, 30, 40);
+      teSub.textContent = outros > 0 ? "inclui outros encargos" : "só esta prestação";
+      teItem.style.display = "";
+
+      // DSTI — com choque de taxa de juro do BdP (0,5/1/1,5 pp por maturidade; só variável/mista)
+      var anos = s.anos;
+      var shock = anos <= 5 ? 0.5 : (anos <= 10 ? 1.0 : 1.5);
+      var mesesAmort = s.meses - (s.mesesCarencia || 0);
+      var prestacaoStress, metodo;
+
+      if (s.tipo === "fixa") {
+        prestacaoStress = prestacaoReal; shock = 0;
+        metodo = "taxa fixa: sem choque";
+      } else if (s.tipo === "variavel") {
+        var txStress = (s.taxaAnual + shock) / 100 / 12;
+        prestacaoStress = pmtDSTI(s.valor, txStress, mesesAmort);
+        metodo = "Euribor +" + shock.toFixed(1).replace(".", ",") + " pp";
+      } else { // mista — choque sobre a fase variável (cenário conservador)
+        var txVarStress = (s.taxaVariavel + shock) / 100 / 12;
+        prestacaoStress = pmtDSTI(s.valor, txVarStress, mesesAmort);
+        metodo = "fase variável +" + shock.toFixed(1).replace(".", ",") + " pp";
       }
-      var dsti = (prestacao / rendimento) * 100;
+
+      var dsti = ((prestacaoStress + outros) / rendimento) * 100;
       dstiEl.textContent = dsti.toFixed(1) + " %";
-      dstiEl.style.color = dsti > 40 ? "#ef4444" : dsti > 30 ? "#f59e0b" : "var(--primary)";
+      dstiEl.style.color = corEsforco(dsti, 40, 50);
+      dstiSub.textContent = metodo + " · limite 50%";
       dstiItem.style.display = "";
     }
 
     var tipoTaxaAtual = "variavel";
+    var ultimaSim = null;
 
     function setTaxa(tipo) {
       tipoTaxaAtual = tipo;
@@ -650,14 +703,19 @@
       if (pv) pv.value = "";
 
       // Resultados
-      ["res-prestacao","res-tan","res-prazo","res-total","res-taeg","res-dsti"].forEach(id => {
+      ["res-prestacao","res-tan","res-prazo","res-total","res-taeg","res-te","res-dsti"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = "—";
       });
+      const teItem = document.getElementById("res-te-item");
+      if (teItem) teItem.style.display = "none";
       const dstiItem = document.getElementById("res-dsti-item");
       if (dstiItem) dstiItem.style.display = "none";
       const rendEl = document.getElementById("rendimento");
       if (rendEl) { rendEl.value = ""; rendEl.style.borderColor = ""; }
+      const outrosEl = document.getElementById("outros-encargos");
+      if (outrosEl) { outrosEl.value = ""; outrosEl.style.borderColor = ""; }
+      ultimaSim = null;
 
       // Status
       const st = document.getElementById("status-sim");
@@ -748,6 +806,7 @@
         }
         const taegMista = r > 0 ? (Math.pow(1 + r, 12) - 1) * 100 : 0;
         document.getElementById("res-taeg").textContent = taegMista > 0 ? taegMista.toFixed(2) + " %" : "—";
+        ultimaSim = { tipo: "mista", valor: valor, anos: anos, meses: meses, mesesCarencia: mesesCarencia, taxaVariavel: taxaVariavel, prestacaoFixa: prestacaoFixa, prestacaoVariavel: prestacaoVariavel };
         calcularDSTI();
         status.textContent = "Simulação mista actualizada."; status.classList.add("ok"); return;
       }
@@ -782,6 +841,7 @@
       document.getElementById("res-prazo").textContent = anos + " anos (" + meses + " meses)" + (mesesCarencia ? " · carência " + mesesCarencia + "m" : "");
       document.getElementById("res-total").textContent = formatEuro(totalPago);
       document.getElementById("res-taeg").textContent = taeg > 0 ? taeg.toFixed(2) + " %" : "—";
+      ultimaSim = { tipo: tipoTaxaAtual, valor: valor, anos: anos, meses: meses, mesesCarencia: mesesCarencia, taxaAnual: taxaAnual, prestacao: prestacao };
       calcularDSTI();
       status.textContent = "Simulação atualizada."; status.classList.add("ok");
     }
@@ -903,9 +963,14 @@
               return (!isNaN(r) && r > 0) ? r.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2}) : "";
             })(),
             dsti: (function() {
-              const el = document.getElementById("res-dsti");
-              const txt = el ? el.textContent : "—";
-              return (txt && txt !== "—") ? txt : "";
+              const te = document.getElementById("res-te");
+              const d = document.getElementById("res-dsti");
+              const teT = te ? te.textContent : "—";
+              const dT = d ? d.textContent : "—";
+              const partes = [];
+              if (teT && teT !== "—") partes.push("TE " + teT);
+              if (dT && dT !== "—") partes.push("DSTI " + dT);
+              return partes.join(" · ");
             })()
           })
         });
