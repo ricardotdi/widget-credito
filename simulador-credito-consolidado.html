@@ -294,13 +294,18 @@
         <div id="dsti-compare-wrap" style="display:none;">
           <div class="dsti-compare">
             <div class="dsti-box before">
-              <div class="dsti-tag">Taxa de esforço antes (DSTI)</div>
-              <div class="dsti-val" id="dsti-antes">—</div>
+              <div class="dsti-tag">Taxa de esforço antes (TE)</div>
+              <div class="dsti-val" id="te-antes">—</div>
             </div>
             <div class="dsti-box after">
-              <div class="dsti-tag">Taxa de esforço depois (DSTI)</div>
-              <div class="dsti-val" id="dsti-depois">—</div>
+              <div class="dsti-tag">Taxa de esforço depois (TE)</div>
+              <div class="dsti-val" id="te-depois">—</div>
             </div>
+          </div>
+          <div id="dsti-novo-wrap" style="display:none; margin-top:10px; background:#eff6ff; border:1px solid rgba(29,78,216,0.2); border-radius:10px; padding:8px 12px; text-align:center;">
+            <div class="dsti-tag" style="color:#1d4ed8;">DSTI do novo crédito (stress BdP)</div>
+            <div class="dsti-val" id="dsti-novo-val" style="color:#1d4ed8;">—</div>
+            <div id="dsti-novo-sub" style="font-size:0.7rem;color:var(--muted);margin-top:2px;"></div>
           </div>
         </div>
       </div>
@@ -424,6 +429,7 @@
 
   // ── Estado ──
   var creditosCount = 0;
+  var ultimaSim = null;
   var TIPOS = ["Habitação","Pessoal","Cartão de crédito","Automóvel","Outro"];
 
   function adicionarCredito() {
@@ -508,11 +514,45 @@
     var novaTxt = document.getElementById("res-prestacao-nova").textContent || "0";
     var prestNova = parseFloat(novaTxt.replace(/[^\d,]/g,"").replace(",",".")) || 0;
     var wrap = document.getElementById("dsti-compare-wrap");
+    var dstiWrap = document.getElementById("dsti-novo-wrap");
+
     if (!isNaN(rend) && rend > 0 && (prestAtual > 0 || prestNova > 0)) {
       wrap.style.display = "";
-      document.getElementById("dsti-antes").textContent = prestAtual > 0 ? (prestAtual/rend*100).toFixed(1) + "%" : "—";
-      document.getElementById("dsti-depois").textContent = prestNova > 0 ? (prestNova/rend*100).toFixed(1) + "%" : "—";
-    } else { wrap.style.display = "none"; }
+      // Taxa de Esforço (TE) — esforço real antes e depois
+      document.getElementById("te-antes").textContent = prestAtual > 0 ? (prestAtual/rend*100).toFixed(1) + "%" : "—";
+      document.getElementById("te-depois").textContent = prestNova > 0 ? (prestNova/rend*100).toFixed(1) + "%" : "—";
+
+      // DSTI do novo crédito (com choque de taxa de juro do BdP) — só após simular
+      if (ultimaSim && prestNova > 0) {
+        var s = ultimaSim;
+        var anos = s.meses / 12;
+        var shock = anos <= 5 ? 0.5 : (anos <= 10 ? 1.0 : 1.5);
+        var prestStress, metodo;
+        if (s.tipo === "fixa") {
+          prestStress = prestNova; shock = 0;
+          metodo = "taxa fixa: sem choque";
+        } else if (s.tipo === "mista") {
+          var txVarStress = (s.taxaVariavel + shock) / 100 / 12;
+          prestStress = calcPrestacao(s.capitalNovo, txVarStress, s.meses);
+          metodo = "fase variável +" + shock.toFixed(1).replace(".", ",") + " pp";
+        } else {
+          var txStress = (s.taxaAnual + shock) / 100 / 12;
+          prestStress = calcPrestacao(s.capitalNovo, txStress, s.meses);
+          metodo = "Euribor +" + shock.toFixed(1).replace(".", ",") + " pp";
+        }
+        var dstiDepois = prestStress / rend * 100;
+        var valEl = document.getElementById("dsti-novo-val");
+        valEl.textContent = dstiDepois.toFixed(1) + "%";
+        valEl.style.color = dstiDepois > 50 ? "#dc2626" : dstiDepois > 40 ? "#d97706" : "#1d4ed8";
+        document.getElementById("dsti-novo-sub").textContent = metodo + " · limite 50%";
+        dstiWrap.style.display = "";
+      } else {
+        dstiWrap.style.display = "none";
+      }
+    } else {
+      wrap.style.display = "none";
+      if (dstiWrap) dstiWrap.style.display = "none";
+    }
   }
 
   function onTipoTaxaChange() {
@@ -599,6 +639,16 @@
     var capitalNovo = totalCapital + extra;
     var meses = prazo * 12;
     var prestNova = calcPrestacao(capitalNovo, taxaMensal, meses);
+    // Guardar estado do novo crédito para o DSTI com stress do BdP
+    var taxaVariavelNovo = taxaAnual;
+    if (tipo === "mista") {
+      var emS = parseFloat(document.getElementById("mista-euribor").value);
+      var spS = parseFloat(document.getElementById("mista-spread").value);
+      if (!isNaN(emS) && !isNaN(spS)) taxaVariavelNovo = emS + spS;
+    } else if (tipo === "variavel") {
+      taxaVariavelNovo = taxaAnual; // já é euribor + spread
+    }
+    ultimaSim = { tipo: tipo, capitalNovo: capitalNovo, meses: meses, taxaAnual: taxaAnual, taxaVariavel: taxaVariavelNovo };
     var mtic = prestNova * meses;
     var taeg = taxaMensal === 0 ? 0 : calcTAEG(taxaMensal);
     var poupanca = totalPrestAtual - prestNova;
@@ -636,8 +686,10 @@
     document.getElementById("encargos-total").value = "";
     document.getElementById("ltv-result").innerHTML = "";
     document.getElementById("dsti-compare-wrap").style.display = "none";
+    document.getElementById("dsti-novo-wrap").style.display = "none";
     document.getElementById("savings-wrap").style.display = "none";
     ["res-prestacao-atual","res-prestacao-nova","res-mtic","res-taeg","res-tan","res-capital"].forEach(function(id){ document.getElementById(id).textContent = "—"; });
+    ultimaSim = null;
     var st = document.getElementById("status-sim"); st.textContent = ""; st.className = "status";
   }
 
@@ -810,8 +862,9 @@
           taeg:               document.getElementById("res-taeg").textContent,
           mtic:               document.getElementById("res-mtic").textContent,
           poupancaMensal:     document.getElementById("res-poupanca-eur").textContent,
-          dstiAntes:          document.getElementById("dsti-antes").textContent,
-          dstiDepois:         document.getElementById("dsti-depois").textContent
+          dstiAntes:          document.getElementById("te-antes").textContent,
+          dstiDepois:         document.getElementById("te-depois").textContent,
+          dstiNovo:           (function(){ var e = document.getElementById("dsti-novo-val"); return e ? e.textContent : ""; })()
         })
       });
       if (!res.ok) {
