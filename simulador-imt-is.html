@@ -256,9 +256,9 @@
           <div class="result-sub" id="res-imt-taxa">Taxa: —</div>
         </div>
         <div class="result-item">
-          <div class="result-label">IS sobre compra (0,8%)</div>
+          <div class="result-label" id="res-is-compra-label">IS sobre compra (0,8%)</div>
           <div class="result-value" id="res-is-compra">—</div>
-          <div class="result-sub">Sobre o valor de compra</div>
+          <div class="result-sub" id="res-is-compra-sub">Sobre o valor de compra</div>
         </div>
         <div class="result-item">
           <div class="result-label">IS sobre crédito (0,6%)</div>
@@ -493,8 +493,23 @@
     // Base de incidência: o maior entre valor de compra e VPT (aqui usamos valor de compra)
     const { imt, taxa } = calcularIMT(valorCompra, tabela);
 
-    // IS sobre compra: 0,8%
-    const isCompra = valorCompra * 0.008;
+    // IS sobre compra (verba 1.1 da TGIS): 0,8%
+    // Na isenção jovem (HPP Jovem ≤ 35), o IS sobre a aquisição acompanha a isenção
+    // do IMT: isento até ao limite da isenção (1.º escalão a 0% da tabela) e tributado
+    // apenas sobre o excesso. NÃO abrange o IS sobre o crédito (verba 17), que se mantém.
+    let isCompra;
+    let isCompraIsento = false;
+    if (tipoAtual === 'hpp-jovem' && tabela[0] && tabela[0].taxa === 0) {
+      const limiteIsencao = tabela[0].limite;
+      if (valorCompra <= limiteIsencao) {
+        isCompra = 0;
+        isCompraIsento = true;
+      } else {
+        isCompra = (valorCompra - limiteIsencao) * 0.008; // só sobre o excesso
+      }
+    } else {
+      isCompra = valorCompra * 0.008;
+    }
 
     // IS sobre crédito: 0,6%
     const isCredito = valorCredito * 0.006;
@@ -507,6 +522,19 @@
     document.getElementById('res-imt').textContent = formatEuro(imt);
     document.getElementById('res-imt-taxa').textContent = 'Taxa: ' + taxa;
     document.getElementById('res-is-compra').textContent = formatEuro(isCompra);
+    // Etiqueta/sub do IS compra consoante a isenção jovem
+    const isCompraLabel = document.getElementById('res-is-compra-label');
+    const isCompraSub = document.getElementById('res-is-compra-sub');
+    if (tipoAtual === 'hpp-jovem' && isCompraIsento) {
+      isCompraLabel.textContent = 'IS sobre compra (isento)';
+      isCompraSub.textContent = 'Isenção jovem ≤ 35 anos';
+    } else if (tipoAtual === 'hpp-jovem' && !isCompraIsento) {
+      isCompraLabel.textContent = 'IS sobre compra (0,8% s/ excesso)';
+      isCompraSub.textContent = 'Isenção parcial — só sobre o excesso';
+    } else {
+      isCompraLabel.textContent = 'IS sobre compra (0,8%)';
+      isCompraSub.textContent = 'Sobre o valor de compra';
+    }
     document.getElementById('res-is-credito').textContent = valorCredito > 0 ? formatEuro(isCredito) : '—';
     document.getElementById('res-total-impostos').textContent = formatEuro(totalImpostos);
     document.getElementById('res-total-aquisicao').textContent = formatEuro(totalAquisicao);
@@ -515,10 +543,18 @@
     // Pressupostos
     const pbox = document.getElementById('pressupostos-box');
     pbox.style.display = '';
+    let isCompraTxt;
+    if (tipoAtual === 'hpp-jovem' && isCompraIsento) {
+      isCompraTxt = 'IS compra: isento (jovem)';
+    } else if (tipoAtual === 'hpp-jovem' && !isCompraIsento) {
+      isCompraTxt = 'IS compra: 0,8% sobre o excesso da isenção';
+    } else {
+      isCompraTxt = 'IS compra: 0,8%';
+    }
     document.getElementById('pressupostos-text').textContent =
       `Valor de compra: ${formatEuro(valorCompra)} · ` +
       (valorCredito > 0 ? `Crédito: ${formatEuro(valorCredito)} · ` : '') +
-      `${nomeTabela} · IS compra: 0,8% · IS crédito: 0,6%`;
+      `${nomeTabela} · ${isCompraTxt} · IS crédito: 0,6%`;
   }
 
   function formatEuro(v) {
