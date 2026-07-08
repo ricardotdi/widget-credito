@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: transparent; }
+  .box { display: inline-block; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden; font-size: 13px; min-width: 220px; width: 100%; }
+  .header { background: #A19276; color: #fff; text-align: center; padding: 7px 12px; font-weight: bold; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .group-label { padding: 6px 14px 3px; font-size: 10px; font-weight: bold; color: #A19276; text-transform: uppercase; letter-spacing: 0.05em; background: #fff; }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 5px 14px; background: #fff; }
+  .row-label { color: #374151; font-weight: 500; font-size: 12.5px; }
+  .row-val { font-weight: bold; font-size: 12.5px; color: #A19276; white-space: nowrap; }
+  .divider { height: 1px; background: #e5e7eb; margin: 4px 0; }
+  .footer { background: #f9fafb; text-align: center; padding: 5px 10px; font-size: 9.5px; color: #9ca3af; border-top: 1px solid #e5e7eb; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="header">Dados para o Simulador</div>
+
+  <div class="group-label">Taxa Euribor %</div>
+  <div class="row">
+    <span class="row-label">Euribor 3 meses</span>
+    <span class="row-val" id="e3m">...</span>
+  </div>
+  <div class="row">
+    <span class="row-label">Euribor 6 meses</span>
+    <span class="row-val" id="e6m">...</span>
+  </div>
+  <div class="row">
+    <span class="row-label">Euribor 12 meses</span>
+    <span class="row-val" id="e12m">...</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="group-label">Spread mínimo — Habitação</div>
+  <div class="row">
+    <span class="row-label">Aquisição</span>
+    <span class="row-val">desde 0,60%</span>
+  </div>
+  <div class="row">
+    <span class="row-label">Construção</span>
+    <span class="row-val">desde 1,00%</span>
+  </div>
+  <div class="row">
+    <span class="row-label">Transferência</span>
+    <span class="row-val">desde 0,75%</span>
+  </div>
+
+  <div class="footer" id="footer-ref">
+    Euribor: a carregar... · Fonte: BCE<br>
+    Spread: <span id="spread-mes"></span> · Fonte: mercado PT
+  </div>
+</div>
+
+<script>
+  var meses = ["janeiro","fevereiro","março","abril","maio","junho",
+               "julho","agosto","setembro","outubro","novembro","dezembro"];
+  var d = new Date();
+  document.getElementById("spread-mes").textContent =
+    meses[d.getMonth()] + " " + d.getFullYear();
+
+  fetch("https://euribor-proxy.ricardotdi.workers.dev")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById("e3m").textContent  = data.e3m  + "%";
+      document.getElementById("e6m").textContent  = data.e6m  + "%";
+      document.getElementById("e12m").textContent = data.e12m + "%";
+      document.getElementById("footer-ref").innerHTML =
+        "Euribor: " + data.date + " · Fonte: BCE<br>" +
+        "Spread: " + meses[d.getMonth()] + " " + d.getFullYear() + " · Fonte: mercado PT";
+    })
+    .catch(function() {
+      ["e3m","e6m","e12m"].forEach(function(id) {
+        document.getElementById(id).textContent = "n/d";
+      });
+      document.getElementById("footer-ref").innerHTML =
+        "Euribor: dados indisponíveis<br>" +
+        "Spread: " + meses[d.getMonth()] + " " + d.getFullYear() + " · Fonte: mercado PT";
+    });
+</script>
+</body>
+</html>
