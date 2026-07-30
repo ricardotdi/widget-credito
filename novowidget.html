@@ -750,6 +750,18 @@
       const status = document.getElementById("status-sim");
       status.textContent = ""; status.className = "status";
 
+      // Limpar resultados anteriores — evita mostrar/exportar dados de uma simulação válida
+      // anterior enquanto os novos dados ainda não passaram na validação.
+      ["res-prestacao","res-tan","res-prazo","res-total","res-taeg","res-te","res-dsti"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "—";
+      });
+      const teItemReset = document.getElementById("res-te-item");
+      if (teItemReset) teItemReset.style.display = "none";
+      const dstiItemReset = document.getElementById("res-dsti-item");
+      if (dstiItemReset) dstiItemReset.style.display = "none";
+      ultimaSim = null;
+
       // Prazo máximo por idade (Recomendação BdP n.º 1/2026, art.º 7.º) + limite prático de 75 anos
       const idade = parseInt(document.getElementById("idade").value);
       if (anos && idade) {
@@ -879,6 +891,16 @@
       const anos = parseInt(document.getElementById("anos").value);
       const status = document.getElementById("status-sim");
       status.textContent = ""; status.className = "status";
+      const idadeExp = parseInt(document.getElementById("idade").value);
+      if (anos && idadeExp) {
+        const prazoEscalaoExp = idadeExp <= 35 ? 40 : 35;
+        const maxPrazoIdadeExp = Math.max(0, Math.min(prazoEscalaoExp, 75 - idadeExp));
+        if (anos > maxPrazoIdadeExp) {
+          status.textContent = "Prazo excede o máximo permitido pela idade (" + maxPrazoIdadeExp + " anos). Simule novamente com um prazo válido.";
+          status.classList.add("err");
+          return;
+        }
+      }
       if (tipoTaxaAtual === "mista") {
         const tanFixa = parseFloat(document.getElementById("mista-tan-value").value);
         const prazoFixaAnos = parseInt(document.getElementById("mista-prazo-value").value);
@@ -1016,6 +1038,16 @@
       const anos = parseInt(document.getElementById("anos").value);
       const status = document.getElementById("status-sim");
       status.textContent = ""; status.className = "status";
+      const idadeExp = parseInt(document.getElementById("idade").value);
+      if (anos && idadeExp) {
+        const prazoEscalaoExp = idadeExp <= 35 ? 40 : 35;
+        const maxPrazoIdadeExp = Math.max(0, Math.min(prazoEscalaoExp, 75 - idadeExp));
+        if (anos > maxPrazoIdadeExp) {
+          status.textContent = "Prazo excede o máximo permitido pela idade (" + maxPrazoIdadeExp + " anos). Simule novamente com um prazo válido.";
+          status.classList.add("err");
+          return;
+        }
+      }
 
       // ── Validação e cálculo por tipo de taxa ──
       let meses, taxaAnual, taxaMensal, prestacao, tipoTaxaLabel;

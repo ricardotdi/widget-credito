@@ -608,6 +608,13 @@
   function simular() {
     var st = document.getElementById("status-sim");
     st.textContent = ""; st.className = "status";
+    // Limpar resultados anteriores — evita mostrar/exportar dados de uma simulação válida anterior
+    // enquanto os novos dados ainda não passaram na validação.
+    document.getElementById("dsti-compare-wrap").style.display = "none";
+    document.getElementById("dsti-novo-wrap").style.display = "none";
+    document.getElementById("savings-wrap").style.display = "none";
+    ["res-prestacao-atual","res-prestacao-nova","res-mtic","res-taeg","res-tan","res-capital"].forEach(function(id){ document.getElementById(id).textContent = "—"; });
+    ultimaSim = null;
 
     var hipoteca = parseFloat(document.getElementById("hipoteca-inscrita").value);
     var capitalAtual = parseFloat(document.getElementById("capital-atual").value);
@@ -723,6 +730,15 @@
     var st = document.getElementById("status-sim");
     var capitalNovo = parseFloat((document.getElementById("res-capital").textContent||"").replace(/[^\d,]/g,"").replace(",",".")) || 0;
     var prazo = parseInt(document.getElementById("novo-prazo").value);
+    var idade1Exp = parseInt(document.getElementById("idade-prop1").value);
+    var idade2Exp = parseInt(document.getElementById("idade-prop2").value);
+    var idadesExp = [idade1Exp, idade2Exp].filter(function(v){ return !isNaN(v) && v > 0; });
+    if (prazo && idadesExp.length > 0) {
+      var idadeMaisVelhaExp = Math.max.apply(null, idadesExp);
+      var prazoEscalaoExp = idadeMaisVelhaExp <= 35 ? 40 : 35;
+      var maxPrazoIdadeExp = Math.max(0, Math.min(prazoEscalaoExp, 75 - idadeMaisVelhaExp));
+      if (prazo > maxPrazoIdadeExp) { st.textContent = "Prazo excede o máximo permitido pela idade dos proponentes (" + maxPrazoIdadeExp + " anos). Simule novamente com um prazo válido."; st.className="status err"; return; }
+    }
     var tipo = document.getElementById("novo-tipo-taxa").value;
     var taxaAnual, taxaMensal;
     if (tipo === "fixa") {
@@ -758,6 +774,15 @@
     var st = document.getElementById("status-sim");
     var capitalNovo = parseFloat((document.getElementById("res-capital").textContent||"").replace(/[^\d,]/g,"").replace(",",".")) || 0;
     var prazo = parseInt(document.getElementById("novo-prazo").value);
+    var idade1Exp = parseInt(document.getElementById("idade-prop1").value);
+    var idade2Exp = parseInt(document.getElementById("idade-prop2").value);
+    var idadesExp = [idade1Exp, idade2Exp].filter(function(v){ return !isNaN(v) && v > 0; });
+    if (prazo && idadesExp.length > 0) {
+      var idadeMaisVelhaExp = Math.max.apply(null, idadesExp);
+      var prazoEscalaoExp = idadeMaisVelhaExp <= 35 ? 40 : 35;
+      var maxPrazoIdadeExp = Math.max(0, Math.min(prazoEscalaoExp, 75 - idadeMaisVelhaExp));
+      if (prazo > maxPrazoIdadeExp) { st.textContent = "Prazo excede o máximo permitido pela idade dos proponentes (" + maxPrazoIdadeExp + " anos). Simule novamente com um prazo válido."; st.className="status err"; return; }
+    }
     var tipo = document.getElementById("novo-tipo-taxa").value;
     var taxaAnual, taxaMensal;
     if (tipo === "fixa") {
