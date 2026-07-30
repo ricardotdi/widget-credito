@@ -687,6 +687,17 @@ function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 // ── AUTH ───────────────────────────────────────────────────────────────────
+async function apiFetch(url, options = {}) {
+  const headers = { ...(options.headers || {}), Authorization: `Bearer ${adminToken}` };
+  const r = await fetch(url, { ...options, headers });
+  if (r.status === 401) {
+    logout();
+    showToast('Sessão expirada. Faça login novamente.', true);
+    throw new Error('unauthorized');
+  }
+  return r;
+}
+
 async function adminLogin() {
   const pass = document.getElementById('admin-pass').value;
   try {
@@ -697,7 +708,8 @@ async function adminLogin() {
     });
     const d = await r.json();
     if (d.success) {
-      adminToken = pass;
+      adminToken = d.token;
+      sessionStorage.setItem('finmais_admin_token', adminToken);
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       loadClients();
@@ -711,15 +723,26 @@ async function adminLogin() {
 
 function logout() {
   adminToken = null;
+  sessionStorage.removeItem('finmais_admin_token');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('admin-pass').value = '';
 }
 
+(function restoreAdminSession() {
+  const saved = sessionStorage.getItem('finmais_admin_token');
+  if (saved) {
+    adminToken = saved;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadClients();
+  }
+})();
+
 // ── CLIENTES ───────────────────────────────────────────────────────────────
 async function loadClients() {
   try {
-    const r = await fetch(`${API}/admin/clients`);
+    const r = await apiFetch(`${API}/admin/clients`);
     clients = await r.json();
     renderTable();
   } catch {
@@ -781,7 +804,7 @@ async function createClient() {
   if (!name || !email) return showToast('Nome e email são obrigatórios', true);
 
   try {
-    const r = await fetch(`${API}/admin/clients`, {
+    const r = await apiFetch(`${API}/admin/clients`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, phone, concelho, processNumber }),
@@ -802,7 +825,7 @@ async function createClient() {
 async function deleteClient(id) {
   if (!confirm('Eliminar este cliente? Esta ação é irreversível.')) return;
   try {
-    await fetch(`${API}/admin/clients/${id}`, { method: 'DELETE' });
+    await apiFetch(`${API}/admin/clients/${id}`, { method: 'DELETE' });
     showToast('Cliente eliminado');
     if (currentClientId === id) closeDetail();
     loadClients();
@@ -813,7 +836,7 @@ async function deleteClient(id) {
 
 async function sendInvite(clientId) {
   try {
-    const r = await fetch(`${API}/admin/invite`, {
+    const r = await apiFetch(`${API}/admin/invite`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clientId }),
@@ -920,7 +943,7 @@ function renderProcessCard(clientId, proc) {
 // ── STEPS ──────────────────────────────────────────────────────────────────
 async function setStep(clientId, processId, step) {
   try {
-    await fetch(`${API}/admin/clients/${clientId}/processes/${processId}/step`, {
+    await apiFetch(`${API}/admin/clients/${clientId}/processes/${processId}/step`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ step }),
@@ -946,7 +969,7 @@ async function saveNewProcess() {
   if (!number) return showToast('Nº do processo obrigatório', true);
 
   try {
-    const r = await fetch(`${API}/admin/clients/${currentClientId}/processes`, {
+    const r = await apiFetch(`${API}/admin/clients/${currentClientId}/processes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ number }),
@@ -986,7 +1009,7 @@ async function saveNewWindow() {
   if (!start || !end) return showToast('Datas obrigatórias', true);
 
   try {
-    const r = await fetch(`${API}/admin/clients/${currentClientId}/processes/${currentProcessId}/upload-windows`, {
+    const r = await apiFetch(`${API}/admin/clients/${currentClientId}/processes/${currentProcessId}/upload-windows`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start: new Date(start).toISOString(), end: new Date(end).toISOString(), note }),
@@ -1009,7 +1032,7 @@ async function saveNewWindow() {
 async function deleteWindow(clientId, processId, windowId) {
   if (!confirm('Remover esta janela de upload?')) return;
   try {
-    await fetch(`${API}/admin/clients/${clientId}/processes/${processId}/upload-windows/${windowId}`, { method: 'DELETE' });
+    await apiFetch(`${API}/admin/clients/${clientId}/processes/${processId}/upload-windows/${windowId}`, { method: 'DELETE' });
     showToast('Janela removida');
     await loadClients();
     const c = clients.find(x => x.id === clientId);
@@ -1020,8 +1043,21 @@ async function deleteWindow(clientId, processId, windowId) {
 }
 
 // ── EXPORTAR CSV ───────────────────────────────────────────────────────────
-function exportCSV() {
-  window.open(`${API}/admin/export`, '_blank');
+async function exportCSV() {
+  try {
+    const r = await apiFetch(`${API}/admin/export`);
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'clientes-finmais.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch {
+    showToast('Erro ao exportar', true);
+  }
 }
 
 // Fechar modais ao clicar fora

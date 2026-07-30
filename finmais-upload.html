@@ -699,6 +699,7 @@ const STEPS = [
 ];
 
 let currentUser = null;
+let clientToken = null;
 let clientData = null;
 let selectedFiles = [];
 let currentProcessIndex = 0;
@@ -751,11 +752,24 @@ window.addEventListener('load', async () => {
 
   // Sessão guardada?
   const saved = sessionStorage.getItem('finmais_user');
-  if (saved) {
+  const savedToken = sessionStorage.getItem('finmais_token');
+  if (saved && savedToken) {
     currentUser = JSON.parse(saved);
+    clientToken = savedToken;
     await loadClientData();
   }
 });
+
+async function apiFetch(url, options = {}) {
+  const headers = { ...(options.headers || {}), Authorization: `Bearer ${clientToken}` };
+  const r = await fetch(url, { ...options, headers });
+  if (r.status === 401) {
+    doLogout();
+    showToast('Sessão expirada. Faça login novamente.', true);
+    throw new Error('unauthorized');
+  }
+  return r;
+}
 
 // ── ATIVAR CONTA ───────────────────────────────────────────────────────────
 async function doActivate() {
@@ -803,7 +817,9 @@ async function doLogin() {
     const d = await r.json();
     if (d.success) {
       currentUser = d.client;
+      clientToken = d.token;
       sessionStorage.setItem('finmais_user', JSON.stringify(currentUser));
+      sessionStorage.setItem('finmais_token', clientToken);
       await loadClientData();
     } else {
       errEl.textContent = d.message || 'Credenciais inválidas';
@@ -815,7 +831,9 @@ async function doLogin() {
 
 function doLogout() {
   sessionStorage.removeItem('finmais_user');
+  sessionStorage.removeItem('finmais_token');
   currentUser = null;
+  clientToken = null;
   clientData = null;
   showScreen('screen-login');
 }
@@ -823,7 +841,7 @@ function doLogout() {
 // ── CARREGAR DADOS ─────────────────────────────────────────────────────────
 async function loadClientData() {
   try {
-    const r = await fetch(`${API}/client/me?email=${encodeURIComponent(currentUser.email)}`);
+    const r = await apiFetch(`${API}/client/me?email=${encodeURIComponent(currentUser.email)}`);
     clientData = await r.json();
     renderApp();
   } catch {
@@ -962,7 +980,7 @@ async function doUpload() {
   document.getElementById('upload-progress').style.display = 'block';
 
   try {
-    const r = await fetch(`${API}/upload`, { method: 'POST', body: form });
+    const r = await apiFetch(`${API}/upload`, { method: 'POST', body: form });
     const d = await r.json();
 
     document.getElementById('upload-progress').style.display = 'none';
