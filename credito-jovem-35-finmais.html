@@ -779,6 +779,26 @@
     var status = document.getElementById("status-sim");
     status.textContent = ""; status.className = "status";
 
+    // Limpar resultados de crédito anteriores — evita mostrar/exportar dados de uma
+    // simulação válida anterior enquanto os novos dados ainda não passaram na validação.
+    ["res-prestacao","res-tan","res-prazo","res-total","res-taeg","res-te","res-dsti"].forEach(function(id){
+      var el = document.getElementById(id); if (el) el.textContent = "—";
+    });
+    document.getElementById("res-te-item").style.display = "none";
+    document.getElementById("res-dsti-item").style.display = "none";
+    ultimaSim = null;
+
+    // Prazo máximo por idade (Recomendação BdP n.º 1/2026, art.º 7.º) + limite prático de 75 anos
+    if (anos && idade) {
+      var prazoEscalao = idade <= 35 ? 40 : 35;
+      var maxPrazoIdade = Math.max(0, Math.min(prazoEscalao, 75 - idade));
+      if (anos > maxPrazoIdade) {
+        status.textContent = "Prazo excede o máximo permitido pela idade (" + maxPrazoIdade + " anos).";
+        status.classList.add("err");
+        return;
+      }
+    }
+
     // ── Benefício jovem (IMT + Selo) ──
     var benefitBlock = document.getElementById("benefit-block");
     var benefitNote = document.getElementById("benefit-note");
