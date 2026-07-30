@@ -804,18 +804,24 @@
       if (prazo > maxPrazoIdadeExp) { st.textContent = "Prazo excede o máximo permitido pela idade dos proponentes (" + maxPrazoIdadeExp + " anos). Simule novamente com um prazo válido."; st.className="status err"; return; }
     }
     var tipo = document.getElementById("novo-tipo-taxa").value;
-    var taxaAnual, taxaMensal;
+    var taxaAnual, taxaMensal, taxaDetalhe, mistaPrazoFixo, mistaEur, mistaSpread;
     if (tipo === "fixa") {
       taxaAnual = parseFloat(document.getElementById("novo-tan-fixo").value);
       if (isNaN(taxaAnual)){ st.textContent="Preencha os dados antes de exportar."; st.className="status err"; return; }
+      taxaDetalhe = "Fixa — TAN: " + taxaAnual.toFixed(2) + "%";
     } else if (tipo === "mista") {
       taxaAnual = parseFloat(document.getElementById("mista-tan-fixo").value);
+      mistaPrazoFixo = parseInt(document.getElementById("mista-prazo-fixo").value);
+      mistaEur = parseFloat(document.getElementById("mista-euribor").value);
+      mistaSpread = parseFloat(document.getElementById("mista-spread").value);
       if (isNaN(taxaAnual)){ st.textContent="Preencha os dados antes de exportar."; st.className="status err"; return; }
+      taxaDetalhe = "Mista — Fase fixa (" + (isNaN(mistaPrazoFixo) ? "—" : mistaPrazoFixo) + " anos): TAN " + taxaAnual.toFixed(2) + "% | Fase variável: Euribor " + (isNaN(mistaEur) ? "—" : mistaEur.toFixed(2) + "%") + " + Spread " + (isNaN(mistaSpread) ? "—" : mistaSpread.toFixed(2) + "%");
     } else {
       var eur=parseFloat(document.getElementById("novo-euribor").value);
       var spread=parseFloat(document.getElementById("novo-spread").value);
       if(isNaN(eur)||isNaN(spread)){ st.textContent="Preencha os dados antes de exportar."; st.className="status err"; return; }
       taxaAnual=eur+spread;
+      taxaDetalhe = "Variável — Euribor: " + eur.toFixed(2) + "% + Spread: " + spread.toFixed(2) + "% (TAN: " + taxaAnual.toFixed(2) + "%)";
     }
     taxaMensal = taxaAnual / 100 / 12;
     if (!capitalNovo || !prazo){ st.textContent="Simule primeiro."; st.className="status err"; return; }
@@ -855,8 +861,7 @@
       ["Montante a libertar", montanteLibertarVal ? montanteLibertarVal + " €" : "—"],
       ["Capital total financiado", document.getElementById("res-capital").textContent],
       ["Prazo", prazo+" anos ("+(prazo*12)+" meses)"],
-      ["Tipo de taxa", tipo.charAt(0).toUpperCase()+tipo.slice(1)],
-      ["TAN", document.getElementById("res-tan").textContent],
+      ["Tipo de taxa", taxaDetalhe],
       ["TAEG", document.getElementById("res-taeg").textContent],
       ["Nova prestação", document.getElementById("res-prestacao-nova").textContent],
       ["Prestação atual", document.getElementById("res-prestacao-atual").textContent],
@@ -864,7 +869,8 @@
       ["Variação da prestação mensal", document.getElementById("res-poupanca-eur").textContent],
       ["Rendimento líquido mensal", rendimentoVal ? rendimentoVal + " €" : "—"],
       ["Encargos mensais atuais", encargosVal ? encargosVal + " €" : "—"],
-      ["Taxa de Esforço (TE)", document.getElementById("te-antes").textContent + " → " + document.getElementById("te-depois").textContent],
+      ["Taxa de Esforço (TE) — antes", document.getElementById("te-antes").textContent],
+      ["Taxa de Esforço (TE) — depois", document.getElementById("te-depois").textContent],
       ["DSTI do novo crédito (stress BdP)", document.getElementById("dsti-novo-val").textContent + " " + document.getElementById("dsti-novo-sub").textContent]
     ];
     doc.autoTable({startY:headerBottom+6,head:[["Parâmetro","Valor"]],body:resumo,theme:"grid",
