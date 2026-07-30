@@ -1098,7 +1098,7 @@
         saldo = Math.max(saldo, 0);
         prestacaoVariavel = taxaMensalVariavel === 0 ? saldo / mesesVariaveis : saldo * (taxaMensalVariavel / (1 - Math.pow(1 + taxaMensalVariavel, -mesesVariaveis)));
         isMista = true;
-        tipoTaxaLabel = "Mista — Fixa " + prazoFixaAnos + "a: TAN " + tanFixa.toFixed(2) + "% | Variável: " + taxaVariavel.toFixed(2) + "%"
+        tipoTaxaLabel = "Mista — Fase fixa (" + prazoFixaAnos + " anos): TAN " + tanFixa.toFixed(2) + "% | Fase variável: Euribor " + euriborMista.toFixed(2) + "% + Spread " + spreadMista.toFixed(2) + "% (TAN: " + taxaVariavel.toFixed(2) + "%)"
           + (mesesCarenciaPDF ? " · carência " + mesesCarenciaPDF + "m" : "");
       } else {
         const euribor = tipoTaxaAtual === "fixa" ? 0 : parseFloat(document.getElementById("euribor").value);
@@ -1116,7 +1116,7 @@
         prestacao = taxaMensal === 0 ? valor / mesesAmortPDF : valor * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -mesesAmortPDF)));
         tipoTaxaLabel = tipoTaxaAtual === "fixa"
           ? "Fixa — TAN: " + spread.toFixed(2) + "%"
-          : "Variável — Euribor: " + euribor.toFixed(2) + "% | Spread: " + spread.toFixed(2) + "%";
+          : "Variável — Euribor: " + euribor.toFixed(2) + "% + Spread: " + spread.toFixed(2) + "% (TAN: " + taxaAnual.toFixed(2) + "%)";
       }
 
       // ── PDF ──
@@ -1161,7 +1161,6 @@
           ["Valor do empréstimo", valor.toLocaleString("pt-PT", {style:"currency", currency:"EUR"})],
           ["Prazo", anos + " anos (" + meses + " meses)" + (mesesCarenciaPDF ? " · carência " + mesesCarenciaPDF + "m" : "")],
           ["Tipo de Taxa", tipoTaxaLabel],
-          ["TAN", taxaAnual.toFixed(2) + " %"],
           ["TAEG", taegPDF > 0 ? taegPDF.toFixed(2) + " %" : "—"],
           ["Prestação mensal", prestacao.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})],
           ["MTIC (custo total)", totalPago.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})]
