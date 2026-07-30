@@ -535,15 +535,15 @@
         var prestStress, metodo;
         if (s.tipo === "fixa") {
           prestStress = prestNova; shock = 0;
-          metodo = "taxa fixa: sem choque";
+          metodo = "taxa fixa: sem choque de juros (a prestação não varia com a Euribor)";
         } else if (s.tipo === "mista") {
           var txVarStress = (s.taxaVariavel + shock) / 100 / 12;
           prestStress = calcPrestacao(s.capitalNovo, txVarStress, s.meses);
-          metodo = "fase variável +" + shock.toFixed(1).replace(".", ",") + " pp";
+          metodo = "choque de +" + shock.toFixed(1).replace(".", ",") + " pp na fase variável (teste de esforço BdP a taxa de juro)";
         } else {
           var txStress = (s.taxaAnual + shock) / 100 / 12;
           prestStress = calcPrestacao(s.capitalNovo, txStress, s.meses);
-          metodo = "Euribor +" + shock.toFixed(1).replace(".", ",") + " pp";
+          metodo = "choque de +" + shock.toFixed(1).replace(".", ",") + " pp na Euribor (teste de esforço BdP a taxa de juro)";
         }
         var dstiDepois = prestStress / rend * 100;
         var valEl = document.getElementById("dsti-novo-val");

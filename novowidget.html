@@ -594,15 +594,15 @@
 
       if (s.tipo === "fixa") {
         prestacaoStress = prestacaoReal; shock = 0;
-        metodo = "taxa fixa: sem choque";
+        metodo = "taxa fixa: sem choque de juros (a prestação não varia com a Euribor)";
       } else if (s.tipo === "variavel") {
         var txStress = (s.taxaAnual + shock) / 100 / 12;
         prestacaoStress = pmtDSTI(s.valor, txStress, mesesAmort);
-        metodo = "Euribor +" + shock.toFixed(1).replace(".", ",") + " pp";
+        metodo = "choque de +" + shock.toFixed(1).replace(".", ",") + " pp na Euribor (teste de esforço BdP a taxa de juro)";
       } else { // mista — choque sobre a fase variável (cenário conservador)
         var txVarStress = (s.taxaVariavel + shock) / 100 / 12;
         prestacaoStress = pmtDSTI(s.valor, txVarStress, mesesAmort);
-        metodo = "fase variável +" + shock.toFixed(1).replace(".", ",") + " pp";
+        metodo = "choque de +" + shock.toFixed(1).replace(".", ",") + " pp na fase variável (teste de esforço BdP a taxa de juro)";
       }
 
       var dsti = ((prestacaoStress + outros) / rendimento) * 100;
@@ -749,6 +749,18 @@
       const carencia = parseInt(document.getElementById("carencia").value) || 0;
       const status = document.getElementById("status-sim");
       status.textContent = ""; status.className = "status";
+
+      // Prazo máximo por idade (Recomendação BdP n.º 1/2026, art.º 7.º) + limite prático de 75 anos
+      const idade = parseInt(document.getElementById("idade").value);
+      if (anos && idade) {
+        const prazoEscalao = idade <= 35 ? 40 : 35;
+        const maxPrazoIdade = Math.max(0, Math.min(prazoEscalao, 75 - idade));
+        if (anos > maxPrazoIdade) {
+          status.textContent = "Prazo excede o máximo permitido pela idade (" + maxPrazoIdade + " anos).";
+          status.classList.add("err");
+          return;
+        }
+      }
 
       if (tipoTaxaAtual === "mista") {
         const tanFixa = parseFloat(document.getElementById("mista-tan-value").value);

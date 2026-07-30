@@ -728,15 +728,15 @@
 
     if (s.tipo === "fixa") {
       prestacaoStress = prestacaoReal; shock = 0;
-      metodo = "taxa fixa: sem choque";
+      metodo = "taxa fixa: sem choque de juros (a prestação não varia com a Euribor)";
     } else if (s.tipo === "variavel") {
       var txStress = (s.taxaAnual + shock) / 100 / 12;
       prestacaoStress = pmtDSTI(s.valor, txStress, mesesAmort);
-      metodo = "Euribor +" + shock.toFixed(1).replace(".", ",") + " pp";
+      metodo = "choque de +" + shock.toFixed(1).replace(".", ",") + " pp na Euribor (teste de esforço BdP a taxa de juro)";
     } else { // mista — choque sobre a fase variável (cenário conservador do BdP)
       var txVarStress = (s.taxaVariavel + shock) / 100 / 12;
       prestacaoStress = pmtDSTI(s.valor, txVarStress, mesesAmort);
-      metodo = "fase variável +" + shock.toFixed(1).replace(".", ",") + " pp";
+      metodo = "choque de +" + shock.toFixed(1).replace(".", ",") + " pp na fase variável (teste de esforço BdP a taxa de juro)";
     }
 
     var dsti = ((prestacaoStress + outros) / rendimento) * 100;
