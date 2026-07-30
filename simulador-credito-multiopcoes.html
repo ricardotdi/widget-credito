@@ -493,7 +493,8 @@
       return;
     }
     var idadeMaisVelha = Math.max.apply(null, idades);
-    var maxPrazoIdade = Math.max(0, 75 - idadeMaisVelha);
+    var prazoEscalao = idadeMaisVelha <= 35 ? 40 : 35; // Recomendação BdP 1/2026, art.º 7.º
+    var maxPrazoIdade = Math.max(0, Math.min(prazoEscalao, 75 - idadeMaisVelha));
 
     if (!isNaN(remanescente) && remanescente > 0 && remanescente >= maxPrazoIdade) {
       novoPrazoField.value = remanescente;
@@ -546,8 +547,8 @@
         var dstiDepois = prestStress / rend * 100;
         var valEl = document.getElementById("dsti-novo-val");
         valEl.textContent = dstiDepois.toFixed(1) + "%";
-        valEl.style.color = dstiDepois > 50 ? "#dc2626" : dstiDepois > 40 ? "#d97706" : "#1d4ed8";
-        document.getElementById("dsti-novo-sub").textContent = metodo + " · limite 50%";
+        valEl.style.color = dstiDepois > 45 ? "#dc2626" : dstiDepois > 35 ? "#d97706" : "#1d4ed8";
+        document.getElementById("dsti-novo-sub").textContent = metodo + " · limite 45%";
         dstiWrap.style.display = "";
       } else {
         dstiWrap.style.display = "none";
@@ -628,7 +629,9 @@
     var idade2 = parseInt(document.getElementById("idade-prop2").value);
     var idades = [idade1, idade2].filter(function(v){ return !isNaN(v) && v > 0; });
     if (idades.length > 0) {
-      var maxPrazoIdade = Math.max(0, 75 - Math.max.apply(null, idades));
+      var idadeMaisVelhaVal = Math.max.apply(null, idades);
+      var prazoEscalaoVal = idadeMaisVelhaVal <= 35 ? 40 : 35; // Recomendação BdP 1/2026, art.º 7.º
+      var maxPrazoIdade = Math.max(0, Math.min(prazoEscalaoVal, 75 - idadeMaisVelhaVal));
       var remanescente = parseFloat(document.getElementById("prazo-remanescente").value);
       var limitePrazo = (!isNaN(remanescente) && remanescente > 0 && remanescente >= maxPrazoIdade) ? remanescente : maxPrazoIdade;
       if (prazo > limitePrazo) { st.textContent = "Prazo excede o máximo permitido pela idade dos proponentes (" + limitePrazo + " anos)."; st.className="status err"; return; }

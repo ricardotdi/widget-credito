@@ -425,12 +425,8 @@
 
     const euribor = euriborValor ?? 2.454;
 
-    // Prazo máximo: mínimo entre escalão de idade (BdP) e limite de 75 anos no fim do contrato
-    let prazoEscalao;
-    if (idade <= 30) prazoEscalao = 40;
-    else if (idade <= 35) prazoEscalao = 37;
-    else if (idade <= 45) prazoEscalao = 35;
-    else prazoEscalao = 30;
+    // Prazo máximo: mínimo entre escalão de idade (Recomendação BdP 1/2026, art.º 7.º) e limite de 75 anos no fim do contrato
+    const prazoEscalao = idade <= 35 ? 40 : 35;
     const prazoAnos = Math.min(prazoEscalao, 75 - idade);
     const prazoMeses = prazoAnos * 12;
 

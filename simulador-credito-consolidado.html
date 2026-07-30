@@ -198,6 +198,11 @@
             <input id="novo-prazo" type="number" min="1" max="50" step="1" placeholder="ex: 30" oninput="calcPrazoVariavel()" />
           </div>
           <div class="field">
+            <label>Idade do mutuário mais velho</label>
+            <input id="idade" type="number" min="18" max="80" step="1" placeholder="ex: 40" />
+            <small>Determina o prazo máximo (Recomendação BdP n.º 1/2026).</small>
+          </div>
+          <div class="field">
             <label>Tipo de taxa</label>
             <select id="novo-tipo-taxa" onchange="onTipoTaxaChange()">
               <option value="variavel">Variável</option>
@@ -543,8 +548,8 @@
         var dstiDepois = prestStress / rend * 100;
         var valEl = document.getElementById("dsti-novo-val");
         valEl.textContent = dstiDepois.toFixed(1) + "%";
-        valEl.style.color = dstiDepois > 50 ? "#dc2626" : dstiDepois > 40 ? "#d97706" : "#1d4ed8";
-        document.getElementById("dsti-novo-sub").textContent = metodo + " · limite 50%";
+        valEl.style.color = dstiDepois > 45 ? "#dc2626" : dstiDepois > 35 ? "#d97706" : "#1d4ed8";
+        document.getElementById("dsti-novo-sub").textContent = metodo + " · limite 45%";
         dstiWrap.style.display = "";
       } else {
         dstiWrap.style.display = "none";
@@ -613,6 +618,12 @@
     var tipo = document.getElementById("novo-tipo-taxa").value;
     var extra = parseFloat(document.getElementById("novo-extra").value) || 0;
     if (!prazo || prazo < 1 || prazo > 50) { st.textContent = "Prazo inválido (1–50 anos)."; st.className="status err"; return; }
+    var idade = parseInt(document.getElementById("idade").value);
+    if (idade) {
+      var prazoEscalao = idade <= 35 ? 40 : 35; // Recomendação BdP 1/2026, art.º 7.º
+      var maxPrazoIdade = Math.max(0, Math.min(prazoEscalao, 75 - idade));
+      if (prazo > maxPrazoIdade) { st.textContent = "Prazo excede o máximo permitido pela idade (" + maxPrazoIdade + " anos)."; st.className="status err"; return; }
+    }
     var taxaAnual, taxaMensal;
     if (tipo === "fixa") {
       taxaAnual = parseFloat(document.getElementById("novo-tan-fixo").value);
@@ -679,7 +690,7 @@
     document.getElementById("creditos-list").innerHTML = "";
     creditosCount = 0;
     adicionarCredito();
-    ["imovel-valor","novo-prazo","novo-euribor","novo-spread","novo-extra","novo-tan-fixo",
+    ["imovel-valor","novo-prazo","idade","novo-euribor","novo-spread","novo-extra","novo-tan-fixo",
      "mista-prazo-fixo","mista-tan-fixo","mista-prazo-variavel","mista-euribor","mista-spread","rendimento"].forEach(function(id){
       var el = document.getElementById(id); if (el) el.value = "";
     });

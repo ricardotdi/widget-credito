@@ -309,6 +309,11 @@
               <input id="anos" type="number" min="5" max="50" step="1" placeholder="ex: 30" oninput="calcPrazoVariavel(); validarCampos();" />
               <small>Prazo total do contrato.</small>
             </div>
+            <div class="field">
+              <label>Idade do mutuário mais velho</label>
+              <input id="idade" type="number" min="18" max="80" step="1" placeholder="ex: 35" oninput="validarCampos();" />
+              <small>Determina o prazo máximo (Recomendação BdP n.º 1/2026).</small>
+            </div>
           </div>
           <!-- Campos Variável / Fixa (ocultos em modo mista) -->
           <div id="taxa-extra-fields" class="inputs-grid" style="margin-top:14px;">
@@ -602,8 +607,8 @@
 
       var dsti = ((prestacaoStress + outros) / rendimento) * 100;
       dstiEl.textContent = dsti.toFixed(1) + " %";
-      dstiEl.style.color = corEsforco(dsti, 40, 50);
-      dstiSub.textContent = metodo + " · limite 50%";
+      dstiEl.style.color = corEsforco(dsti, 35, 45);
+      dstiSub.textContent = metodo + " · limite 45%";
       dstiItem.style.display = "";
     }
 
@@ -656,6 +661,17 @@
         campoAnos.title = "Prazo entre 1 e 50 anos";
       } else { campoAnos.style.borderColor = ""; campoAnos.title = ""; }
 
+      // Prazo máximo por idade (Recomendação BdP n.º 1/2026, art.º 7.º)
+      const idade = parseInt(document.getElementById("idade").value);
+      if (anos && idade) {
+        const prazoEscalao = idade <= 35 ? 40 : 35;
+        const maxPrazoIdade = Math.max(0, Math.min(prazoEscalao, 75 - idade));
+        if (anos > maxPrazoIdade) {
+          campoAnos.style.borderColor = "#ef4444";
+          campoAnos.title = "Prazo máximo permitido pela idade: " + maxPrazoIdade + " anos";
+        }
+      }
+
       // Valor
       const campoValor = document.getElementById("valor");
       if (valor && valor < 1000) {
@@ -690,7 +706,7 @@
     // ── Limpar simulação ──
     function limparSimulacao() {
       // Inputs principais
-      ["valor","anos","euribor","spread","carencia"].forEach(id => {
+      ["valor","anos","idade","euribor","spread","carencia"].forEach(id => {
         const el = document.getElementById(id);
         if (el) { el.value = ""; el.style.borderColor = ""; el.title = ""; }
       });
