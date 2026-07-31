@@ -380,15 +380,17 @@
   const STRESS_DELTA = 1.50; // BdP: TAN stress = TAN base + 1.5pp
   let euriborValor = null;
 
-  // ── Fetch Euribor 6M do Cloudflare Worker ──
+  // ── Fetch Euribor 6M do worker (dados alimentados a partir do Supabase) ──
+  // O worker devolve { e3m: [...], e6m: [...], e12m: [...] }, cada uma uma série
+  // mensal ordenada de { date, rate }; o valor atual é o último elemento de "e6m".
   async function fetchEuribor() {
     try {
-      const res = await fetch("https://euribor-daily.ricardotdi.workers.dev/");
+      const res = await fetch("https://euribor-daily.ricardotdi.workers.dev/?t=" + Date.now());
       const data = await res.json();
-      // Worker devolve { euribor6m: 2.454, date: "2025-04" } ou similar
-      const val = data.euribor6m ?? data.rate ?? data.value ?? null;
-      if (val !== null) {
-        euriborValor = parseFloat(val);
+      const serie = data.e6m;
+      const ultimo = serie && serie.length ? serie[serie.length - 1] : null;
+      if (ultimo && ultimo.rate != null) {
+        euriborValor = parseFloat(ultimo.rate);
         document.getElementById("euribor-tag-text").textContent =
           "Euribor 6M: " + euriborValor.toFixed(3) + "% · atualizado automaticamente";
       } else {
