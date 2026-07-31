@@ -830,10 +830,13 @@
     var doc = new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
     var pageW = doc.internal.pageSize.getWidth();
     var pageH = doc.internal.pageSize.getHeight();
+    var agora = new Date();
+    var dataHoraTxt = "Simulado em " + agora.toLocaleDateString("pt-PT") + " às " + agora.toLocaleTimeString("pt-PT", {hour:"2-digit", minute:"2-digit"});
 
     function addHF(pn) {
       doc.setDrawColor(220,220,220); doc.line(10,pageH-14,pageW-10,pageH-14);
       doc.setFontSize(9); doc.setTextColor(130,130,130);
+      doc.text(dataHoraTxt, 10, pageH-8, {align:"left"});
       doc.text("www.finmais.pt", pageW/2, pageH-8, {align:"center"});
       doc.text("Pág. "+pn, pageW-10, pageH-8, {align:"right"});
     }

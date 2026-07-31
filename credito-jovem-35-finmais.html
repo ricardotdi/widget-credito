@@ -1134,13 +1134,16 @@
       taxaTxt = "Taxa mista — Fixa " + (s.mesesFixos/12) + " anos (TAN " + s.tanFixa.toFixed(2).replace(".", ",") + " %) + Variável (Euribor " + document.getElementById("mista-euribor").value + " % + Spread " + document.getElementById("mista-spread").value + " %, TAN " + s.taxaVariavel.toFixed(2).replace(".", ",") + " %)";
     }
 
+    var agora = new Date();
+    var dataHoraTxt = "Simulado em " + agora.toLocaleDateString("pt-PT") + " às " + agora.toLocaleTimeString("pt-PT", {hour:"2-digit", minute:"2-digit"});
     function footer() {
       var h = doc.internal.pageSize.getHeight();
       doc.setDrawColor(161,146,118); doc.setLineWidth(0.4); doc.line(10, h - 16, 200, h - 16);
       doc.setFontSize(8); doc.setTextColor(120,120,120); doc.setFont(undefined,"normal");
       doc.text("www.finmais.pt", 10, h - 10);
       doc.text("Registado no Banco de Portugal n.º 8693", 10, h - 6);
-      doc.text("Simulação indicativa, sem caráter vinculativo.", 200, h - 8, { align: "right" });
+      doc.text(dataHoraTxt, 200, h - 10, { align: "right" });
+      doc.text("Simulação indicativa, sem caráter vinculativo.", 200, h - 6, { align: "right" });
       doc.setTextColor(60,60,60);
     }
     var headerBottom = desenharCabecalhoFinmais(doc, pageW);

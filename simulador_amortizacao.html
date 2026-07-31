@@ -968,6 +968,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         pdfColMonth: "Mês", pdfColPhase: "Fase", pdfColPay: "Prestação", pdfColInt: "Juros",
         pdfColAmort: "Amort.", pdfColExtra: "Entrega", pdfColFee: "Comissão", pdfColBalance: "Saldo",
         pdfFooter: "Documento meramente indicativo · não substitui informação oficial da instituição de crédito",
+        pdfGeneratedAt: "Simulado em ",
         pdfPage: "Pág. ",
         phaseFixed: "Fixa", phaseVar: "Variável",
         // Excel
@@ -1069,6 +1070,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         pdfColMonth: "Month", pdfColPhase: "Phase", pdfColPay: "Instalment", pdfColInt: "Interest",
         pdfColAmort: "Capital", pdfColExtra: "Overpay", pdfColFee: "Fee", pdfColBalance: "Balance",
         pdfFooter: "Indicative document only · does not replace official information from the lender",
+        pdfGeneratedAt: "Generated on ",
         pdfPage: "P. ",
         phaseFixed: "Fixed", phaseVar: "Variable",
         xlsTitle: "Overpayment Simulation — Home Loan",
@@ -1615,12 +1617,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       const pageH = doc.internal.pageSize.getHeight();
 
       const paginasComRodape = {};
+      const agora = new Date();
+      const dataHoraTxt = t("pdfGeneratedAt") + agora.toLocaleDateString(t("locale")) + " " + agora.toLocaleTimeString(t("locale"), {hour:"2-digit", minute:"2-digit"});
       function rodape(pageNum) {
         if (paginasComRodape[pageNum]) return;
         paginasComRodape[pageNum] = true;
         doc.setDrawColor(220, 220, 220);
         doc.line(10, pageH - 14, pageW - 10, pageH - 14);
         doc.setFontSize(8); doc.setTextColor(140, 140, 140);
+        doc.text(dataHoraTxt, 10, pageH - 9, { align: "left" });
         doc.text(t("pdfFooter"), pageW / 2, pageH - 9, { align: "center" });
         doc.text(t("pdfPage") + pageNum, pageW - 10, pageH - 9, { align: "right" });
       }

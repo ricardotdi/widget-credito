@@ -1124,11 +1124,14 @@
       const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
+      const agora = new Date();
+      const dataHoraTxt = "Simulado em " + agora.toLocaleDateString("pt-PT") + " às " + agora.toLocaleTimeString("pt-PT", {hour:"2-digit", minute:"2-digit"});
 
       function addHeaderFooter(pageNum) {
         doc.setDrawColor(220, 220, 220);
         doc.line(10, pageH - 14, pageW - 10, pageH - 14);
         doc.setFontSize(9); doc.setTextColor(130, 130, 130);
+        doc.text(dataHoraTxt, 10, pageH - 8, { align: "left" });
         doc.text("www.finmais.pt", pageW / 2, pageH - 8, { align: "center" });
         doc.text("Pág. " + pageNum, pageW - 10, pageH - 8, { align: "right" });
       }
@@ -1144,10 +1147,12 @@
         const mesesFixosEfetivos2 = mesesFixos - mesesCarenciaPDF;
         const jurosCarenciaMista = taxaMensalFixa2 === 0 ? 0 : valor * taxaMensalFixa2 * mesesCarenciaPDF;
         const totalPago = jurosCarenciaMista + prestacaoFixa * mesesFixosEfetivos2 + prestacaoVariavel * mesesVariaveis;
+        const taegMistaPDF = document.getElementById("res-taeg").textContent;
         resumo = [
           ["Valor do empréstimo", valor.toLocaleString("pt-PT", {style:"currency", currency:"EUR"})],
           ["Prazo total", anos + " anos (" + meses + " meses)" + (mesesCarenciaPDF ? " · carência " + mesesCarenciaPDF + "m" : "")],
           ["Tipo de Taxa", tipoTaxaLabel],
+          ["TAEG", taegMistaPDF],
           ["Prestação (fase fixa)", prestacaoFixa.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})],
           ["Prestação (fase variável)", prestacaoVariavel.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})],
           ["MTIC (custo total)", totalPago.toLocaleString("pt-PT", {style:"currency", currency:"EUR", maximumFractionDigits:2})]
