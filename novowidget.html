@@ -1127,7 +1127,10 @@
       const agora = new Date();
       const dataHoraTxt = "Simulado em " + agora.toLocaleDateString("pt-PT") + " às " + agora.toLocaleTimeString("pt-PT", {hour:"2-digit", minute:"2-digit"});
 
+      const paginasComRodape = {};
       function addHeaderFooter(pageNum) {
+        if (paginasComRodape[pageNum]) return;
+        paginasComRodape[pageNum] = true;
         doc.setDrawColor(220, 220, 220);
         doc.line(10, pageH - 14, pageW - 10, pageH - 14);
         doc.setFontSize(9); doc.setTextColor(130, 130, 130);
