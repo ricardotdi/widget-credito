@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulador de Crédito Habitação – Fin+</title>
+  <link rel="icon" type="image/png" href="data:image/png;base64,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">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #A19276;
+      --primary-dark: #8a7d65;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 14px;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #f5f0ea, #f9fafb);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    .widget-root { max-width: 860px; margin: 30px auto; padding: 20px; }
+    @media (max-width: 480px) { .widget-root { margin: 10px auto; padding: 10px; } }
+
+    .widget-card {
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    @media (max-width: 480px) { .widget-card { padding: 16px; border-radius: 16px; } }
+
+    .widget-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 8px;
+    }
+    .widget-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    @media (max-width: 480px) { .widget-title { font-size: 1.15rem; } }
+    .widget-subtitle { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+    .badge {
+      font-size: 0.75rem; padding: 4px 10px; border-radius: 999px;
+      background: rgba(161, 146, 118, 0.08); color: #8a7d65;
+      border: 1px solid rgba(161, 146, 118, 0.35); white-space: nowrap;
+    }
+
+    .section-title {
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    .inputs-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 640px) { .inputs-grid { grid-template-columns: 1fr; } }
+
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+    .field small { font-size: 0.75rem; color: var(--muted); }
+
+    .stepper {
+      display: flex; align-items: center;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: #f9fafb; overflow: hidden;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .stepper:focus-within {
+      border-color: var(--primary); background: #fff;
+      box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.35);
+    }
+    .stepper button {
+      background: none; border: none; cursor: pointer;
+      padding: 10px 14px; font-size: 1.1rem; color: var(--primary);
+      font-weight: 700; line-height: 1; flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .stepper button:hover { background: rgba(161,146,118,0.08); }
+    .stepper input {
+      flex: 1; border: none; outline: none; text-align: center;
+      font-size: 0.95rem; font-weight: 600; background: transparent;
+      color: var(--text); min-width: 0; padding: 10px 0;
+    }
+    .stepper input::-webkit-outer-spin-button,
+    .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .stepper input[type=number] { -moz-appearance: textfield; }
+
+    .btn-calcular {
+      width: 100%; padding: 14px; border-radius: 999px; border: none;
+      background: var(--primary); color: #fff; font-size: 1rem; font-weight: 600;
+      letter-spacing: 0.04em; cursor: pointer; text-transform: uppercase;
+      box-shadow: 0 10px 25px rgba(161, 146, 118, 0.35);
+      transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
+      margin-bottom: 24px;
+    }
+    .btn-calcular:hover {
+      background: var(--primary-dark); transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(161, 146, 118, 0.4);
+    }
+
+    .results-box {
+      background: rgba(15, 23, 42, 0.02); border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.35); padding: 18px;
+    }
+
+    .result-main {
+      background: #fff; border-radius: 14px; padding: 18px 20px;
+      border: 1px solid rgba(226,232,240,0.9); text-align: center;
+      margin-bottom: 14px;
+    }
+    .result-main-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+    .result-main-value { font-size: 2.1rem; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
+    .result-main-sub { font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
+
+    .pressupostos {
+      background: rgba(161,146,118,0.04); border-radius: 12px;
+      padding: 12px 14px; border: 1px solid rgba(161,146,118,0.15);
+    }
+    .pressupostos-title { font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .pressupostos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    @media (max-width: 640px) { .pressupostos-grid { grid-template-columns: repeat(2, 1fr); } }
+    .pressuposto-item { font-size: 0.78rem; color: var(--muted); }
+    .pressuposto-item span { color: var(--text); font-weight: 700; display: block; font-size: 0.92rem; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+    .nota {
+      margin-top: 16px; padding: 12px 14px; border-radius: 12px;
+      background: rgba(59, 130, 246, 0.04); border: 1px solid rgba(59,130,246,0.12);
+      font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+    }
+    .nota strong { color: var(--text); }
+
+    .lead-card {
+      background: #0f172a; color: #e5e7eb; border-radius: 18px;
+      padding: 20px; margin-top: 20px; position: relative; overflow: hidden;
+      text-align: center;
+    }
+    .lead-card::before {
+      content: ""; position: absolute; inset: -40%;
+      background: radial-gradient(circle at top right, rgba(161,146,118,0.18), transparent 55%);
+      pointer-events: none;
+    }
+    .lead-inner { position: relative; z-index: 1; }
+    .lead-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+    .lead-subtitle { font-size: 0.85rem; color: #9ca3af; margin-bottom: 16px; }
+    .lead-btn-full {
+      width: 100%; border-radius: 999px; border: none; padding: 14px 20px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      background: var(--primary); color: #fff; letter-spacing: 0.02em;
+      transition: background 0.15s, transform 0.1s;
+      box-shadow: 0 10px 25px rgba(161, 146, 118, 0.35);
+    }
+    .lead-btn-full:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .lead-note { font-size: 0.72rem; color: #9ca3af; margin-top: 10px; }
+
+    .branding { text-align: center; margin-top: 18px; font-size: 0.75rem; color: var(--muted); }
+    .branding a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+    .cookie-banner {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 999;
+      background: #0f172a; color: #e2e8f0; padding: 14px 18px;
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+      flex-wrap: wrap; font-size: 0.8rem; box-shadow: 0 -8px 24px rgba(0,0,0,0.25);
+    }
+    .cookie-banner a { color: #cbd5e1; text-decoration: underline; }
+    .cookie-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .cookie-btn { border: none; border-radius: 999px; padding: 7px 14px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+    .cookie-accept { background: var(--primary); color: #fff; }
+    .cookie-essential { background: transparent; color: #cbd5e1; border: 1px solid rgba(203,213,225,0.4); }
+  </style>
+</head>
+<body>
+<div class="widget-root">
+  <div class="widget-card">
+
+    <div class="widget-header">
+      <div>
+        <div class="widget-title">Simulador de Crédito Habitação</div>
+        <div class="widget-subtitle">Descobre a tua prestação estimada em poucos segundos.</div>
+      </div>
+      <div class="badge">Simulação indicativa</div>
+    </div>
+
+    <div class="section-title">Os teus dados</div>
+    <div class="inputs-grid">
+      <div class="field">
+        <label>Montante do empréstimo (€)</label>
+        <div class="stepper">
+          <button type="button" onclick="step('montante', -5000)">−</button>
+          <input type="number" id="montante" value="150000" min="10000" max="1000000" step="5000" oninput="calcular()" />
+          <button type="button" onclick="step('montante', 5000); calcular()">+</button>
+        </div>
+        <small>Valor total a pedir ao banco</small>
+      </div>
+      <div class="field">
+        <label>Idade do cliente</label>
+        <div class="stepper">
+          <button type="button" onclick="step('idade', -1)">−</button>
+          <input type="number" id="idade" value="35" min="18" max="74" step="1" oninput="calcular()" />
+          <button type="button" onclick="step('idade', 1); calcular()">+</button>
+        </div>
+        <small>Determina o prazo máximo (regra do Banco de Portugal)</small>
+      </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="results-box" id="results-box">
+      <div class="result-main">
+        <div class="result-main-label">Prestação mensal estimada</div>
+        <div class="result-main-value" id="res-prestacao">—</div>
+        <div class="result-main-sub">TAN indicativa de 3,00% · sistema de prestação constante</div>
+      </div>
+
+      <div class="pressupostos">
+        <div class="pressupostos-title">Dados da simulação</div>
+        <div class="pressupostos-grid">
+          <div class="pressuposto-item">Montante do empréstimo<span id="p-montante">—</span></div>
+          <div class="pressuposto-item">Idade do cliente<span id="p-idade">—</span></div>
+          <div class="pressuposto-item">Prazo máximo (BdP)<span id="p-prazo">—</span></div>
+          <div class="pressuposto-item">TAN utilizada<span id="p-tan">3,00%</span></div>
+        </div>
+      </div>
+
+      <div class="nota">
+        <strong>Nota:</strong> Simulação indicativa, sem caráter vinculativo. A TAN de 3,00% é utilizada apenas para efeitos de demonstração e não corresponde à TAEG nem a uma proposta de crédito. As condições finais — incluindo taxa, TAEG e prazo — dependem da instituição de crédito, do perfil de risco do cliente e da avaliação de solvabilidade.
+        <br /><br />
+        Ricardo Vagner Paiva Custódio, intermediário de crédito vinculado, registado junto do Banco de Portugal com o n.º 8693.
+      </div>
+    </div>
+
+    <!-- CTA de lead -->
+    <div class="lead-card">
+      <div class="lead-inner">
+        <div class="lead-title">Queres saber se consegues mesmo estas condições?</div>
+        <div class="lead-subtitle">Fala com um especialista Fin+, sem compromisso.</div>
+        <button class="lead-btn-full" onclick="irParaContacto()">Quero ser contactado por um especialista</button>
+        <div class="lead-note">Sem custos. Sem compromisso. Resposta rápida.</div>
+      </div>
+    </div>
+
+    <div class="branding">
+      <a href="https://www.finmais.pt" target="_blank">finmais.pt</a> · Intermediário de Crédito n.º 8693
+    </div>
+
+  </div>
+</div>
+
+<div class="cookie-banner" id="cookie-banner" style="display:none;">
+  <span>Utilizamos cookies para melhorar a sua experiência. Consulte a nossa <a href="https://www.finmais.pt/politica-de-privacidade" target="_blank">Política de Privacidade</a>.</span>
+  <div class="cookie-actions">
+    <button class="cookie-btn cookie-essential" onclick="cookieChoice('essenciais')">Apenas essenciais</button>
+    <button class="cookie-btn cookie-accept" onclick="cookieChoice('todos')">Aceitar todos</button>
+  </div>
+</div>
+
+<script>
+  // ── Prazo máximo por idade (Recomendação Macroprudencial do BdP n.º 1/2026, art.º 7.º, em vigor desde 1/8/2026) ──
+  function prazoMaximo(idade) {
+    const prazoEscalao = idade <= 35 ? 40 : 35;
+    return Math.max(0, Math.min(prazoEscalao, 75 - idade));
+  }
+
+  function pmt(montante, tanPercent, prazoAnos) {
+    const i = tanPercent / 100 / 12;
+    const n = prazoAnos * 12;
+    if (n <= 0) return 0;
+    if (i === 0) return montante / n;
+    return montante * (i / (1 - Math.pow(1 + i, -n)));
+  }
+
+  function formatEuro(v) {
+    return v.toLocaleString("pt-PT", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function formatEuroInt(v) {
+    return v.toLocaleString("pt-PT", { style: "currency", currency: "EUR", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+
+  let ultimaSimulacao = null;
+
+  function calcular() {
+    const montante = parseFloat(document.getElementById("montante").value) || 0;
+    const idade = parseInt(document.getElementById("idade").value) || 35;
+    const prazoAnos = prazoMaximo(idade);
+
+    if (prazoAnos <= 0) {
+      document.getElementById("res-prestacao").textContent = "—";
+      document.getElementById("p-prazo").textContent = "Idade excede o limite";
+      ultimaSimulacao = null;
+      return;
+    }
+
+    const prestacao = pmt(montante, 3, prazoAnos);
+
+    document.getElementById("res-prestacao").textContent = formatEuro(prestacao) + " /mês";
+    document.getElementById("p-montante").textContent = formatEuroInt(montante);
+    document.getElementById("p-idade").textContent = idade + " anos";
+    document.getElementById("p-prazo").textContent = prazoAnos + " anos";
+    document.getElementById("p-tan").textContent = "3,00%";
+
+    ultimaSimulacao = { montante, idade, prazoAnos, prestacao: Math.round(prestacao * 100) / 100 };
+  }
+
+  function step(id, delta) {
+    const el = document.getElementById(id);
+    const val = parseFloat(el.value) || 0;
+    const min = parseFloat(el.min ?? -Infinity);
+    const max = parseFloat(el.max ?? Infinity);
+    el.value = Math.max(min, Math.min(max, val + delta));
+  }
+
+  function irParaContacto() {
+    if (!ultimaSimulacao) calcular();
+    const s = ultimaSimulacao || {};
+    const params = new URLSearchParams({
+      montante: s.montante ?? "",
+      idade: s.idade ?? "",
+      prazo: s.prazoAnos ?? "",
+      prestacao: s.prestacao ?? "",
+      tan: "3"
+    });
+    window.location.href = "lead-credito-habitacao.html?" + params.toString();
+  }
+
+  // ── Cookie banner ──
+  (function () {
+    if (!localStorage.getItem("finmais_cookie_choice")) {
+      document.getElementById("cookie-banner").style.display = "flex";
+    }
+  })();
+  function cookieChoice(choice) {
+    localStorage.setItem("finmais_cookie_choice", choice);
+    document.getElementById("cookie-banner").style.display = "none";
+  }
+
+  calcular();
+</script>
+</body>
+</html>

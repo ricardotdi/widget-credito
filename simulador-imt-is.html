@@ -215,7 +215,7 @@
     <div class="toggle-group" style="margin-bottom:20px;">
       <button class="toggle-btn active" onclick="setTipo('hpp')" id="btn-hpp">HPP</button>
       <button class="toggle-btn" onclick="setTipo('hpp-jovem')" id="btn-hpp-jovem">HPP Jovem ≤ 35 anos</button>
-      <button class="toggle-btn" onclick="setTipo('habitacao')" id="btn-habitacao">Habitação Secundária</button>
+      <button class="toggle-btn" onclick="setTipo('habitacao')" id="btn-habitacao">Habitação Secundária / Arrendamento</button>
     </div>
 
     <!-- Região -->
@@ -230,13 +230,13 @@
     <div class="inputs-grid-3">
       <div class="field">
         <label>Valor de compra (€)</label>
-        <input type="number" id="valor-compra" value="200000" min="0" step="1000" />
+        <input type="number" id="valor-compra" value="200000" min="0" step="1000" oninput="validarLTV()" />
         <small>Valor escriturado do imóvel</small>
       </div>
       <div class="field">
         <label>Valor do crédito (€)</label>
-        <input type="number" id="valor-credito" value="160000" min="0" step="1000" />
-        <small>Montante financiado pelo banco</small>
+        <input type="number" id="valor-credito" value="160000" min="0" step="1000" oninput="validarLTV()" />
+        <small id="hint-credito-max">Montante financiado pelo banco</small>
       </div>
       <div class="field" id="field-idade" style="display:none;">
         <label>Idade do comprador</label>
@@ -429,6 +429,15 @@
     ],
   };
 
+  // ── LTV máximo (rácio crédito/valor do imóvel) por tipo de habitação ──
+  // Recomendação/Aviso do Banco de Portugal: 90% em HPP, 100% para jovens ≤35 anos
+  // (garantia pública), 80% em habitação secundária ou para arrendamento.
+  const LTV_MAX = {
+    'hpp': 0.90,
+    'hpp-jovem': 1.00,
+    'habitacao': 0.80,
+  };
+
   const NOMES_TABELAS = {
     'continente-hpp':        'Tabela I — Continente HPP',
     'continente-hpp-jovem':  'Tabela II — Continente HPP Jovem',
@@ -457,6 +466,30 @@
       document.getElementById('btn-' + t).classList.toggle('active', t === tipo);
     });
     document.getElementById('field-idade').style.display = tipo === 'hpp-jovem' ? '' : 'none';
+    validarLTV();
+  }
+
+  // Verifica o crédito face ao LTV máximo legal do tipo de habitação selecionado
+  // e atualiza a dica junto ao campo. Não bloqueia a digitação — apenas avisa;
+  // o bloqueio efetivo acontece em calcular().
+  function validarLTV() {
+    const valorCompra  = parseFloat(document.getElementById('valor-compra').value)  || 0;
+    const valorCredito = parseFloat(document.getElementById('valor-credito').value) || 0;
+    const ltv = LTV_MAX[tipoAtual];
+    const creditoMax = valorCompra * ltv;
+    const hint = document.getElementById('hint-credito-max');
+    const campoCredito = document.getElementById('valor-credito');
+
+    hint.textContent = 'Montante financiado pelo banco · máx. legal ' + (ltv * 100).toFixed(0) + '%' +
+      (valorCompra > 0 ? ' (' + formatEuro(creditoMax) + ')' : '');
+
+    if (valorCompra > 0 && valorCredito > creditoMax + 0.01) {
+      campoCredito.style.borderColor = '#dc2626';
+      hint.style.color = '#dc2626';
+    } else {
+      campoCredito.style.borderColor = '';
+      hint.style.color = '';
+    }
   }
 
   function setRegiao(regiao) {
@@ -482,6 +515,17 @@
         alert('Para a tabela de jovens a idade deve ser entre 18 e 35 anos.');
         return;
       }
+    }
+
+    // LTV máximo legal (rácio crédito/imóvel): 90% HPP, 100% HPP Jovem ≤35, 80% habitação
+    // secundária/arrendamento. Sem isto o simulador aceitava créditos superiores ao
+    // limite regulatório e mostrava um IS sobre crédito calculado sobre um valor impossível.
+    const ltvMax = LTV_MAX[tipoAtual];
+    const creditoMax = valorCompra * ltvMax;
+    if (valorCredito > creditoMax + 0.01) {
+      alert('O valor do crédito excede o limite legal de financiamento (' + (ltvMax * 100).toFixed(0) +
+        '% do valor do imóvel) para este tipo de habitação.\nValor máximo de crédito: ' + formatEuro(creditoMax) + '.');
+      return;
     }
 
     // Selecionar tabela
@@ -635,6 +679,8 @@
     dropdown.style.maxHeight = '0'; dropdown.style.opacity = '0'; dropdown.style.borderWidth = '0';
     arrow.style.transform = 'rotate(0deg)'; btn.style.borderRadius = '9px';
   }
+
+  validarLTV();
 </script>
 </body>
 </html>

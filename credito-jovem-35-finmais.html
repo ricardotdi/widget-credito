@@ -670,7 +670,7 @@
     if (valor && valor < 1000) { campoValor.style.borderColor = "#ef4444"; } else { campoValor.style.borderColor = ""; }
 
     var campoImovel = document.getElementById("valorImovel");
-    if (imovel && valor && valor > imovel) { campoImovel.style.borderColor = "#f59e0b"; campoImovel.title = "Empréstimo superior ao valor do imóvel"; }
+    if (imovel && valor && valor > imovel) { campoImovel.style.borderColor = "#ef4444"; campoImovel.title = "Empréstimo superior ao valor do imóvel"; }
     else { campoImovel.style.borderColor = ""; campoImovel.title = ""; }
 
     var campoCarencia = document.getElementById("carencia");
@@ -787,6 +787,13 @@
     document.getElementById("res-te-item").style.display = "none";
     document.getElementById("res-dsti-item").style.display = "none";
     ultimaSim = null;
+
+    // Empréstimo não pode exceder o valor do imóvel (LTV máximo de 100%)
+    if (imovel && valor && valor > imovel) {
+      status.textContent = "O valor do empréstimo não pode ser superior ao valor do imóvel.";
+      status.classList.add("err");
+      return;
+    }
 
     // Prazo máximo por idade (Recomendação BdP n.º 1/2026, art.º 7.º) + limite prático de 75 anos
     if (anos && idade) {
@@ -1115,6 +1122,17 @@
     var teEl = document.getElementById("res-te");
     var dstiEl = document.getElementById("res-dsti");
     var dstiSubEl = document.getElementById("res-dsti-sub");
+    var s = ultimaSim;
+    var carenciaVal = document.getElementById("carencia").value;
+
+    var taxaTxt;
+    if (s.tipo === "fixa") {
+      taxaTxt = "Taxa fixa — TAN: " + s.taxaAnual.toFixed(2).replace(".", ",") + " %";
+    } else if (s.tipo === "variavel") {
+      taxaTxt = "Taxa variável — Euribor: " + document.getElementById("euribor").value + " % + Spread: " + document.getElementById("spread").value + " % (TAN: " + s.taxaAnual.toFixed(2).replace(".", ",") + " %)";
+    } else {
+      taxaTxt = "Taxa mista — Fixa " + (s.mesesFixos/12) + " anos (TAN " + s.tanFixa.toFixed(2).replace(".", ",") + " %) + Variável (Euribor " + document.getElementById("mista-euribor").value + " % + Spread " + document.getElementById("mista-spread").value + " %, TAN " + s.taxaVariavel.toFixed(2).replace(".", ",") + " %)";
+    }
 
     function footer() {
       var h = doc.internal.pageSize.getHeight();
@@ -1133,8 +1151,24 @@
     doc.text("Valor do imóvel: " + (imovel ? formatEuro(parseFloat(imovel)) : "—"), 10, y); y += 6;
     doc.text("Valor do empréstimo: " + (emprestimo ? formatEuro(parseFloat(emprestimo)) : "—"), 10, y); y += 6;
     doc.text("Prazo: " + (prazoAnos ? prazoAnos + " anos" : "—"), 10, y); y += 6;
+    doc.text(taxaTxt, 10, y); y += 6;
+    doc.text("Carência de capital: " + (carenciaVal ? carenciaVal + " meses" : "0 meses"), 10, y); y += 6;
     doc.text("Idade do(a) titular mais novo(a): " + (idadeVal ? idadeVal + " anos" : "—"), 10, y); y += 6;
-    doc.text("Região: " + (regiaoAtual === "acores" ? "Açores e Madeira" : "Continente"), 10, y); y += 6;
+    doc.text("Região: " + (regiaoAtual === "acores" ? "Açores e Madeira" : "Continente"), 10, y); y += 8;
+
+    doc.setFont(undefined,"bold");
+    doc.text("Resultados da simulação", 10, y); y += 6;
+    doc.setFont(undefined,"normal");
+    if (s.tipo === "mista") {
+      doc.text("Prestação mensal: " + formatEuro(s.prestacaoFixa) + " (fase fixa) / " + formatEuro(s.prestacaoVariavel) + " (fase variável)", 10, y); y += 6;
+    } else {
+      doc.text("Prestação mensal: " + formatEuro(s.prestacao), 10, y); y += 6;
+    }
+    doc.text("Prazo total: " + s.anos + " anos (" + s.meses + " meses)" + (s.mesesCarencia ? " · carência " + s.mesesCarencia + " m" : ""), 10, y); y += 6;
+    doc.text("Custo total do crédito (MTIC): " + formatEuro(s.totalPago), 10, y); y += 6;
+    var taegTxt = document.getElementById("res-taeg").textContent;
+    doc.text("TAEG: " + (taegTxt && taegTxt !== "—" ? taegTxt : "—"), 10, y); y += 8;
+
     doc.text("Rendimento líquido mensal: " + (rendimentoVal ? rendimentoVal + " €" : "—"), 10, y); y += 6;
     doc.text("Outros encargos mensais: " + (outrosVal ? outrosVal + " €" : "—"), 10, y); y += 6;
     doc.text("Taxa de Esforço (TE): " + (teEl ? teEl.textContent : "—"), 10, y); y += 6;
