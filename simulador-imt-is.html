@@ -81,14 +81,14 @@
 
     /* Toggle */
     .toggle-group {
-      display: flex; gap: 0; border: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--border);
       border-radius: 10px; overflow: hidden; margin-bottom: 20px;
     }
     .toggle-btn {
-      flex: 1; padding: 9px 8px; text-align: center; cursor: pointer;
+      flex: 1 1 auto; min-width: 130px; padding: 9px 8px; text-align: center; cursor: pointer;
       font-size: 0.82rem; font-weight: 500; color: var(--muted);
       background: #f9fafb; border: none; transition: all 0.2s;
-      border-right: 1px solid var(--border);
+      border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
     }
     .toggle-btn:last-child { border-right: none; }
     .toggle-btn.active { background: var(--primary); color: #fff; }
@@ -216,11 +216,13 @@
       <button class="toggle-btn active" onclick="setTipo('hpp')" id="btn-hpp">HPP</button>
       <button class="toggle-btn" onclick="setTipo('hpp-jovem')" id="btn-hpp-jovem">HPP Jovem ≤ 35 anos</button>
       <button class="toggle-btn" onclick="setTipo('habitacao')" id="btn-habitacao">Habitação Secundária / Arrendamento</button>
+      <button class="toggle-btn" onclick="setTipo('rustico')" id="btn-rustico">Prédios Rústicos</button>
+      <button class="toggle-btn" onclick="setTipo('urbano-outras')" id="btn-urbano-outras">Prédios Urbanos e Outras Aquisições Onerosas</button>
     </div>
 
     <!-- Região -->
-    <div class="section-title">Região</div>
-    <div class="toggle-group" style="margin-bottom:20px;">
+    <div class="section-title" id="regiao-title">Região</div>
+    <div class="toggle-group" style="margin-bottom:20px;" id="regiao-group">
       <button class="toggle-btn active" onclick="setRegiao('continente')" id="btn-continente">Continente</button>
       <button class="toggle-btn" onclick="setRegiao('autonomas')" id="btn-autonomas">Açores / Madeira</button>
     </div>
@@ -447,6 +449,18 @@
     'autonomas-habitacao':   'Tabela VI — Regiões Autónomas Habitação',
   };
 
+  // ── Taxas únicas (art.º 17.º, n.os 1 e 3, do CIMT) ──
+  // Prédios rústicos e "outros" prédios urbanos/aquisições onerosas (não habitação):
+  // taxa fixa sobre o valor de compra, sem escalões e sem distinção Continente/Açores.
+  const TAXA_FIXA = {
+    'rustico': 0.05,
+    'urbano-outras': 0.065,
+  };
+  const NOMES_TAXA_FIXA = {
+    'rustico': 'Taxa única — Prédios Rústicos (art.º 17.º, n.º 1 CIMT)',
+    'urbano-outras': 'Taxa única — Prédios Urbanos e Outras Aquisições Onerosas (art.º 17.º, n.º 3 CIMT)',
+  };
+
   function calcularIMT(valor, tabela) {
     for (const escalao of tabela) {
       if (valor <= escalao.limite) {
@@ -462,10 +476,15 @@
 
   function setTipo(tipo) {
     tipoAtual = tipo;
-    ['hpp','hpp-jovem','habitacao'].forEach(t => {
+    ['hpp','hpp-jovem','habitacao','rustico','urbano-outras'].forEach(t => {
       document.getElementById('btn-' + t).classList.toggle('active', t === tipo);
     });
     document.getElementById('field-idade').style.display = tipo === 'hpp-jovem' ? '' : 'none';
+    // Prédios rústicos e "outros" urbanos usam taxa única a nível nacional
+    // (art.º 17.º, n.os 1 e 3 do CIMT); a distinção Continente/Açores não se aplica.
+    const semRegiao = tipo === 'rustico' || tipo === 'urbano-outras';
+    document.getElementById('regiao-title').style.display = semRegiao ? 'none' : '';
+    document.getElementById('regiao-group').style.display = semRegiao ? 'none' : '';
     validarLTV();
   }
 
@@ -476,10 +495,19 @@
     const valorCompra  = parseFloat(document.getElementById('valor-compra').value)  || 0;
     const valorCredito = parseFloat(document.getElementById('valor-credito').value) || 0;
     const ltv = LTV_MAX[tipoAtual];
-    const creditoMax = valorCompra * ltv;
     const hint = document.getElementById('hint-credito-max');
     const campoCredito = document.getElementById('valor-credito');
 
+    // Prédios rústicos/urbanos não habitacionais não são "crédito habitação" e por isso
+    // não têm o limite de LTV da Recomendação do BdP; não há máximo a validar aqui.
+    if (ltv === undefined) {
+      hint.textContent = 'Montante financiado pelo banco';
+      campoCredito.style.borderColor = '';
+      hint.style.color = '';
+      return;
+    }
+
+    const creditoMax = valorCompra * ltv;
     hint.textContent = 'Montante financiado pelo banco · máx. legal ' + (ltv * 100).toFixed(0) + '%' +
       (valorCompra > 0 ? ' (' + formatEuro(creditoMax) + ')' : '');
 
@@ -518,24 +546,33 @@
     }
 
     // LTV máximo legal (rácio crédito/imóvel): 90% HPP, 100% HPP Jovem ≤35, 80% habitação
-    // secundária/arrendamento. Sem isto o simulador aceitava créditos superiores ao
-    // limite regulatório e mostrava um IS sobre crédito calculado sobre um valor impossível.
+    // secundária/arrendamento. Não se aplica a prédios rústicos/urbanos não habitacionais,
+    // que não são "crédito habitação" na aceção da Recomendação do BdP.
     const ltvMax = LTV_MAX[tipoAtual];
-    const creditoMax = valorCompra * ltvMax;
-    if (valorCredito > creditoMax + 0.01) {
-      alert('O valor do crédito excede o limite legal de financiamento (' + (ltvMax * 100).toFixed(0) +
-        '% do valor do imóvel) para este tipo de habitação.\nValor máximo de crédito: ' + formatEuro(creditoMax) + '.');
-      return;
+    if (ltvMax !== undefined) {
+      const creditoMax = valorCompra * ltvMax;
+      if (valorCredito > creditoMax + 0.01) {
+        alert('O valor do crédito excede o limite legal de financiamento (' + (ltvMax * 100).toFixed(0) +
+          '% do valor do imóvel) para este tipo de habitação.\nValor máximo de crédito: ' + formatEuro(creditoMax) + '.');
+        return;
+      }
     }
 
-    // Selecionar tabela
-    const chave = regiaoAtual + '-' + tipoAtual;
-    const tabela = TABELAS[chave];
-    const nomeTabela = NOMES_TABELAS[chave];
-
-    // Calcular IMT
-    // Base de incidência: o maior entre valor de compra e VPT (aqui usamos valor de compra)
-    const { imt, taxa } = calcularIMT(valorCompra, tabela);
+    // Calcular IMT: taxa fixa para rústicos/outros prédios urbanos (art.º 17.º CIMT),
+    // tabela de escalões para habitação.
+    let imt, taxa, nomeTabela, tabela;
+    if (TAXA_FIXA[tipoAtual] !== undefined) {
+      const taxaFixa = TAXA_FIXA[tipoAtual];
+      imt = valorCompra * taxaFixa;
+      taxa = (taxaFixa * 100).toFixed(1).replace('.', ',') + '% (taxa única)';
+      nomeTabela = NOMES_TAXA_FIXA[tipoAtual];
+    } else {
+      const chave = regiaoAtual + '-' + tipoAtual;
+      tabela = TABELAS[chave];
+      nomeTabela = NOMES_TABELAS[chave];
+      // Base de incidência: o maior entre valor de compra e VPT (aqui usamos valor de compra)
+      ({ imt, taxa } = calcularIMT(valorCompra, tabela));
+    }
 
     // IS sobre compra (verba 1.1 da TGIS): 0,8%
     // Na isenção jovem (HPP Jovem ≤ 35), o IS sobre a aquisição acompanha a isenção
