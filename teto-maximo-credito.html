@@ -390,6 +390,7 @@
   const DSTI_MAX = 0.45;
   const STRESS_DELTA = 1.50; // BdP: TAN stress = TAN base + 1.5pp
   let euriborValor = null;
+  let ultimoCalculo = null;
 
   // ── Fetch Euribor 6M do worker (dados alimentados a partir do Supabase) ──
   // O worker devolve { e3m: [...], e6m: [...], e12m: [...] }, cada uma uma série
@@ -485,8 +486,13 @@
     // DSTI real com taxa base
     const dstiReal = ((prestacaoBase + outras) / rendimento) * 100;
 
+    // TAEG e MTIC (à taxa base, não à taxa stressada)
+    const taeg = (Math.pow(1 + rMensalBase, 12) - 1) * 100;
+    const mtic = prestacaoBase * prazoMeses;
+    ultimoCalculo = { capitalMaximo, prazoMeses, prazoAnos, prestacaoBase, taeg, mtic };
+
     // Mostrar resultados
-    
+
     document.getElementById("res-montante").textContent = formatEuro(capitalMaximo);
     document.getElementById("res-prestacao").textContent = formatEuro(prestacaoBase);
     document.getElementById("res-prazo-label").textContent = "Prazo: " + prazoAnos + " anos";
@@ -571,7 +577,11 @@
     doc.text("Montante máximo financiável: " + document.getElementById("res-montante").textContent, 10, y); y += 6;
     doc.text(document.getElementById("res-prazo-label").textContent, 10, y); y += 6;
     doc.text("Prestação estimada: " + document.getElementById("res-prestacao").textContent, 10, y); y += 6;
-    doc.text("Taxa de esforço (à taxa atual): " + document.getElementById("res-dsti").textContent, 10, y); y += 8;
+    doc.text("Taxa de esforço (à taxa atual): " + document.getElementById("res-dsti").textContent, 10, y); y += 6;
+    if (ultimoCalculo) {
+      doc.text("TAEG: " + ultimoCalculo.taeg.toFixed(2) + "%", 10, y); y += 6;
+      doc.text("MTIC (custo total do crédito): " + formatEuro(ultimoCalculo.mtic), 10, y); y += 8;
+    } else { y += 2; }
 
     doc.setFont(undefined, "bold");
     doc.text("Pressupostos utilizados no cálculo", 10, y); y += 6;
