@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Simulador de Amortização de Crédito Habitação</title>
+  <link rel="icon" type="image/png" href="data:image/png;base64,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">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script>
 /*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
@@ -461,8 +462,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 </script>
   <style>
     :root {
-      --primary: #1d4ed8;
-      --primary-dark: #1e40af;
+      --primary: #A19276;
+      --primary-dark: #8a7d65;
       --accent: #16a34a;
       --warn: #dc2626;
       --bg: #f3f4f6;
@@ -477,7 +478,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #eef2ff, #f9fafb);
+      background: radial-gradient(circle at top left, #f5f0ea, #f9fafb);
       color: var(--text);
       overflow-x: hidden;
     }
@@ -497,18 +498,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     .widget-subtitle { font-size: 0.92rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
     .badge {
       display: inline-block; font-size: 0.72rem; padding: 4px 10px; border-radius: 999px;
-      background: rgba(29, 78, 216, 0.08); color: var(--primary);
-      border: 1px solid rgba(29, 78, 216, 0.3); margin-top: 8px;
+      background: rgba(161, 146, 118, 0.08); color: var(--primary);
+      border: 1px solid rgba(161, 146, 118, 0.3); margin-top: 8px;
     }
-    .lang-toggle {
-      display: inline-flex; background: #eef2ff; border-radius: 999px; padding: 3px 4px;
-      border: 1px solid rgba(29,78,216,0.2); flex-shrink: 0;
-    }
-    .lang-toggle span {
-      font-size: 0.8rem; font-weight: 600; padding: 5px 12px; border-radius: 999px; cursor: pointer;
-      color: var(--muted); white-space: nowrap; transition: .2s; user-select: none;
-    }
-    .lang-toggle span.active { background: var(--primary); color: #fff; }
     .layout {
       display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 26px;
     }
@@ -529,7 +521,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     .field input:focus, .field select:focus {
       border-color: var(--primary); background: #ffffff;
-      box-shadow: 0 0 0 1px rgba(29, 78, 216, 0.3);
+      box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.3);
     }
     .field small { font-size: 0.74rem; color: var(--muted); }
     .field input:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; border-color: #e5e7eb; }
@@ -548,14 +540,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     @media (max-width: 480px) { .taxa-toggle span { font-size: 0.75rem; padding: 6px 9px; } }
     .taxa-toggle span.active {
       background: var(--primary); color: #fff;
-      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+      box-shadow: 0 4px 12px rgba(161, 146, 118, 0.25);
     }
     .mista-inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     @media (max-width: 600px) { .mista-inner-grid { grid-template-columns: 1fr; } }
     .sub-head {
       font-size: 0.76rem; font-weight: 600; color: var(--primary);
       text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;
-      padding-bottom: 4px; border-bottom: 1px solid rgba(29,78,216,0.2);
+      padding-bottom: 4px; border-bottom: 1px solid rgba(161,146,118,0.2);
     }
     .actions-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
     .btn {
@@ -566,7 +558,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     .btn-primary {
       background: var(--primary); color: #fff;
-      box-shadow: 0 10px 25px rgba(29, 78, 216, 0.3);
+      box-shadow: 0 10px 25px rgba(161, 146, 118, 0.3);
     }
     .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
     .btn-ghost { background: rgba(15, 23, 42, 0.02); color: var(--muted); border: 1px solid var(--border); }
@@ -588,8 +580,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     .switch-label { font-size: 0.88rem; font-weight: 600; }
     .help { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
     .toggle-mini {
-      display: inline-flex; background: #eef2ff; border-radius: 999px; padding: 3px 4px;
-      border: 1px solid rgba(29,78,216,0.2); margin-top: 4px;
+      display: inline-flex; background: #f5f0ea; border-radius: 999px; padding: 3px 4px;
+      border: 1px solid rgba(161,146,118,0.2); margin-top: 4px;
     }
     .toggle-mini span {
       font-size: 0.78rem; padding: 5px 12px; border-radius: 999px; cursor: pointer;
@@ -631,14 +623,60 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     .inverse-result.hidden { display: none; }
     .edu-box {
       margin-top: 16px; padding: 14px 16px; border-radius: 14px;
-      background: #eff6ff; border: 1px solid rgba(29,78,216,0.2);
-      font-size: 0.85rem; color: #1e3a8a; line-height: 1.6;
+      background: rgba(161,146,118,0.06); border: 1px solid rgba(161,146,118,0.2);
+      font-size: 0.85rem; color: #5c5344; line-height: 1.6;
     }
-    .edu-box strong { color: #1d4ed8; }
+    .edu-box strong { color: #8a7d65; }
     .status { margin-top: 8px; font-size: 0.82rem; }
     .status.ok { color: #16a34a; }
     .status.err { color: #dc2626; }
     .disclaimer { font-size: 0.76rem; color: var(--muted); margin-top: 12px; line-height: 1.5; }
+
+    /* Lead card */
+    .lead-card {
+      background: #0f172a; color: #e5e7eb; border-radius: 18px;
+      padding: 18px; margin-top: 20px; position: relative; overflow: hidden;
+    }
+    .lead-card::before {
+      content: ""; position: absolute; inset: -40%;
+      background: radial-gradient(circle at top right, rgba(161,146,118,0.18), transparent 55%);
+      pointer-events: none;
+    }
+    .lead-inner { position: relative; z-index: 1; }
+    .lead-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+    .lead-subtitle { font-size: 0.8rem; color: #9ca3af; margin-bottom: 12px; }
+    .lead-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 480px) { .lead-grid { grid-template-columns: 1fr; } }
+    .lead-field label { font-size: 0.75rem; color: #9ca3af; margin-bottom: 3px; display: block; }
+    .lead-field input {
+      width: 100%; padding: 8px 10px; border-radius: 9px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: rgba(15,23,42,0.9); color: #e5e7eb; font-size: 0.85rem; outline: none;
+      box-sizing: border-box;
+    }
+    .lead-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px rgba(161,146,118,0.4); }
+    #horario-dropdown label:hover { background: rgba(161,146,118,0.15); color: #e5e7eb; }
+    .rgpd-wrap {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin: 12px 0 8px; padding: 10px 12px;
+      background: rgba(255,255,255,0.04); border-radius: 9px;
+      border: 1px solid rgba(148,163,184,0.2);
+    }
+    .rgpd-wrap input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; accent-color: var(--primary); width: 15px; height: 15px; cursor: pointer; }
+    .rgpd-wrap label { font-size: 0.72rem; color: #9ca3af; line-height: 1.5; cursor: pointer; }
+    .rgpd-wrap label a { color: var(--primary); text-decoration: underline; }
+    .lead-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .lead-note { font-size: 0.7rem; color: #9ca3af; }
+    .lead-btn {
+      border-radius: 999px; border: none; padding: 8px 18px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      background: var(--primary); color: #fff;
+      transition: background 0.15s;
+    }
+    .lead-btn:hover { background: var(--primary-dark); }
+
+    .branding { text-align: center; margin-top: 18px; font-size: 0.75rem; color: var(--muted); }
+    .branding a { color: var(--primary); text-decoration: none; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -646,13 +684,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="widget-card">
       <div class="widget-header">
         <div>
-          <div class="widget-title" data-i18n="title">Simulador de Amortização — Crédito Habitação</div>
+          <div class="widget-title" data-i18n="title">Simulador de Amortização de Crédito Habitação</div>
           <div class="widget-subtitle" data-i18n="subtitle">Descubra quanto pode poupar em juros e em quantos anos pode terminar o seu empréstimo mais cedo, fazendo entregas periódicas de capital.</div>
           <span class="badge" data-i18n="badge">Ferramenta educativa · uso offline</span>
-        </div>
-        <div class="lang-toggle">
-          <span id="lang-pt" class="active" onclick="setLang('pt')">PT</span>
-          <span id="lang-en" onclick="setLang('en')">EN</span>
         </div>
       </div>
 
@@ -873,6 +907,73 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <div class="disclaimer" data-i18n="disclaimer">Valores meramente indicativos, calculados com as taxas e condições que introduziu. Não substituem a informação oficial da sua instituição de crédito. As condições reais de amortização (comissões, mínimos, prazos de aviso prévio) devem ser confirmadas no seu contrato e junto do banco.</div>
         </div>
       </div>
+
+      <div class="lead-card">
+        <div class="lead-inner">
+          <div class="lead-title">Quer confirmar a melhor estratégia de amortização com um especialista?</div>
+          <div class="lead-subtitle">Deixe os seus dados e analisamos gratuitamente a sua situação.</div>
+          <div class="lead-grid">
+            <div class="lead-field">
+              <label>Nome</label>
+              <input type="text" id="lead-nome" placeholder="O seu nome" />
+            </div>
+            <div class="lead-field">
+              <label>Email</label>
+              <input type="email" id="lead-email" placeholder="ex: nome@exemplo.pt" />
+            </div>
+            <div class="lead-field">
+              <label>Telemóvel</label>
+              <input type="tel" id="lead-tel" placeholder="ex: 9xx xxx xxx" />
+            </div>
+            <div class="lead-field">
+              <label>Horário Preferencial de Contacto</label>
+              <div style="position:relative; margin-top:4px;">
+                <button type="button" id="horario-btn" onclick="toggleHorario()" style="
+                  width:100%; padding:7px 9px; border-radius:9px;
+                  border:1px solid rgba(148,163,184,0.7);
+                  background:rgba(15,23,42,0.9); color:#9ca3af;
+                  font-size:0.85rem; outline:none; cursor:pointer;
+                  display:flex; justify-content:space-between; align-items:center;
+                  text-align:left; box-sizing:border-box; min-width:0;">
+                  <span id="horario-label">Qualquer hora</span>
+                  <span id="horario-arrow" style="transition:transform 0.3s ease; display:inline-block;">▾</span>
+                </button>
+                <div id="horario-dropdown" style="
+                  overflow:hidden; max-height:0;
+                  transition:max-height 0.35s ease, opacity 0.25s ease;
+                  opacity:0;
+                  border-radius:0 0 9px 9px;
+                  border:0px solid rgba(148,163,184,0.7);
+                  background:rgba(15,23,42,0.95);
+                  position:absolute; z-index:99; width:100%; max-width:100%; left:0;">
+                  <div id="horario-inner">
+                    <label onclick="selectHorario('qualquer','Qualquer hora')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">Qualquer hora</label>
+                    <label onclick="selectHorario('manha','De manhã')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">De manhã</label>
+                    <label onclick="selectHorario('almoco','Hora de Almoço')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; border-bottom:1px solid rgba(148,163,184,0.15); transition:background 0.15s;">Hora de Almoço</label>
+                    <label onclick="selectHorario('tarde','De tarde')" style="display:block; padding:8px 10px; font-size:0.82rem; color:#9ca3af; cursor:pointer; transition:background 0.15s;">De tarde</label>
+                  </div>
+                </div>
+                <input type="hidden" id="horario-value" value="qualquer" />
+              </div>
+            </div>
+          </div>
+          <div class="rgpd-wrap">
+            <input type="checkbox" id="rgpd-consent" />
+            <label for="rgpd-consent">
+              Li e aceito a <a href="https://www.finmais.pt/politica-de-privacidade" target="_blank">Política de Privacidade</a>. Autorizo o tratamento dos meus dados pessoais para efeitos de simulação e contacto de crédito.
+            </label>
+          </div>
+          <div class="lead-footer">
+            <div class="lead-note">Análise gratuita e sem compromisso.</div>
+            <button class="lead-btn" onclick="enviarLead()">Submeter</button>
+          </div>
+          <div id="status-lead" class="status"></div>
+        </div>
+      </div>
+
+      <div class="branding">
+        <a href="https://www.finmais.pt" target="_blank">finmais.pt</a> · Intermediário de Crédito n.º 0008693
+      </div>
     </div>
   </div>
 
@@ -881,7 +982,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     const I18N = {
       pt: {
         htmlTitle: "Simulador de Amortização de Crédito Habitação",
-        title: "Simulador de Amortização — Crédito Habitação",
+        title: "Simulador de Amortização de Crédito Habitação",
         subtitle: "Descubra quanto pode poupar em juros e em quantos anos pode terminar o seu empréstimo mais cedo, fazendo entregas periódicas de capital.",
         badge: "Ferramenta educativa · uso offline",
         taxType: "Tipo de taxa",
@@ -952,7 +1053,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         intInPay: "Juros na prestação", capInPay: "Capital na prestação", tooltipYear: "Ano",
         jurosCaption: "A linha mostra que parte de cada prestação são juros. No início, os juros dominam — só por volta de metade do prazo é que passam a ser menos do que o capital amortizado. Por isso uma entrega feita cedo elimina muito mais juros.",
         // PDF
-        pdfTitle: "Plano de Amortização — Crédito Habitação", pdfSimOf: "Simulação de ",
+        pdfTitle: "Plano de Amortização de Crédito Habitação", pdfSimOf: "Simulação de ",
         pdfParam: "Parâmetro", pdfValue: "Valor",
         pdfAmount: "Valor em dívida", pdfTerm: "Prazo restante", pdfRateType: "Tipo de taxa",
         pdfPeriodicPay: "Entrega periódica", pdfFromMonth: "A partir do mês", pdfEffect: "Efeito", pdfFee: "Comissão de amortização",
@@ -972,7 +1073,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         pdfPage: "Pág. ",
         phaseFixed: "Fixa", phaseVar: "Variável",
         // Excel
-        xlsTitle: "Simulação de Amortização — Crédito Habitação",
+        xlsTitle: "Simulação de Amortização de Crédito Habitação",
         xlsEffectLbl: "Efeito da amortização", xlsPeriodicPay: "Entrega periódica",
         xlsFreqM: "Periodicidade (meses)", xlsStartM: "Início (mês)", xlsFeeRow: "Comissão de amortização",
         xlsFeeIncl: "Incluída", xlsFeeNot: "Não incluída",
@@ -1631,7 +1732,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
 
       const headerBottom = desenharCabecalhoFinmais(doc, pageW);
-      doc.setFontSize(16); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
+      doc.setFontSize(16); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold");
       doc.text(t("pdfTitle"), pageW / 2, headerBottom, { align: "center" });
       doc.setFontSize(9); doc.setTextColor(110, 110, 110); doc.setFont(undefined, "normal");
       doc.text(t("pdfSimOf") + new Date().toLocaleDateString(t("locale")), pageW / 2, headerBottom + 7, { align: "center" });
@@ -1654,14 +1755,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
       doc.autoTable({
         startY: headerBottom + 13, head: [[t("pdfParam"), t("pdfValue")]], body: params, theme: "grid",
-        headStyles: { fillColor: [29, 78, 216], textColor: 255, fontStyle: "bold", fontSize: 10 },
+        headStyles: { fillColor: [161, 146, 118], textColor: 255, fontStyle: "bold", fontSize: 10 },
         bodyStyles: { fontSize: 10 },
         columnStyles: { 0: { fontStyle: "bold", cellWidth: 70 }, 1: { cellWidth: 110 } },
         margin: { left: 10, right: 10 }, didDrawPage: function (d) { rodape(d.pageNumber); }
       });
 
       let y = doc.lastAutoTable.finalY + 8;
-      doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
+      doc.setFontSize(12); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold");
       doc.text(t("pdfCompare"), 10, y);
       const compRows = [
         [t("rowTerm"), mesesParaTexto(base.mesesTotais), mesesParaTexto(com.mesesTotais)],
@@ -1673,7 +1774,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       compRows.push([t("rowTotCost"), fmtEuro(cfg.valor + base.totalJuros), fmtEuro(cfg.valor + com.totalJuros + com.totalComissoes)]);
       doc.autoTable({
         startY: y + 3, head: [["", t("withoutPay"), t("withPay")]], body: compRows, theme: "grid",
-        headStyles: { fillColor: [29, 78, 216], textColor: 255, fontStyle: "bold", fontSize: 10 },
+        headStyles: { fillColor: [161, 146, 118], textColor: 255, fontStyle: "bold", fontSize: 10 },
         bodyStyles: { fontSize: 10 },
         columnStyles: { 0: { fontStyle: "bold", cellWidth: 70 }, 2: { textColor: [22, 163, 74], fontStyle: "bold" } },
         margin: { left: 10, right: 10 }, didDrawPage: function (d) { rodape(d.pageNumber); }
@@ -1696,12 +1797,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         try {
           const imgData = dividaChart.toBase64Image("image/png", 1);
           let gy = y + 8;
-          doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
+          doc.setFontSize(12); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold");
           doc.text(t("pdfChartDebt"), pageW / 2, gy, { align: "center" });
           gy += 4;
           const imgW = pageW - 28;
           let imgH = imgW * (dividaChart.height / dividaChart.width);
-          if (gy + imgH > pageH - 16) { doc.addPage(); gy = 20; doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold"); doc.text(t("pdfChartDebt"), pageW / 2, gy, { align: "center" }); gy += 4; }
+          if (gy + imgH > pageH - 16) { doc.addPage(); gy = 20; doc.setFontSize(12); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold"); doc.text(t("pdfChartDebt"), pageW / 2, gy, { align: "center" }); gy += 4; }
           doc.addImage(imgData, "PNG", 14, gy, imgW, imgH);
           y = gy + imgH;
         } catch (e) {}
@@ -1717,7 +1818,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           if (gy + imgH > pageH - 16) {
             doc.addPage(); gy = 20;
           }
-          doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
+          doc.setFontSize(12); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold");
           doc.text(t("pdfChartInt"), pageW / 2, gy, { align: "center" });
           gy += 4;
           doc.addImage(imgData2, "PNG", 14, gy, imgW, imgH);
@@ -1729,7 +1830,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
       // Mapa de amortização
       doc.addPage();
-      doc.setFontSize(12); doc.setTextColor(29, 78, 216); doc.setFont(undefined, "bold");
+      doc.setFontSize(12); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold");
       doc.text(t("pdfMap"), pageW / 2, 16, { align: "center" });
       const rows = com.linhas.map(function (l) {
         return [l.mes, faseLabel(l.fase), fmtNum(l.prestacao), fmtNum(l.juros), fmtNum(l.amortizacao),
@@ -1739,7 +1840,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         startY: 22,
         head: [[t("pdfColMonth"), t("pdfColPhase"), t("pdfColPay"), t("pdfColInt"), t("pdfColAmort"), t("pdfColExtra"), t("pdfColFee"), t("pdfColBalance")]],
         body: rows, theme: "striped",
-        headStyles: { fillColor: [29, 78, 216], textColor: 255, fontStyle: "bold", fontSize: 8 },
+        headStyles: { fillColor: [161, 146, 118], textColor: 255, fontStyle: "bold", fontSize: 8 },
         bodyStyles: { fontSize: 7 },
         columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 18 }, 2: { halign: "right" }, 3: { halign: "right" }, 4: { halign: "right" }, 5: { halign: "right" }, 6: { halign: "right" }, 7: { halign: "right" } },
         margin: { left: 10, right: 10 }, didDrawPage: function (d) { rodape(d.pageNumber); }
@@ -1747,6 +1848,82 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
       doc.save(t("filePdf"));
       status.textContent = t("pdfDone"); status.className = "status ok";
+    }
+
+    // ── Lead ──
+    async function enviarLead() {
+      const status = document.getElementById("status-lead");
+      status.textContent = ""; status.className = "status";
+      const nome = document.getElementById("lead-nome").value.trim();
+      const email = document.getElementById("lead-email").value.trim();
+      const tel = document.getElementById("lead-tel").value.trim();
+      const rgpd = document.getElementById("rgpd-consent").checked;
+      if (!nome || !tel) { status.textContent = "Preencha nome e telemóvel."; status.classList.add("err"); return; }
+      if (!rgpd) { status.textContent = "Por favor aceite a Política de Privacidade."; status.classList.add("err"); return; }
+      const horarioValue = document.getElementById("horario-value").value;
+      const horarioLabels = { qualquer: "Qualquer hora", manha: "De manhã", almoco: "Hora de Almoço", tarde: "De tarde" };
+      const horario = horarioLabels[horarioValue] || "Qualquer hora";
+      const valor = document.getElementById("valor").value;
+      const anos = document.getElementById("anos").value;
+      const jurosPoupados = document.getElementById("poup-juros").textContent;
+      const tempoPoupado = document.getElementById("poup-tempo").textContent;
+      try {
+        const res = await fetch("https://credito-backend-ffnk.onrender.com/send-email", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            simulador: "Simulador de Amortização de Crédito Habitação",
+            nome, email, telefone: tel, horario,
+            valorDivida: valor + " €",
+            prazoRestante: anos + " anos",
+            jurosPoupados, tempoPoupado
+          })
+        });
+        if (!res.ok) throw new Error();
+        status.textContent = "Lead enviada com sucesso. Será contactado em breve.";
+        status.classList.add("ok");
+      } catch (e) {
+        status.textContent = "Erro ao enviar. Tente novamente.";
+        status.classList.add("err");
+      }
+    }
+
+    // ── Horário dropdown ──
+    document.addEventListener("click", function (e) {
+      const hBtn = document.getElementById("horario-btn");
+      const hDd = document.getElementById("horario-dropdown");
+      if (hBtn && hDd && !hBtn.contains(e.target) && !hDd.contains(e.target)) {
+        if (hDd.style.maxHeight && hDd.style.maxHeight !== "0px") {
+          hDd.style.maxHeight = "0"; hDd.style.opacity = "0"; hDd.style.borderWidth = "0";
+          document.getElementById("horario-arrow").style.transform = "rotate(0deg)";
+          hBtn.style.borderRadius = "9px";
+        }
+      }
+    });
+
+    function toggleHorario() {
+      const dropdown = document.getElementById("horario-dropdown");
+      const arrow = document.getElementById("horario-arrow");
+      const btn = document.getElementById("horario-btn");
+      const isOpen = dropdown.style.maxHeight !== "0px" && dropdown.style.maxHeight !== "";
+      if (isOpen) {
+        dropdown.style.maxHeight = "0"; dropdown.style.opacity = "0"; dropdown.style.borderWidth = "0";
+        arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "9px";
+      } else {
+        dropdown.style.maxHeight = dropdown.scrollHeight + "px"; dropdown.style.opacity = "1";
+        dropdown.style.borderWidth = "1px"; dropdown.style.borderTopWidth = "0";
+        arrow.style.transform = "rotate(180deg)"; btn.style.borderRadius = "9px 9px 0 0";
+      }
+    }
+
+    function selectHorario(value, label) {
+      document.getElementById("horario-value").value = value;
+      document.getElementById("horario-label").textContent = label;
+      document.getElementById("horario-label").style.color = "#e5e7eb";
+      const dropdown = document.getElementById("horario-dropdown");
+      const arrow = document.getElementById("horario-arrow");
+      const btn = document.getElementById("horario-btn");
+      dropdown.style.maxHeight = "0"; dropdown.style.opacity = "0"; dropdown.style.borderWidth = "0";
+      arrow.style.transform = "rotate(0deg)"; btn.style.borderRadius = "9px";
     }
 
     // Inicialização
