@@ -1026,7 +1026,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         // dinâmicos
         locale: "pt-PT",
         rowTerm: "Prazo até liquidar", rowInitPay: "Prestação inicial", rowTotInt: "Total de juros",
-        rowExtra: "Capital entregue (extra)", rowFees: "Comissões de amortização", rowTotCost: "Custo total do crédito",
+        rowExtra: "Capital entregue (extra)", rowFees: "Comissões de amortização", rowTaeg: "TAEG", rowTotCost: "MTIC (custo total do crédito)",
         rowFeesShort: "Comissões",
         subFeesDiscounted: "(já descontadas as comissões)", subInterestAvoided: "em juros que deixa de pagar",
         subFinishEarlier: "termina mais cedo o empréstimo", subEffectPayment: "(efeito: reduzir prestação)",
@@ -1129,7 +1129,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         disclaimer: "Indicative values only, calculated with the rates and conditions you entered. They do not replace the official information from your lender. The actual overpayment conditions (fees, minimums, notice periods) must be confirmed in your contract and with the bank.",
         locale: "en-GB",
         rowTerm: "Time to pay off", rowInitPay: "Initial instalment", rowTotInt: "Total interest",
-        rowExtra: "Capital overpaid (extra)", rowFees: "Early-repayment fees", rowTotCost: "Total cost of the loan",
+        rowExtra: "Capital overpaid (extra)", rowFees: "Early-repayment fees", rowTaeg: "APR (TAEG)", rowTotCost: "MTIC (total cost of the loan)",
         rowFeesShort: "Fees",
         subFeesDiscounted: "(fees already deducted)", subInterestAvoided: "in interest you no longer pay",
         subFinishEarlier: "you finish the loan sooner", subEffectPayment: "(effect: reduce instalment)",
@@ -1292,6 +1292,27 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       return saldo * (taxaMensal / (1 - Math.pow(1 + taxaMensal, -nMeses)));
     }
 
+    // TAEG: TIR mensal sobre o plano contratado (sem amortizações extra), convertida em taxa anual efetiva.
+    // Reflete a taxa e o prazo acordados com o banco — não muda com amortizações antecipadas voluntárias.
+    function calcularTAEGdeFluxos(valor, prestacoes) {
+      if (!valor || !prestacoes.length) return 0;
+      let r = 0.003;
+      for (let iter = 0; iter < 200; iter++) {
+        let vpn = -valor, dvpn = 0;
+        for (let t = 0; t < prestacoes.length; t++) {
+          const desc = Math.pow(1 + r, -(t + 1));
+          vpn += prestacoes[t] * desc;
+          dvpn -= (t + 1) * prestacoes[t] * desc / (1 + r);
+        }
+        if (Math.abs(dvpn) < 1e-12) break;
+        const rNew = r - vpn / dvpn;
+        if (!isFinite(rNew)) break;
+        if (Math.abs(rNew - r) < 1e-12) { r = rNew; break; }
+        r = rNew;
+      }
+      return r > 0 ? (Math.pow(1 + r, 12) - 1) * 100 : 0;
+    }
+
     function simularPlano(cfg, amort) {
       const linhas = [];
       let saldo = cfg.valor, totalJuros = 0, totalAmortExtra = 0, totalComissoes = 0, mes = 0;
@@ -1417,12 +1438,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       const amort = lerAmort();
       const base = simularPlano(cfg, { ativa: false });
       const com = simularPlano(cfg, amort);
-      ultimaSimulacao = { cfg: cfg, amort: amort, base: base, com: com };
+      const taeg = calcularTAEGdeFluxos(cfg.valor, base.linhas.map(function (l) { return l.prestacao; }));
+      ultimaSimulacao = { cfg: cfg, amort: amort, base: base, com: com, taeg: taeg };
 
       const jurosBase = base.totalJuros, jurosCom = com.totalJuros;
       const custoBase = cfg.valor + jurosBase;
       const custoCom = cfg.valor + jurosCom + com.totalComissoes;
       const temAmort = amort.ativa && amort.valor > 0;
+      const taegTxt = taeg > 0 ? taeg.toFixed(2) + " %" : "—";
 
       let html = "";
       html += linhaComp(t("rowTerm"), mesesParaTexto(base.mesesTotais), mesesParaTexto(com.mesesTotais));
@@ -1430,6 +1453,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       html += linhaComp(t("rowTotInt"), fmtEuro(jurosBase), fmtEuro(jurosCom));
       html += linhaComp(t("rowExtra"), "—", temAmort ? fmtEuro(com.totalAmortExtra) : "—");
       if (cfg.comissaoAtiva && com.totalComissoes > 0) html += linhaComp(t("rowFees"), "—", fmtEuro(com.totalComissoes));
+      html += linhaComp(t("rowTaeg"), taegTxt, taegTxt);
       html += linhaComp(t("rowTotCost"), fmtEuro(custoBase), fmtEuro(custoCom));
       document.getElementById("compare-body").innerHTML = html;
 
@@ -1631,7 +1655,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       status.textContent = ""; status.className = "status";
       if (!ultimaSimulacao) simular(false);
       if (!ultimaSimulacao) { status.textContent = t("errCalcFirst"); status.className = "status err"; return; }
-      const { cfg, amort, base, com } = ultimaSimulacao;
+      const { cfg, amort, base, com, taeg } = ultimaSimulacao;
       const wb = XLSX.utils.book_new();
       const jurosPoupados = base.totalJuros - com.totalJuros - com.totalComissoes;
       const mesesPoupados = base.mesesTotais - com.mesesTotais;
@@ -1653,6 +1677,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         [t("rowTotInt"), base.totalJuros, com.totalJuros],
         [t("rowExtra"), 0, com.totalAmortExtra],
         [t("rowFees"), 0, com.totalComissoes],
+        [t("rowTaeg"), round2(taeg), round2(taeg)],
         [t("rowTotCost"), cfg.valor + base.totalJuros, cfg.valor + com.totalJuros + com.totalComissoes],
         [],
         [t("xlsSavingsInt"), Math.max(jurosPoupados, 0)],
@@ -1708,7 +1733,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       status.textContent = ""; status.className = "status";
       if (!ultimaSimulacao) simular(false);
       if (!ultimaSimulacao) { status.textContent = t("errCalcFirst"); status.className = "status err"; return; }
-      const { cfg, amort, base, com } = ultimaSimulacao;
+      const { cfg, amort, base, com, taeg } = ultimaSimulacao;
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
       const pageW = doc.internal.pageSize.getWidth();
@@ -1724,7 +1749,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         doc.line(10, pageH - 14, pageW - 10, pageH - 14);
         doc.setFontSize(8); doc.setTextColor(140, 140, 140);
         doc.text(dataHoraTxt, 10, pageH - 9, { align: "left" });
-        doc.text(t("pdfFooter"), pageW / 2, pageH - 9, { align: "center" });
+        doc.text("www.finmais.pt", pageW / 2, pageH - 9, { align: "center" });
         doc.text(t("pdfPage") + pageNum, pageW - 10, pageH - 9, { align: "right" });
       }
 
@@ -1768,6 +1793,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       ];
       if (temAmort) compRows.push([t("rowExtra"), "—", fmtEuro(com.totalAmortExtra)]);
       if (cfg.comissaoAtiva && com.totalComissoes > 0) compRows.push([t("rowFeesShort"), "—", fmtEuro(com.totalComissoes)]);
+      const taegTxtPDF = taeg > 0 ? taeg.toFixed(2) + " %" : "—";
+      compRows.push([t("rowTaeg"), taegTxtPDF, taegTxtPDF]);
       compRows.push([t("rowTotCost"), fmtEuro(cfg.valor + base.totalJuros), fmtEuro(cfg.valor + com.totalJuros + com.totalComissoes)]);
       doc.autoTable({
         startY: y + 3, head: [["", t("withoutPay"), t("withPay")]], body: compRows, theme: "grid",
