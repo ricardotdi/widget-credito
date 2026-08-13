@@ -1045,12 +1045,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         invResult: "Para terminar em <strong>#A# anos</strong>, precisa de entregar cerca de <strong>#B#</strong> a cada <strong>#C#</strong> (a partir do 1.º ano).<br>Pouparia aproximadamente <strong>#D#</strong> em juros#E#.",
         invFeesNote: " (já com comissões descontadas)",
         period6: "6 meses", period12: "1 ano", period24: "2 anos", period36: "3 anos", period48: "4 anos", period60: "5 anos",
-        labelMixed: "Mista — Fixa #A#a (TAN #B#%) / Variável #C#%",
-        labelFixed: "Fixa — TAN #A#%", labelVar: "Variável — Euribor #A#% + Spread #B#%",
+        labelMixed: "Mista - Fixa #A#a (TAN #B#%) / Variável #C#%",
+        labelFixed: "Fixa - TAN #A#%", labelVar: "Variável - Euribor #A#% + Spread #B#%",
         chartWithout: "Sem amortizar", chartWith: "Com amortizações",
         axisYears: "Anos", axisDebt: "Dívida (€)", axisPct: "% da prestação",
         intInPay: "Juros na prestação", capInPay: "Capital na prestação", tooltipYear: "Ano",
-        jurosCaption: "A linha mostra que parte de cada prestação são juros. No início, os juros dominam — só por volta de metade do prazo é que passam a ser menos do que o capital amortizado. Por isso uma entrega feita cedo elimina muito mais juros.",
+        jurosCaption: "A linha mostra que parte de cada prestação são juros. No início, os juros dominam - só por volta de metade do prazo é que passam a ser menos do que o capital amortizado. Por isso uma entrega feita cedo elimina muito mais juros.",
         // PDF
         pdfTitle: "Plano de Amortização de Crédito Habitação", pdfSimOf: "Simulação de ",
         pdfParam: "Parâmetro", pdfValue: "Valor",
@@ -1791,9 +1791,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         [t("rowInitPay"), fmtEuro(base.prestacaoInicial), fmtEuro(com.prestacaoInicial)],
         [t("rowTotInt"), fmtEuro(base.totalJuros), fmtEuro(com.totalJuros)]
       ];
-      if (temAmort) compRows.push([t("rowExtra"), "—", fmtEuro(com.totalAmortExtra)]);
-      if (cfg.comissaoAtiva && com.totalComissoes > 0) compRows.push([t("rowFeesShort"), "—", fmtEuro(com.totalComissoes)]);
-      const taegTxtPDF = taeg > 0 ? taeg.toFixed(2) + " %" : "—";
+      if (temAmort) compRows.push([t("rowExtra"), "-", fmtEuro(com.totalAmortExtra)]);
+      if (cfg.comissaoAtiva && com.totalComissoes > 0) compRows.push([t("rowFeesShort"), "-", fmtEuro(com.totalComissoes)]);
+      const taegTxtPDF = taeg > 0 ? taeg.toFixed(2) + " %" : "-";
       compRows.push([t("rowTaeg"), taegTxtPDF, taegTxtPDF]);
       compRows.push([t("rowTotCost"), fmtEuro(cfg.valor + base.totalJuros), fmtEuro(cfg.valor + com.totalJuros + com.totalComissoes)]);
       doc.autoTable({
@@ -1820,13 +1820,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (temAmort && dividaChart) {
         try {
           const imgData = dividaChart.toBase64Image("image/png", 1);
+          const imgW = pageW - 28;
+          const imgH = imgW * (dividaChart.height / dividaChart.width);
           let gy = y + 8;
+          if (gy + 4 + imgH > pageH - 16) { doc.addPage(); gy = 20; }
           doc.setFontSize(12); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold");
           doc.text(t("pdfChartDebt"), pageW / 2, gy, { align: "center" });
           gy += 4;
-          const imgW = pageW - 28;
-          let imgH = imgW * (dividaChart.height / dividaChart.width);
-          if (gy + imgH > pageH - 16) { doc.addPage(); gy = 20; doc.setFontSize(12); doc.setTextColor(161, 146, 118); doc.setFont(undefined, "bold"); doc.text(t("pdfChartDebt"), pageW / 2, gy, { align: "center" }); gy += 4; }
           doc.addImage(imgData, "PNG", 14, gy, imgW, imgH);
           y = gy + imgH;
         } catch (e) {}
@@ -1858,7 +1858,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       doc.text(t("pdfMap"), pageW / 2, 16, { align: "center" });
       const rows = com.linhas.map(function (l) {
         return [l.mes, faseLabel(l.fase), fmtNum(l.prestacao), fmtNum(l.juros), fmtNum(l.amortizacao),
-                l.entregaExtra > 0 ? fmtNum(l.entregaExtra) : "—", l.comissao > 0 ? fmtNum(l.comissao) : "—", fmtNum(l.saldo)];
+                l.entregaExtra > 0 ? fmtNum(l.entregaExtra) : "-", l.comissao > 0 ? fmtNum(l.comissao) : "-", fmtNum(l.saldo)];
       });
       doc.autoTable({
         startY: 22,
