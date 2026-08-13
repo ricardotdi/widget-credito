@@ -686,7 +686,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <div>
           <div class="widget-title" data-i18n="title">Simulador de Amortização de Crédito Habitação</div>
           <div class="widget-subtitle" data-i18n="subtitle">Descubra quanto pode poupar em juros e em quantos anos pode terminar o seu empréstimo mais cedo, fazendo entregas periódicas de capital.</div>
-          <span class="badge" data-i18n="badge">Ferramenta educativa · uso offline</span>
         </div>
       </div>
 
@@ -1194,8 +1193,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function setLang(l) {
       lang = l;
       document.documentElement.lang = l;
-      document.getElementById("lang-pt").classList.toggle("active", l === "pt");
-      document.getElementById("lang-en").classList.toggle("active", l === "en");
       document.title = t("htmlTitle");
       // aplica a todos os elementos com data-i18n
       document.querySelectorAll("[data-i18n]").forEach(function (el) {
