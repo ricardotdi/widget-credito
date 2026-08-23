@@ -65,6 +65,39 @@
     .field { display: flex; flex-direction: column; gap: 4px; }
     .field label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
     .field small { font-size: 0.75rem; color: var(--muted); }
+    #fixa-grid input, #mista-grid input {
+      padding: 9px 11px; border-radius: 10px; border: 1px solid var(--border);
+      font-size: 0.9rem; outline: none; background: #f9fafb;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+      width: 100%; min-width: 0;
+    }
+    #fixa-grid input:focus, #mista-grid input:focus {
+      border-color: var(--primary); background: #fff;
+      box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.35);
+    }
+
+    /* Tipo de taxa toggle */
+    .taxa-toggle {
+      display: flex; align-items: center; gap: 0; margin-bottom: 16px;
+      background: #f3f4f6; border-radius: 999px; padding: 4px 6px;
+      width: 100%; max-width: 100%; border: 1px solid var(--border);
+      flex-wrap: nowrap; overflow-x: auto;
+    }
+    .taxa-toggle span {
+      font-size: 0.82rem; font-weight: 500; padding: 5px 10px;
+      border-radius: 999px; cursor: pointer; color: var(--muted);
+      transition: background 0.2s, color 0.2s; user-select: none;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    @media (max-width: 480px) {
+      .taxa-toggle span { font-size: 0.75rem; padding: 5px 8px; }
+    }
+    .taxa-toggle span.active {
+      background: var(--primary); color: #fff;
+      box-shadow: 0 4px 12px rgba(161,146,118,0.25);
+    }
+    .mista-inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .mista-inner-grid { grid-template-columns: 1fr; } }
 
     /* Stepper input */
     .stepper {
@@ -260,6 +293,39 @@
       <span id="euribor-tag-text">A carregar Euribor 6M…</span>
     </div>
 
+    <!-- Tipo de taxa -->
+    <div class="section-title">Tipo de taxa</div>
+    <div class="taxa-toggle">
+      <span id="toggle-variavel" class="active" onclick="setTaxa('variavel')">Taxa Variável</span>
+      <span id="toggle-fixa" onclick="setTaxa('fixa')">Taxa Fixa</span>
+      <span id="toggle-mista" onclick="setTaxa('mista')">Taxa Mista</span>
+    </div>
+
+    <!-- Campo Taxa Fixa (oculto por defeito) -->
+    <div id="fixa-grid" class="inputs-grid" style="display:none; margin-bottom:16px;">
+      <div class="field">
+        <label>TAN fixa (%)</label>
+        <input type="number" id="fixa-tan" step="0.01" placeholder="ex: 3.20" />
+        <small>Taxa Anual Nominal fixa proposta pelo banco.</small>
+      </div>
+    </div>
+
+    <!-- Campos Taxa Mista (ocultos por defeito) -->
+    <div id="mista-grid" style="display:none; margin-bottom:16px;">
+      <div class="mista-inner-grid">
+        <div class="field">
+          <label>Prazo da taxa fixa (anos)</label>
+          <input type="number" id="mista-prazo-fixo" min="1" step="1" placeholder="ex: 5" oninput="atualizarPrazoVariavelPreview()" />
+          <small id="mista-prazo-help">Anos em que a prestação fica fixa, antes de passar a variável.</small>
+        </div>
+        <div class="field">
+          <label>TAN período fixo (%)</label>
+          <input type="number" id="mista-tan" step="0.01" placeholder="ex: 3.20" />
+          <small>Depois deste período passa a Euribor + spread (0,70%).</small>
+        </div>
+      </div>
+    </div>
+
     <!-- Inputs -->
     <div class="section-title">Dados do agregado</div>
     <div class="inputs-grid">
@@ -284,9 +350,9 @@
       <div class="field">
         <label>Idade do titular mais velho</label>
         <div class="stepper">
-          <button type="button" onclick="step('idade', -1)">−</button>
-          <input type="number" id="idade" value="35" min="18" max="75" step="1" />
-          <button type="button" onclick="step('idade', 1)">+</button>
+          <button type="button" onclick="step('idade', -1); atualizarPrazoVariavelPreview();">−</button>
+          <input type="number" id="idade" value="35" min="18" max="75" step="1" oninput="atualizarPrazoVariavelPreview()" />
+          <button type="button" onclick="step('idade', 1); atualizarPrazoVariavelPreview();">+</button>
         </div>
         <small>Determina o prazo máximo</small>
       </div>
@@ -312,7 +378,7 @@
           <div class="result-secondary-label">Prestação estimada</div>
           <div class="result-secondary-value" id="res-prestacao">—</div>
           <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Taxa de esforço: <span id="res-dsti" style="font-weight:700;">—</span></div>
-          <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.4;">Taxa de esforço calculada à taxa atual, com o rendimento anualizado (14 ou 12 meses) convertido para base mensal. O teto é apurado com taxa stressada (+1,5pp) conforme metodologia BdP.</div>
+          <div id="res-dsti-note" style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.4;">Taxa de esforço calculada à taxa atual, com o rendimento anualizado (14 ou 12 meses) convertido para base mensal. O teto é apurado com taxa stressada (+1,5pp) conforme metodologia BdP.</div>
         </div>
       </div>
 
@@ -414,11 +480,43 @@
   let euriborValor = null;
   let ultimoCalculo = null;
   let mesesPagamento = 14; // 14 meses (TCO) ou 12 meses (ENI/recibos verdes)
+  let tipoTaxaAtual = "variavel";
 
   function setTipoRendimento(val, btn) {
     mesesPagamento = val === "12" ? 12 : 14;
     document.querySelectorAll("#tipo-rendimento-group .toggle-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
+  }
+
+  // Prazo máximo: mínimo entre escalão de idade (Recomendação BdP 1/2026, art.º 7.º) e limite de 75 anos no fim do contrato
+  function prazoMaximoAnos(idade) {
+    const prazoEscalao = idade <= 35 ? 40 : 35;
+    return Math.min(prazoEscalao, 75 - idade);
+  }
+
+  function setTaxa(tipo) {
+    tipoTaxaAtual = tipo;
+    ["variavel", "fixa", "mista"].forEach(function (x) {
+      document.getElementById("toggle-" + x).classList.toggle("active", x === tipo);
+    });
+    document.getElementById("fixa-grid").style.display = tipo === "fixa" ? "grid" : "none";
+    document.getElementById("mista-grid").style.display = tipo === "mista" ? "block" : "none";
+    if (tipo === "mista") atualizarPrazoVariavelPreview();
+  }
+
+  function atualizarPrazoVariavelPreview() {
+    const help = document.getElementById("mista-prazo-help");
+    if (!help) return;
+    const idade = parseInt(document.getElementById("idade").value) || 35;
+    const prazoFixo = parseInt(document.getElementById("mista-prazo-fixo").value);
+    const prazoTotal = prazoMaximoAnos(idade);
+    if (!isNaN(prazoFixo) && prazoFixo >= prazoTotal) {
+      help.textContent = "⚠ deve ser inferior ao prazo total estimado (" + prazoTotal + " anos)";
+    } else if (!isNaN(prazoFixo)) {
+      help.textContent = "Depois, fica " + (prazoTotal - prazoFixo) + " anos em taxa variável (de um total de " + prazoTotal + " anos).";
+    } else {
+      help.textContent = "Anos em que a prestação fica fixa, antes de passar a variável (prazo total estimado: " + prazoTotal + " anos).";
+    }
   }
 
   // ── Fetch Euribor 6M do worker (dados alimentados a partir do Supabase) ──
@@ -472,10 +570,7 @@
     const rendimentoMedioMensal = rendimento * mesesPagamento / 12;
 
     const euribor = euriborValor ?? 2.454;
-
-    // Prazo máximo: mínimo entre escalão de idade (Recomendação BdP 1/2026, art.º 7.º) e limite de 75 anos no fim do contrato
-    const prazoEscalao = idade <= 35 ? 40 : 35;
-    const prazoAnos = Math.min(prazoEscalao, 75 - idade);
+    const prazoAnos = prazoMaximoAnos(idade);
     const prazoMeses = prazoAnos * 12;
 
     if (prazoAnos <= 0) {
@@ -483,9 +578,36 @@
       return;
     }
 
-    // TAN base e stressada
-    const tanBase = euribor + SPREAD;
-    const tanStress = tanBase + STRESS_DELTA;
+    // TAN base (usada na prestação inicial) e TAN stressada (usada para apurar o capital máximo)
+    let tanBase, tanStress, prazoFixoAnos = null;
+    if (tipoTaxaAtual === "fixa") {
+      const tanFixa = parseFloat(document.getElementById("fixa-tan").value);
+      if (isNaN(tanFixa) || tanFixa <= 0) {
+        alert("Por favor introduza a TAN fixa.");
+        return;
+      }
+      // Taxa fixa: sem choque de juros (a prestação não varia com a Euribor)
+      tanBase = tanFixa;
+      tanStress = tanFixa;
+    } else if (tipoTaxaAtual === "mista") {
+      const tanFixa = parseFloat(document.getElementById("mista-tan").value);
+      prazoFixoAnos = parseInt(document.getElementById("mista-prazo-fixo").value);
+      if (isNaN(tanFixa) || tanFixa <= 0 || isNaN(prazoFixoAnos)) {
+        alert("Preencha o prazo e a TAN do período fixo da taxa mista.");
+        return;
+      }
+      if (prazoFixoAnos < 1 || prazoFixoAnos >= prazoAnos) {
+        alert("O prazo em taxa fixa deve ser inferior ao prazo total estimado (" + prazoAnos + " anos).");
+        return;
+      }
+      // Prestação inicial calculada à TAN fixa; capital máximo apurado com choque sobre a fase
+      // variável (cenário conservador, uma vez que essa é a exposição de longo prazo do crédito)
+      tanBase = tanFixa;
+      tanStress = euribor + SPREAD + STRESS_DELTA;
+    } else {
+      tanBase = euribor + SPREAD;
+      tanStress = tanBase + STRESS_DELTA;
+    }
 
     // Prestação máxima disponível (com taxa stressada para calcular o capital máximo)
     const prestacaoMaxima = (rendimentoMedioMensal * DSTI_MAX) - outras;
@@ -523,21 +645,36 @@
     // TAEG e MTIC (à taxa base, não à taxa stressada)
     const taeg = (Math.pow(1 + rMensalBase, 12) - 1) * 100;
     const mtic = prestacaoBase * prazoMeses;
-    ultimoCalculo = { capitalMaximo, prazoMeses, prazoAnos, prestacaoBase, taeg, mtic };
+    ultimoCalculo = { capitalMaximo, prazoMeses, prazoAnos, prestacaoBase, taeg, mtic, tipoTaxa: tipoTaxaAtual, prazoFixoAnos };
 
     // Mostrar resultados
 
     document.getElementById("res-montante").textContent = formatEuro(capitalMaximo);
     document.getElementById("res-prestacao").textContent = formatEuro(prestacaoBase);
-    document.getElementById("res-prazo-label").textContent = "Prazo: " + prazoAnos + " anos";
+    document.getElementById("res-prazo-label").textContent = tipoTaxaAtual === "mista"
+      ? "Prazo: " + prazoAnos + " anos (" + prazoFixoAnos + " fixos + " + (prazoAnos - prazoFixoAnos) + " variável)"
+      : "Prazo: " + prazoAnos + " anos";
     document.getElementById("res-dsti").textContent = dstiReal.toFixed(1) + "%";
     document.getElementById("res-dsti").style.color = dstiReal > 45 ? "#ef4444" : dstiReal > 35 ? "#f59e0b" : "#16a34a";
 
     // Pressupostos
     document.getElementById("p-rendimento-medio").textContent = formatEuro(rendimentoMedioMensal) + " (" + mesesPagamento + " meses/ano)";
-    document.getElementById("p-euribor").textContent = euribor.toFixed(3) + "%";
-    document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "%";
-    document.getElementById("p-tan-stress").textContent = tanStress.toFixed(3) + "%";
+    if (tipoTaxaAtual === "fixa") {
+      document.getElementById("p-euribor").textContent = "não aplicável";
+      document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "% (fixa)";
+      document.getElementById("p-tan-stress").textContent = "sem choque (taxa fixa)";
+      document.getElementById("res-dsti-note").textContent = "Taxa de esforço calculada à TAN fixa, com o rendimento anualizado (14 ou 12 meses) convertido para base mensal. Sem choque de taxa de juro (a prestação não varia com a Euribor).";
+    } else if (tipoTaxaAtual === "mista") {
+      document.getElementById("p-euribor").textContent = euribor.toFixed(3) + "%";
+      document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "% (fixa, " + prazoFixoAnos + " anos)";
+      document.getElementById("p-tan-stress").textContent = tanStress.toFixed(3) + "% (fase variável)";
+      document.getElementById("res-dsti-note").textContent = "Taxa de esforço calculada à TAN do período fixo, com o rendimento anualizado (14 ou 12 meses) convertido para base mensal. O teto é apurado com choque de +1,5pp sobre a fase variável (cenário conservador), conforme metodologia BdP.";
+    } else {
+      document.getElementById("p-euribor").textContent = euribor.toFixed(3) + "%";
+      document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "%";
+      document.getElementById("p-tan-stress").textContent = tanStress.toFixed(3) + "%";
+      document.getElementById("res-dsti-note").textContent = "Taxa de esforço calculada à taxa atual, com o rendimento anualizado (14 ou 12 meses) convertido para base mensal. O teto é apurado com taxa stressada (+1,5pp) conforme metodologia BdP.";
+    }
     document.getElementById("p-prazo").textContent = prazoAnos + " anos (idade " + idade + ")";
   }
 
@@ -619,14 +756,17 @@
       doc.text("MTIC (custo total do crédito): " + formatEuro(ultimoCalculo.mtic), 10, y); y += 8;
     } else { y += 2; }
 
+    var tipoTaxaLabel = { variavel: "Variável", fixa: "Fixa", mista: "Mista" }[tipoTaxaAtual] || "Variável";
+
     doc.setFont(undefined, "bold");
     doc.text("Pressupostos utilizados no cálculo", 10, y); y += 6;
     doc.setFont(undefined, "normal");
     doc.text("Rendimento médio mensal (base cálculo): " + document.getElementById("p-rendimento-medio").textContent, 10, y); y += 6;
-    doc.text("Spread: 0,70%", 10, y); y += 6;
+    doc.text("Tipo de taxa: " + tipoTaxaLabel, 10, y); y += 6;
+    if (tipoTaxaAtual !== "fixa") { doc.text("Spread: 0,70%", 10, y); y += 6; }
     doc.text("Euribor 6M: " + document.getElementById("p-euribor").textContent, 10, y); y += 6;
-    doc.text("TAN base: " + document.getElementById("p-tan").textContent, 10, y); y += 6;
-    doc.text("TAN stressada (+1,5 p.p.): " + document.getElementById("p-tan-stress").textContent, 10, y); y += 6;
+    doc.text((tipoTaxaAtual === "mista" ? "TAN fase fixa: " : "TAN base: ") + document.getElementById("p-tan").textContent, 10, y); y += 6;
+    doc.text((tipoTaxaAtual === "mista" ? "TAN stressada (fase variável): " : "TAN stressada: ") + document.getElementById("p-tan-stress").textContent, 10, y); y += 6;
     doc.text("Taxa de esforço máxima (DSTI): 45%", 10, y); y += 6;
     doc.text("Prazo máximo: " + document.getElementById("p-prazo").textContent, 10, y); y += 8;
 
@@ -665,7 +805,8 @@
           rendimento: rendimento + " €",
           tipoRendimento: mesesPagamento === 12 ? "ENI / Recibos verdes (12 meses)" : "Trabalhador por conta de outrem (14 meses)",
           outrasPrestacoes: outras + " €",
-          montanteMaximo: montante
+          montanteMaximo: montante,
+          tipoTaxa: { variavel: "Variável", fixa: "Fixa", mista: "Mista" }[tipoTaxaAtual] || "Variável"
         })
       });
       if (!res.ok) throw new Error();
