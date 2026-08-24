@@ -65,39 +65,6 @@
     .field { display: flex; flex-direction: column; gap: 4px; }
     .field label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
     .field small { font-size: 0.75rem; color: var(--muted); }
-    #fixa-grid input, #mista-grid input {
-      padding: 9px 11px; border-radius: 10px; border: 1px solid var(--border);
-      font-size: 0.9rem; outline: none; background: #f9fafb;
-      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-      width: 100%; min-width: 0;
-    }
-    #fixa-grid input:focus, #mista-grid input:focus {
-      border-color: var(--primary); background: #fff;
-      box-shadow: 0 0 0 1px rgba(161, 146, 118, 0.35);
-    }
-
-    /* Tipo de taxa toggle */
-    .taxa-toggle {
-      display: flex; align-items: center; gap: 0; margin-bottom: 16px;
-      background: #f3f4f6; border-radius: 999px; padding: 4px 6px;
-      width: 100%; max-width: 100%; border: 1px solid var(--border);
-      flex-wrap: nowrap; overflow-x: auto;
-    }
-    .taxa-toggle span {
-      font-size: 0.82rem; font-weight: 500; padding: 5px 10px;
-      border-radius: 999px; cursor: pointer; color: var(--muted);
-      transition: background 0.2s, color 0.2s; user-select: none;
-      white-space: nowrap; flex-shrink: 0;
-    }
-    @media (max-width: 480px) {
-      .taxa-toggle span { font-size: 0.75rem; padding: 5px 8px; }
-    }
-    .taxa-toggle span.active {
-      background: var(--primary); color: #fff;
-      box-shadow: 0 4px 12px rgba(161,146,118,0.25);
-    }
-    .mista-inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    @media (max-width: 640px) { .mista-inner-grid { grid-template-columns: 1fr; } }
 
     /* Stepper input */
     .stepper {
@@ -140,6 +107,56 @@
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+
+    /* Painel de taxas de referência (Crédito Bonificado) */
+    .ref-panel {
+      background: rgba(161,146,118,0.06); border: 1px solid rgba(161,146,118,0.2);
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.8rem;
+    }
+    .ref-panel-title {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    .ref-panel-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+    .ref-panel-label { color: #374151; font-weight: 500; }
+    .ref-panel-val { font-weight: 700; color: var(--primary-dark); }
+    .ref-panel-source { font-size: 0.7rem; color: var(--muted); margin-left: 4px; }
+    .dot-live {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: #4ade80; margin-right: 4px; animation: pulse 2.5s infinite;
+    }
+
+    /* Modo (Simples/Avançado), tipo de taxa e tipo de aquisição */
+    .taxa-toggle {
+      display: flex; align-items: center; gap: 0; margin-bottom: 14px;
+      background: #f3f4f6; border-radius: 999px; padding: 4px 6px;
+      width: 100%; max-width: 100%; border: 1px solid var(--border);
+      flex-wrap: nowrap; overflow-x: auto;
+    }
+    .taxa-toggle span {
+      font-size: 0.82rem; font-weight: 500; padding: 5px 10px;
+      border-radius: 999px; cursor: pointer; color: var(--muted);
+      transition: background 0.2s, color 0.2s; user-select: none;
+      white-space: nowrap; flex-shrink: 0; text-align: center; flex: 1;
+    }
+    @media (max-width: 480px) { .taxa-toggle span { font-size: 0.75rem; padding: 5px 8px; } }
+    .taxa-toggle span.active {
+      background: var(--primary); color: #fff;
+      box-shadow: 0 4px 12px rgba(161,146,118,0.25);
+    }
+    .avancado-panel { display: none; }
+    .avancado-panel.show { display: block; }
+    .ltv-note {
+      font-size: 0.78rem; color: var(--muted); margin: 4px 0 16px;
+      background: rgba(161,146,118,0.06); border: 1px solid rgba(161,146,118,0.2);
+      border-radius: 10px; padding: 8px 12px; line-height: 1.5;
+    }
+    .ltv-note strong { color: var(--text); }
+    .warn-box {
+      font-size: 0.78rem; color: #92400e; margin-bottom: 16px;
+      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3);
+      border-radius: 10px; padding: 8px 12px; line-height: 1.5;
     }
 
     /* Botão calcular */
@@ -278,37 +295,10 @@
       <span id="euribor-tag-text">A carregar Euribor 6M…</span>
     </div>
 
-    <!-- Tipo de taxa -->
-    <div class="section-title">Tipo de taxa</div>
-    <div class="taxa-toggle">
-      <span id="toggle-variavel" class="active" onclick="setTaxa('variavel')">Taxa Variável</span>
-      <span id="toggle-fixa" onclick="setTaxa('fixa')">Taxa Fixa</span>
-      <span id="toggle-mista" onclick="setTaxa('mista')">Taxa Mista</span>
-    </div>
-
-    <!-- Campo Taxa Fixa (oculto por defeito) -->
-    <div id="fixa-grid" class="inputs-grid" style="display:none; margin-bottom:16px;">
-      <div class="field">
-        <label>TAN fixa (%)</label>
-        <input type="number" id="fixa-tan" step="0.01" placeholder="ex: 3.20" />
-        <small>Taxa Anual Nominal fixa proposta pelo banco.</small>
-      </div>
-    </div>
-
-    <!-- Campos Taxa Mista (ocultos por defeito) -->
-    <div id="mista-grid" style="display:none; margin-bottom:16px;">
-      <div class="mista-inner-grid">
-        <div class="field">
-          <label>Prazo da taxa fixa (anos)</label>
-          <input type="number" id="mista-prazo-fixo" min="1" step="1" placeholder="ex: 5" oninput="atualizarPrazoVariavelPreview()" />
-          <small id="mista-prazo-help">Anos em que a prestação fica fixa, antes de passar a variável.</small>
-        </div>
-        <div class="field">
-          <label>TAN período fixo (%)</label>
-          <input type="number" id="mista-tan" step="0.01" placeholder="ex: 3.20" />
-          <small>Depois deste período passa a Euribor + spread (0,70%).</small>
-        </div>
-      </div>
+    <!-- Modo de simulação -->
+    <div class="taxa-toggle" style="margin-bottom:18px;">
+      <span id="modo-simples" class="active" onclick="setModo('simples')">Simples</span>
+      <span id="modo-avancado" onclick="setModo('avancado')">Avançado</span>
     </div>
 
     <!-- Inputs -->
@@ -335,11 +325,129 @@
       <div class="field">
         <label>Idade do titular mais velho</label>
         <div class="stepper">
-          <button type="button" onclick="step('idade', -1); atualizarPrazoVariavelPreview();">−</button>
-          <input type="number" id="idade" value="35" min="18" max="75" step="1" oninput="atualizarPrazoVariavelPreview()" />
-          <button type="button" onclick="step('idade', 1); atualizarPrazoVariavelPreview();">+</button>
+          <button type="button" onclick="step('idade', -1)">−</button>
+          <input type="number" id="idade" value="35" min="18" max="75" step="1" oninput="atualizarAvisoJovem(); atualizarPrazoMistaHelp();" />
+          <button type="button" onclick="step('idade', 1)">+</button>
         </div>
         <small>Determina o prazo máximo</small>
+      </div>
+    </div>
+
+    <div class="check-row" style="margin-bottom:16px;">
+      <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text); cursor:pointer; font-weight:500;">
+        <input type="checkbox" id="recebe-14-meses" checked style="width:15px; height:15px; accent-color:var(--primary); cursor:pointer; flex-shrink:0;" />
+        Recebe 14 meses por ano (subsídios de férias e Natal)
+      </label>
+      <small style="display:block; margin-left:23px; color:var(--muted);">Trabalhadores por conta de outrem recebem, em regra, 14 vencimentos/ano. O rendimento é ajustado para uma média mensal (rendimento × 14 ÷ 12) no cálculo da taxa de esforço. Desmarque se o titular recebe apenas 12 vezes (ex: alguns regimes de trabalho independente).</small>
+    </div>
+
+    <!-- Avançado -->
+    <div class="avancado-panel" id="avancado-panel">
+      <div class="section-title">Imóvel e financiamento</div>
+      <div class="inputs-grid" style="grid-template-columns: repeat(2, minmax(0,1fr));">
+        <div class="field">
+          <label>Valor do imóvel a comprar (€)</label>
+          <div class="stepper">
+            <button type="button" onclick="step('valor-imovel', -5000)">−</button>
+            <input type="number" id="valor-imovel" value="200000" min="0" step="5000" />
+            <button type="button" onclick="step('valor-imovel', 5000)">+</button>
+          </div>
+          <small>Preço de compra / valor de avaliação</small>
+        </div>
+        <div class="field">
+          <label>Tipo de aquisição</label>
+          <div class="taxa-toggle" style="margin-bottom:0;">
+            <span id="tipo-hpp" class="active" onclick="setTipoAquisicao('hpp')">HPP</span>
+            <span id="tipo-hps" onclick="setTipoAquisicao('hps')">HPS</span>
+            <span id="tipo-hpa" onclick="setTipoAquisicao('hpa')">HPA</span>
+            <span id="tipo-jovem" onclick="setTipoAquisicao('jovem')">Jovem</span>
+            <span id="tipo-bonificado" onclick="setTipoAquisicao('bonificado')">Bonificado</span>
+          </div>
+          <small id="tipo-aquisicao-help">Habitação Própria e Permanente · LTV até 90%</small>
+        </div>
+      </div>
+
+      <div id="jovem-warning" class="warn-box" style="display:none;">
+        O regime de garantia pública para Crédito Jovem aplica-se, em regra, a titulares até 35 anos. Reveja a idade do titular mais velho.
+      </div>
+
+      <div id="taxa-tipo-section">
+        <div class="section-title">Tipo de taxa</div>
+        <div class="taxa-toggle" style="margin-bottom:14px;">
+          <span id="taxa-variavel" class="active" onclick="setTipoTaxaAvancado('variavel')">Variável</span>
+          <span id="taxa-mista" onclick="setTipoTaxaAvancado('mista')">Mista</span>
+          <span id="taxa-fixa" onclick="setTipoTaxaAvancado('fixa')">Fixa</span>
+        </div>
+
+        <div class="inputs-grid" id="campos-mista-prazo" style="grid-template-columns: 1fr; display:none; margin-bottom:14px;">
+          <div class="field">
+            <label>Prazo da taxa fixa (anos)</label>
+            <div class="stepper">
+              <button type="button" onclick="step('mista-prazo-fixo', -1); atualizarPrazoMistaHelp();">−</button>
+              <input type="number" id="mista-prazo-fixo" min="1" step="1" value="5" oninput="atualizarPrazoMistaHelp()" />
+              <button type="button" onclick="step('mista-prazo-fixo', 1); atualizarPrazoMistaHelp();">+</button>
+            </div>
+            <small id="mista-prazo-help">Anos em que a prestação fica fixa, antes de passar a variável (Euribor + spread).</small>
+          </div>
+        </div>
+
+        <div class="inputs-grid" id="campos-variavel" style="grid-template-columns: repeat(2, minmax(0,1fr));">
+          <div class="field">
+            <label>Euribor (%)</label>
+            <div class="stepper">
+              <button type="button" onclick="step('euribor-manual', -0.05)">−</button>
+              <input type="number" id="euribor-manual" step="0.01" value="2.454" />
+              <button type="button" onclick="step('euribor-manual', 0.05)">+</button>
+            </div>
+            <small>Preenchido automaticamente, editável</small>
+          </div>
+          <div class="field">
+            <label>Spread (%)</label>
+            <div class="stepper">
+              <button type="button" onclick="step('spread-manual', -0.05)">−</button>
+              <input type="number" id="spread-manual" step="0.01" value="0.70" />
+              <button type="button" onclick="step('spread-manual', 0.05)">+</button>
+            </div>
+            <small>Margem do banco</small>
+          </div>
+        </div>
+
+        <div class="inputs-grid" id="campos-tan" style="grid-template-columns: 1fr; display:none;">
+          <div class="field">
+            <label>TAN (%)</label>
+            <div class="stepper">
+              <button type="button" onclick="step('tan-manual', -0.05)">−</button>
+              <input type="number" id="tan-manual" step="0.01" value="3.20" />
+              <button type="button" onclick="step('tan-manual', 0.05)">+</button>
+            </div>
+            <small id="tan-help">Taxa Anual Nominal fixa contratada</small>
+          </div>
+        </div>
+      </div>
+
+      <div id="campos-bonificado" style="display:none;">
+        <div class="section-title">Taxa do Crédito Bonificado</div>
+        <div class="ref-panel">
+          <div class="ref-panel-title"><span class="dot-live"></span>Taxa de referência: pré-preenchida automaticamente</div>
+          <div class="ref-panel-row">
+            <span class="ref-panel-label">Taxa BCE (MRO)</span>
+            <span><span class="ref-panel-val" id="rp-bce">a carregar…</span><span class="ref-panel-source">· BCE</span></span>
+          </div>
+        </div>
+        <div class="inputs-grid" style="grid-template-columns: 1fr;">
+          <div class="field">
+            <label>Taxa BCE (MRO) (%)</label>
+            <div class="stepper">
+              <button type="button" onclick="step('bce-manual', -0.05)">−</button>
+              <input type="number" id="bce-manual" step="0.01" value="2.15" />
+              <button type="button" onclick="step('bce-manual', 0.05)">+</button>
+            </div>
+            <small>Taxa de refinanciamento do BCE (MRO), preenchida automaticamente. A taxa paga pelo mutuário é 65% deste valor.</small>
+          </div>
+        </div>
+        <div class="ltv-note">
+          <strong>Crédito Bonificado (Lei n.º 64/2014):</strong> taxa efetiva de 65% × Taxa BCE, LTV até 90%, taxa de esforço até 50% e montante máximo de financiamento de 238 273,23 € (atualizado anualmente), independentemente do rendimento ou do valor do imóvel.
+        </div>
       </div>
     </div>
 
@@ -357,19 +465,28 @@
           <div class="result-secondary-label">Prestação estimada</div>
           <div class="result-secondary-value" id="res-prestacao">—</div>
           <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Taxa de esforço: <span id="res-dsti" style="font-weight:700;">—</span></div>
-          <div id="res-dsti-note" style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.4;">Taxa de esforço calculada à taxa atual. O teto é apurado com taxa stressada (+1,5pp) conforme metodologia BdP.</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.4;">Taxa de esforço calculada à taxa atual. O teto é apurado com taxa stressada (+1,5pp) conforme metodologia BdP.</div>
         </div>
+      </div>
+
+      <div class="ltv-note" id="ltv-info" style="display:none;">
+        <strong>Restrição aplicada:</strong> <span id="ltv-info-text"></span>
       </div>
 
       <div class="pressupostos">
         <div class="pressupostos-title">Pressupostos utilizados no cálculo</div>
         <div class="pressupostos-grid">
-          <div class="pressuposto-item">Spread: <span>0,70%</span></div>
-          <div class="pressuposto-item">Euribor 6M: <span id="p-euribor">—</span></div>
+          <div class="pressuposto-item" id="p-rendimento-item" style="display:none;">Rendimento considerado (14 meses): <span id="p-rendimento">—</span></div>
+          <div class="pressuposto-item" id="p-spread-item">Spread: <span id="p-spread">0,70%</span></div>
+          <div class="pressuposto-item" id="p-euribor-item">Euribor 6M: <span id="p-euribor">—</span></div>
+          <div class="pressuposto-item" id="p-bce-item" style="display:none;">Taxa BCE (MRO): <span id="p-bce">—</span></div>
           <div class="pressuposto-item">TAN base: <span id="p-tan">—</span></div>
           <div class="pressuposto-item">TAN stressada: <span id="p-tan-stress">—</span></div>
-          <div class="pressuposto-item">Taxa de esforço máxima: <span>45%</span></div>
+          <div class="pressuposto-item">Taxa de esforço máxima: <span id="p-dsti-max">45%</span></div>
           <div class="pressuposto-item">Prazo máximo: <span id="p-prazo">—</span> <span style="font-size:0.7rem;">(BdP)</span></div>
+          <div class="pressuposto-item" id="p-aquisicao-item" style="display:none;">Tipo de aquisição: <span id="p-aquisicao">—</span></div>
+          <div class="pressuposto-item" id="p-ltv-item" style="display:none;">LTV aplicado: <span id="p-ltv">—</span></div>
+          <div class="pressuposto-item" id="p-montante-max-item" style="display:none;">Montante máximo (lei): <span id="p-montante-max">—</span></div>
         </div>
       </div>
 
@@ -457,30 +574,77 @@
   const STRESS_DELTA = 1.50; // BdP: TAN stress = TAN base + 1.5pp
   let euriborValor = null;
   let ultimoCalculo = null;
-  let tipoTaxaAtual = "variavel";
 
-  // Prazo máximo: mínimo entre escalão de idade (Recomendação BdP 1/2026, art.º 7.º) e limite de 75 anos no fim do contrato
-  function prazoMaximoAnos(idade) {
-    const prazoEscalao = idade <= 35 ? 40 : 35;
-    return Math.min(prazoEscalao, 75 - idade);
+  // ── Modo Simples/Avançado ──
+  let modoAtual = "simples";
+  function setModo(modo) {
+    modoAtual = modo;
+    document.getElementById("modo-simples").classList.toggle("active", modo === "simples");
+    document.getElementById("modo-avancado").classList.toggle("active", modo === "avancado");
+    document.getElementById("avancado-panel").classList.toggle("show", modo === "avancado");
   }
 
-  function setTaxa(tipo) {
-    tipoTaxaAtual = tipo;
-    ["variavel", "fixa", "mista"].forEach(function (x) {
-      document.getElementById("toggle-" + x).classList.toggle("active", x === tipo);
+  // ── Tipo de aquisição e LTV (Recomendação Macroprudencial do BdP n.º 1/2026;
+  // Crédito Jovem por garantia pública do Estado, DL/legislação própria; Crédito
+  // Bonificado nos termos da Lei n.º 64/2014, de 26 de agosto) ──
+  const LTV_POR_TIPO = { hpp: 0.90, hps: 0.80, hpa: 0.80, jovem: 1.00, bonificado: 0.90 };
+  const LABEL_TIPO_AQUISICAO = {
+    hpp: "Habitação Própria e Permanente", hps: "Habitação Própria Secundária",
+    hpa: "Habitação para Arrendamento", jovem: "Crédito Jovem (garantia pública)",
+    bonificado: "Crédito Bonificado"
+  };
+  const HELP_TIPO_AQUISICAO = {
+    hpp: "Habitação Própria e Permanente · LTV até 90%",
+    hps: "Habitação Própria Secundária · LTV até 80%",
+    hpa: "Habitação para Arrendamento · LTV até 80%",
+    jovem: "Crédito Jovem (≤ 35 anos, garantia pública) · LTV até 100%",
+    bonificado: "Crédito Bonificado (Lei n.º 64/2014) · LTV até 90% · DSTI até 50% · máx. 238 273,23 €"
+  };
+  // Crédito Bonificado: DSTI e montante máximo próprios (Lei n.º 64/2014), diferentes
+  // do regime geral usado pelos outros tipos de aquisição.
+  const DSTI_MAX_BONIFICADO = 0.50;
+  const MONTANTE_MAX_BONIFICADO = 238273.23;
+  let tipoAquisicaoAtual = "hpp";
+  function setTipoAquisicao(tipo) {
+    tipoAquisicaoAtual = tipo;
+    ["hpp", "hps", "hpa", "jovem", "bonificado"].forEach(function (t) {
+      document.getElementById("tipo-" + t).classList.toggle("active", t === tipo);
     });
-    document.getElementById("fixa-grid").style.display = tipo === "fixa" ? "grid" : "none";
-    document.getElementById("mista-grid").style.display = tipo === "mista" ? "block" : "none";
-    if (tipo === "mista") atualizarPrazoVariavelPreview();
+    document.getElementById("tipo-aquisicao-help").textContent = HELP_TIPO_AQUISICAO[tipo];
+    document.getElementById("taxa-tipo-section").style.display = tipo === "bonificado" ? "none" : "block";
+    document.getElementById("campos-bonificado").style.display = tipo === "bonificado" ? "block" : "none";
+    atualizarAvisoJovem();
+  }
+  function atualizarAvisoJovem() {
+    const idade = parseInt(document.getElementById("idade").value) || 0;
+    document.getElementById("jovem-warning").style.display =
+      (tipoAquisicaoAtual === "jovem" && idade > 35) ? "block" : "none";
   }
 
-  function atualizarPrazoVariavelPreview() {
+  // ── Tipo de taxa (Avançado) ──
+  let tipoTaxaAvancado = "variavel";
+  function setTipoTaxaAvancado(tipo) {
+    tipoTaxaAvancado = tipo;
+    ["variavel", "mista", "fixa"].forEach(function (t) {
+      document.getElementById("taxa-" + t).classList.toggle("active", t === tipo);
+    });
+    document.getElementById("campos-variavel").style.display = (tipo === "variavel" || tipo === "mista") ? "grid" : "none";
+    document.getElementById("campos-tan").style.display = (tipo === "fixa" || tipo === "mista") ? "grid" : "none";
+    document.getElementById("campos-mista-prazo").style.display = tipo === "mista" ? "grid" : "none";
+    document.getElementById("tan-help").textContent = tipo === "mista"
+      ? "TAN do período fixo · usada no cálculo do teto máximo"
+      : "Taxa Anual Nominal fixa contratada";
+    if (tipo === "mista") atualizarPrazoMistaHelp();
+  }
+
+  // Prazo máximo do regime geral (idade), usado para validar o período em taxa fixa da Mista;
+  // não se aplica ao Crédito Bonificado (secção de tipo de taxa fica oculta nesse caso).
+  function atualizarPrazoMistaHelp() {
     const help = document.getElementById("mista-prazo-help");
     if (!help) return;
     const idade = parseInt(document.getElementById("idade").value) || 35;
     const prazoFixo = parseInt(document.getElementById("mista-prazo-fixo").value);
-    const prazoTotal = prazoMaximoAnos(idade);
+    const prazoTotal = Math.min(idade <= 35 ? 40 : 35, 75 - idade);
     if (!isNaN(prazoFixo) && prazoFixo >= prazoTotal) {
       help.textContent = "⚠ deve ser inferior ao prazo total estimado (" + prazoTotal + " anos)";
     } else if (!isNaN(prazoFixo)) {
@@ -512,8 +676,28 @@
       document.getElementById("euribor-tag-text").textContent =
         "Euribor 6M: " + euriborValor.toFixed(3) + "% (valor de referência)";
     }
+    document.getElementById("euribor-manual").value = euriborValor.toFixed(3);
   }
   fetchEuribor();
+
+  // ── Fetch Taxa BCE (MRO), para o Crédito Bonificado (mesmo worker do simulador dedicado) ──
+  function fetchTaxaBCE() {
+    fetch("https://taxas-referencia.ricardotdi.workers.dev")
+      .then(function (r) { return r.json(); })
+      .then(function (json) {
+        if (json.error) throw new Error(json.error);
+        var bce = json.mro;
+        var bceInput = document.getElementById("bce-manual");
+        var rpBce = document.getElementById("rp-bce");
+        if (bceInput) bceInput.value = bce.toFixed(2);
+        if (rpBce) rpBce.textContent = bce.toFixed(2).replace(".", ",") + "%";
+      })
+      .catch(function () {
+        var rpBce = document.getElementById("rp-bce");
+        if (rpBce) { rpBce.textContent = "—"; rpBce.style.color = "#dc2626"; }
+      });
+  }
+  fetchTaxaBCE();
 
   // ── Stepper ──
   function step(id, delta) {
@@ -535,8 +719,64 @@
       return;
     }
 
-    const euribor = euriborValor ?? 2.454;
-    const prazoAnos = prazoMaximoAnos(idade);
+    // Trabalhadores por conta de outrem recebem, em regra, 14 vencimentos/ano (subsídios de
+    // férias e Natal); a taxa de esforço usa a média mensal desse rendimento anualizado, não
+    // o valor de um mês normal, tal como na prática das instituições de crédito.
+    const recebe14Meses = document.getElementById("recebe-14-meses").checked;
+    const rendimentoCalculo = recebe14Meses ? (rendimento * 14 / 12) : rendimento;
+
+    const avancado = modoAtual === "avancado";
+    const bonificado = avancado && tipoAquisicaoAtual === "bonificado";
+
+    // Spread, Euribor e TAN: fixos no modo Simples (Variável), editáveis no modo Avançado.
+    // Crédito Bonificado não usa Euribor/Spread/TAN: a taxa efetiva do mutuário é
+    // sempre 65% × Taxa BCE (MRO), nos termos do art.º 7.º da Lei n.º 64/2014.
+    let spread = SPREAD;
+    let euribor = euriborValor ?? 2.454;
+    let bce = null;
+    let tanBase;
+    let prazoFixoAnos = null;
+
+    if (bonificado) {
+      bce = parseFloat(document.getElementById("bce-manual").value);
+      if (isNaN(bce) || bce <= 0) {
+        alert("Por favor introduza a Taxa BCE (MRO).");
+        return;
+      }
+      tanBase = bce * 0.65;
+    } else if (avancado) {
+      const spreadManual = parseFloat(document.getElementById("spread-manual").value);
+      if (!isNaN(spreadManual) && spreadManual >= 0) spread = spreadManual;
+      const euriborManual = parseFloat(document.getElementById("euribor-manual").value);
+      if (!isNaN(euriborManual)) euribor = euriborManual;
+
+      if (tipoTaxaAvancado === "variavel") {
+        tanBase = euribor + spread;
+      } else if (tipoTaxaAvancado === "mista") {
+        const tan = parseFloat(document.getElementById("tan-manual").value);
+        prazoFixoAnos = parseInt(document.getElementById("mista-prazo-fixo").value);
+        if (isNaN(tan) || tan <= 0 || isNaN(prazoFixoAnos)) {
+          alert("Preencha a TAN e o prazo do período fixo da taxa mista.");
+          return;
+        }
+        tanBase = tan;
+      } else {
+        const tan = parseFloat(document.getElementById("tan-manual").value);
+        if (isNaN(tan) || tan <= 0) {
+          alert("Por favor introduza a TAN.");
+          return;
+        }
+        tanBase = tan;
+      }
+    } else {
+      tanBase = euribor + spread;
+    }
+
+    // Prazo máximo: regra geral por escalão de idade (Recomendação BdP 1/2026, art.º 7.º);
+    // no Crédito Bonificado usa-se antes o teto fixo de 50 anos da Lei n.º 64/2014 (art.º 6.º),
+    // que não depende da idade. Em ambos os casos, limitado a 75 anos no fim do contrato.
+    const prazoEscalao = bonificado ? 50 : (idade <= 35 ? 40 : 35);
+    const prazoAnos = Math.min(prazoEscalao, 75 - idade);
     const prazoMeses = prazoAnos * 12;
 
     if (prazoAnos <= 0) {
@@ -544,57 +784,68 @@
       return;
     }
 
-    // TAN base (usada na prestação inicial) e TAN stressada (usada para apurar o capital máximo)
-    let tanBase, tanStress, prazoFixoAnos = null;
-    if (tipoTaxaAtual === "fixa") {
-      const tanFixa = parseFloat(document.getElementById("fixa-tan").value);
-      if (isNaN(tanFixa) || tanFixa <= 0) {
-        alert("Por favor introduza a TAN fixa.");
-        return;
-      }
-      // Taxa fixa: sem choque de juros (a prestação não varia com a Euribor)
-      tanBase = tanFixa;
-      tanStress = tanFixa;
-    } else if (tipoTaxaAtual === "mista") {
-      const tanFixa = parseFloat(document.getElementById("mista-tan").value);
-      prazoFixoAnos = parseInt(document.getElementById("mista-prazo-fixo").value);
-      if (isNaN(tanFixa) || tanFixa <= 0 || isNaN(prazoFixoAnos)) {
-        alert("Preencha o prazo e a TAN do período fixo da taxa mista.");
-        return;
-      }
-      if (prazoFixoAnos < 1 || prazoFixoAnos >= prazoAnos) {
-        alert("O prazo em taxa fixa deve ser inferior ao prazo total estimado (" + prazoAnos + " anos).");
-        return;
-      }
-      // Prestação inicial calculada à TAN fixa; capital máximo apurado com choque sobre a fase
-      // variável (cenário conservador, uma vez que essa é a exposição de longo prazo do crédito)
-      tanBase = tanFixa;
-      tanStress = euribor + SPREAD + STRESS_DELTA;
-    } else {
-      tanBase = euribor + SPREAD;
-      tanStress = tanBase + STRESS_DELTA;
+    if (prazoFixoAnos !== null && (prazoFixoAnos < 1 || prazoFixoAnos >= prazoAnos)) {
+      alert("O prazo em taxa fixa deve ser inferior ao prazo total estimado (" + prazoAnos + " anos).");
+      return;
     }
 
+    // Choque de taxa de juro para o teste de esforço: +1,5pp no regime geral (BdP);
+    // no Crédito Bonificado, o choque varia por maturidade (≤5a: +0,5pp; 5-10a: +1pp;
+    // >10a: +1,5pp), tal como no simulador dedicado do Crédito Bonificado.
+    const stressDelta = bonificado
+      ? (prazoAnos <= 5 ? 0.5 : (prazoAnos <= 10 ? 1.0 : 1.5))
+      : STRESS_DELTA;
+    // Na Mista, o choque aplica-se à fase variável (Euribor + spread), que é a exposição
+    // de longo prazo do crédito depois do período fixo — cenário conservador, tal como nos
+    // restantes simuladores da Fin+.
+    const tanStress = (avancado && tipoTaxaAvancado === "mista")
+      ? euribor + spread + stressDelta
+      : tanBase + stressDelta;
+
+    // Taxa de esforço máxima: 45% no regime geral, 50% no Crédito Bonificado (Lei n.º 64/2014)
+    const dstiMax = bonificado ? DSTI_MAX_BONIFICADO : DSTI_MAX;
+
     // Prestação máxima disponível (com taxa stressada para calcular o capital máximo)
-    const prestacaoMaxima = (rendimento * DSTI_MAX) - outras;
+    const prestacaoMaxima = (rendimentoCalculo * dstiMax) - outras;
 
     if (prestacaoMaxima <= 0) {
-      
       document.getElementById("res-montante").textContent = "0 €";
       document.getElementById("res-prestacao").textContent = "—";
       document.getElementById("res-dsti").textContent = ">";
       document.getElementById("res-prazo-label").textContent = "Outras prestações excedem o DSTI máximo";
+      document.getElementById("ltv-info").style.display = "none";
+      document.getElementById("p-aquisicao-item").style.display = "none";
+      document.getElementById("p-ltv-item").style.display = "none";
+      document.getElementById("p-montante-max-item").style.display = "none";
       return;
     }
 
-    // Capital máximo: VP de anuidade usando TAN stressada
+    // Capital máximo por rendimento (DSTI): VP de anuidade usando TAN stressada
     const rMensalStress = tanStress / 100 / 12;
-    let capitalMaximo;
+    let capitalPorRendimento;
     if (rMensalStress === 0) {
-      capitalMaximo = prestacaoMaxima * prazoMeses;
+      capitalPorRendimento = prestacaoMaxima * prazoMeses;
     } else {
-      capitalMaximo = prestacaoMaxima * (1 - Math.pow(1 + rMensalStress, -prazoMeses)) / rMensalStress;
+      capitalPorRendimento = prestacaoMaxima * (1 - Math.pow(1 + rMensalStress, -prazoMeses)) / rMensalStress;
     }
+
+    // Capital máximo por LTV (só no modo Avançado, com valor de imóvel preenchido)
+    let capitalPorLTV = null, ltvPercent = null, valorImovel = 0;
+    if (avancado) {
+      valorImovel = parseFloat(document.getElementById("valor-imovel").value) || 0;
+      if (valorImovel > 0) {
+        ltvPercent = LTV_POR_TIPO[tipoAquisicaoAtual];
+        capitalPorLTV = valorImovel * ltvPercent;
+      }
+    }
+
+    // Restrição mais apertada entre rendimento (DSTI), LTV e, no Crédito Bonificado,
+    // o montante máximo de financiamento fixado por lei.
+    let capitalMaximo = capitalPorRendimento;
+    let restricao = "rendimento";
+    if (capitalPorLTV !== null && capitalPorLTV < capitalMaximo) { capitalMaximo = capitalPorLTV; restricao = "ltv"; }
+    if (bonificado && MONTANTE_MAX_BONIFICADO < capitalMaximo) { capitalMaximo = MONTANTE_MAX_BONIFICADO; restricao = "montante-max"; }
+    const restricaoLTV = restricao === "ltv";
 
     // Prestação estimada com TAN base (o que o cliente paga inicialmente)
     const rMensalBase = tanBase / 100 / 12;
@@ -606,41 +857,81 @@
     }
 
     // DSTI real com taxa base
-    const dstiReal = ((prestacaoBase + outras) / rendimento) * 100;
+    const dstiReal = ((prestacaoBase + outras) / rendimentoCalculo) * 100;
 
     // TAEG e MTIC (à taxa base, não à taxa stressada)
     const taeg = (Math.pow(1 + rMensalBase, 12) - 1) * 100;
     const mtic = prestacaoBase * prazoMeses;
-    ultimoCalculo = { capitalMaximo, prazoMeses, prazoAnos, prestacaoBase, taeg, mtic, tipoTaxa: tipoTaxaAtual, prazoFixoAnos };
+    ultimoCalculo = {
+      capitalMaximo, prazoMeses, prazoAnos, prestacaoBase, taeg, mtic,
+      avancado, bonificado, tipoTaxaAvancado, tipoAquisicao: tipoAquisicaoAtual,
+      valorImovel, ltvPercent, capitalPorLTV, capitalPorRendimento, restricaoLTV, restricao,
+      spread, euribor, bce, tanBase, dstiMax, prazoFixoAnos, recebe14Meses, rendimentoCalculo
+    };
 
     // Mostrar resultados
-
     document.getElementById("res-montante").textContent = formatEuro(capitalMaximo);
     document.getElementById("res-prestacao").textContent = formatEuro(prestacaoBase);
-    document.getElementById("res-prazo-label").textContent = tipoTaxaAtual === "mista"
+    document.getElementById("res-prazo-label").textContent = prazoFixoAnos !== null
       ? "Prazo: " + prazoAnos + " anos (" + prazoFixoAnos + " fixos + " + (prazoAnos - prazoFixoAnos) + " variável)"
       : "Prazo: " + prazoAnos + " anos";
     document.getElementById("res-dsti").textContent = dstiReal.toFixed(1) + "%";
-    document.getElementById("res-dsti").style.color = dstiReal > 45 ? "#ef4444" : dstiReal > 35 ? "#f59e0b" : "#16a34a";
+    document.getElementById("res-dsti").style.color = dstiReal > (dstiMax * 100) ? "#ef4444" : dstiReal > 35 ? "#f59e0b" : "#16a34a";
 
     // Pressupostos
-    if (tipoTaxaAtual === "fixa") {
-      document.getElementById("p-euribor").textContent = "não aplicável";
-      document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "% (fixa)";
-      document.getElementById("p-tan-stress").textContent = "sem choque (taxa fixa)";
-      document.getElementById("res-dsti-note").textContent = "Taxa de esforço calculada à TAN fixa. Sem choque de taxa de juro (a prestação não varia com a Euribor).";
-    } else if (tipoTaxaAtual === "mista") {
-      document.getElementById("p-euribor").textContent = euribor.toFixed(3) + "%";
-      document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "% (fixa, " + prazoFixoAnos + " anos)";
-      document.getElementById("p-tan-stress").textContent = tanStress.toFixed(3) + "% (fase variável)";
-      document.getElementById("res-dsti-note").textContent = "Taxa de esforço calculada à TAN do período fixo. O teto é apurado com choque de +1,5pp sobre a fase variável (cenário conservador), conforme metodologia BdP.";
+    document.getElementById("p-rendimento-item").style.display = recebe14Meses ? "" : "none";
+    if (recebe14Meses) document.getElementById("p-rendimento").textContent = formatEuro(rendimentoCalculo);
+    document.getElementById("p-spread-item").style.display = bonificado ? "none" : "";
+    document.getElementById("p-euribor-item").style.display = bonificado ? "none" : "";
+    document.getElementById("p-bce-item").style.display = bonificado ? "" : "none";
+    if (bonificado) {
+      document.getElementById("p-bce").textContent = bce.toFixed(3) + "%";
     } else {
+      document.getElementById("p-spread").textContent = spread.toFixed(2) + "%";
       document.getElementById("p-euribor").textContent = euribor.toFixed(3) + "%";
-      document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "%";
-      document.getElementById("p-tan-stress").textContent = tanStress.toFixed(3) + "%";
-      document.getElementById("res-dsti-note").textContent = "Taxa de esforço calculada à taxa atual. O teto é apurado com taxa stressada (+1,5pp) conforme metodologia BdP.";
     }
+    document.getElementById("p-tan").textContent = tanBase.toFixed(3) + "%" + (prazoFixoAnos !== null ? " (fixa, " + prazoFixoAnos + " anos)" : "");
+    document.getElementById("p-tan-stress").textContent = tanStress.toFixed(3) + "%" + (prazoFixoAnos !== null ? " (fase variável)" : "");
+    document.getElementById("p-dsti-max").textContent = (dstiMax * 100).toFixed(0) + "%";
     document.getElementById("p-prazo").textContent = prazoAnos + " anos (idade " + idade + ")";
+
+    // Restrição rendimento vs. LTV vs. montante máximo (Avançado)
+    const ltvInfo = document.getElementById("ltv-info");
+    const pAquisicaoItem = document.getElementById("p-aquisicao-item");
+    const pLtvItem = document.getElementById("p-ltv-item");
+    const pMontanteMaxItem = document.getElementById("p-montante-max-item");
+    pMontanteMaxItem.style.display = bonificado ? "" : "none";
+    if (bonificado) document.getElementById("p-montante-max").textContent = formatEuro(MONTANTE_MAX_BONIFICADO);
+
+    if (avancado && capitalPorLTV !== null) {
+      document.getElementById("p-aquisicao").textContent = LABEL_TIPO_AQUISICAO[tipoAquisicaoAtual];
+      document.getElementById("p-ltv").textContent = (ltvPercent * 100).toFixed(0) + "% · " + formatEuro(capitalPorLTV);
+      pAquisicaoItem.style.display = "";
+      pLtvItem.style.display = "";
+    } else if (bonificado) {
+      document.getElementById("p-aquisicao").textContent = LABEL_TIPO_AQUISICAO[tipoAquisicaoAtual];
+      pAquisicaoItem.style.display = "";
+      pLtvItem.style.display = "none";
+    } else {
+      pAquisicaoItem.style.display = "none";
+      pLtvItem.style.display = "none";
+    }
+
+    if (restricao === "ltv") {
+      ltvInfo.style.display = "block";
+      document.getElementById("ltv-info-text").textContent =
+        "o valor do imóvel (LTV de " + (ltvPercent * 100).toFixed(0) + "%) limita mais o financiamento do que o rendimento: teto de " + formatEuro(capitalPorLTV) + ", face a " + formatEuro(capitalPorRendimento) + " que o rendimento permitiria.";
+    } else if (restricao === "montante-max") {
+      ltvInfo.style.display = "block";
+      document.getElementById("ltv-info-text").textContent =
+        "o montante máximo de financiamento do Crédito Bonificado (" + formatEuro(MONTANTE_MAX_BONIFICADO) + ") é mais baixo do que o rendimento e o LTV permitiriam.";
+    } else if (avancado && capitalPorLTV !== null) {
+      ltvInfo.style.display = "block";
+      document.getElementById("ltv-info-text").textContent =
+        "o rendimento é a restrição mais apertada; o LTV de " + (ltvPercent * 100).toFixed(0) + "% permitiria até " + formatEuro(capitalPorLTV) + ".";
+    } else {
+      ltvInfo.style.display = "none";
+    }
   }
 
   function formatEuro(v) {
@@ -679,6 +970,7 @@
     var jsPDFns = window.jspdf || window.jsPDF;
     var doc = new jsPDFns.jsPDF();
     var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
 
     var agora = new Date();
     var dataHoraTxt = "Simulado em " + agora.toLocaleDateString("pt-PT") + " às " + agora.toLocaleTimeString("pt-PT", {hour:"2-digit", minute:"2-digit"});
@@ -720,19 +1012,45 @@
       doc.text("MTIC (custo total do crédito): " + formatEuro(ultimoCalculo.mtic), 10, y); y += 8;
     } else { y += 2; }
 
-    var tipoTaxaLabel = { variavel: "Variável", fixa: "Fixa", mista: "Mista" }[tipoTaxaAtual] || "Variável";
-
     doc.setFont(undefined, "bold");
     doc.text("Pressupostos utilizados no cálculo", 10, y); y += 6;
     doc.setFont(undefined, "normal");
-    doc.text("Tipo de taxa: " + tipoTaxaLabel, 10, y); y += 6;
-    if (tipoTaxaAtual !== "fixa") { doc.text("Spread: 0,70%", 10, y); y += 6; }
-    doc.text("Euribor 6M: " + document.getElementById("p-euribor").textContent, 10, y); y += 6;
-    doc.text((tipoTaxaAtual === "mista" ? "TAN fase fixa: " : "TAN base: ") + document.getElementById("p-tan").textContent, 10, y); y += 6;
-    doc.text((tipoTaxaAtual === "mista" ? "TAN stressada (fase variável): " : "TAN stressada: ") + document.getElementById("p-tan-stress").textContent, 10, y); y += 6;
-    doc.text("Taxa de esforço máxima (DSTI): 45%", 10, y); y += 6;
+    if (ultimoCalculo && ultimoCalculo.avancado && !ultimoCalculo.bonificado) {
+      var tipoTaxaLabel = { variavel: "Variável", mista: "Mista", fixa: "Fixa" }[ultimoCalculo.tipoTaxaAvancado] || "Variável";
+      doc.text("Tipo de taxa: " + tipoTaxaLabel, 10, y); y += 6;
+    }
+    if (ultimoCalculo && ultimoCalculo.bonificado) {
+      doc.text("Taxa BCE (MRO): " + ultimoCalculo.bce.toFixed(3) + "%", 10, y); y += 6;
+    } else {
+      doc.text("Spread: " + document.getElementById("p-spread").textContent, 10, y); y += 6;
+      doc.text("Euribor 6M: " + document.getElementById("p-euribor").textContent, 10, y); y += 6;
+    }
+    if (ultimoCalculo && ultimoCalculo.recebe14Meses) {
+      doc.text("Rendimento considerado (14 meses/ano): " + formatEuro(ultimoCalculo.rendimentoCalculo), 10, y); y += 6;
+    }
+    doc.text("TAN base: " + document.getElementById("p-tan").textContent, 10, y); y += 6;
+    doc.text("TAN stressada: " + document.getElementById("p-tan-stress").textContent, 10, y); y += 6;
+    doc.text("Taxa de esforço máxima (DSTI): " + document.getElementById("p-dsti-max").textContent, 10, y); y += 6;
     doc.text("Prazo máximo: " + document.getElementById("p-prazo").textContent, 10, y); y += 8;
 
+    if (ultimoCalculo && ultimoCalculo.avancado && (ultimoCalculo.capitalPorLTV !== null || ultimoCalculo.bonificado)) {
+      if (y > pageH - 60) { doc.addPage(); y = 20; }
+      doc.setFont(undefined, "bold");
+      doc.text(ultimoCalculo.bonificado ? "Crédito Bonificado" : "Imóvel e LTV", 10, y); y += 6;
+      doc.setFont(undefined, "normal");
+      doc.text("Tipo de aquisição: " + LABEL_TIPO_AQUISICAO[ultimoCalculo.tipoAquisicao], 10, y); y += 6;
+      if (ultimoCalculo.capitalPorLTV !== null) {
+        doc.text("Valor do imóvel: " + formatEuro(ultimoCalculo.valorImovel), 10, y); y += 6;
+        doc.text("LTV aplicado: " + (ultimoCalculo.ltvPercent * 100).toFixed(0) + "% (teto de " + formatEuro(ultimoCalculo.capitalPorLTV) + ")", 10, y); y += 6;
+      }
+      if (ultimoCalculo.bonificado) {
+        doc.text("Montante máximo de financiamento (lei): " + formatEuro(MONTANTE_MAX_BONIFICADO), 10, y); y += 6;
+      }
+      var restricaoLabel = { rendimento: "rendimento (DSTI)", ltv: "valor do imóvel (LTV)", "montante-max": "montante máximo do Crédito Bonificado" }[ultimoCalculo.restricao] || "rendimento (DSTI)";
+      doc.text("Restrição determinante: " + restricaoLabel, 10, y); y += 8;
+    }
+
+    if (y > pageH - 40) { doc.addPage(); y = 20; }
     doc.setFontSize(8); doc.setTextColor(120, 120, 120);
     var notaLinhas = doc.splitTextToSize(document.getElementById("nota-text").textContent, pageW - 20);
     doc.text(notaLinhas, 10, y);
@@ -759,17 +1077,24 @@
     const rendimento = document.getElementById("rendimento").value;
     const outras = document.getElementById("outras").value;
     const montante = document.getElementById("res-montante").textContent;
+    const extraAvancado = (ultimoCalculo && ultimoCalculo.avancado) ? Object.assign({
+      tipoAquisicao: LABEL_TIPO_AQUISICAO[ultimoCalculo.tipoAquisicao],
+      valorImovel: ultimoCalculo.valorImovel ? formatEuro(ultimoCalculo.valorImovel) : "—",
+      ltvAplicado: ultimoCalculo.ltvPercent ? (ultimoCalculo.ltvPercent * 100).toFixed(0) + "%" : "—"
+    }, ultimoCalculo.bonificado ? {
+      taxaBCE: ultimoCalculo.bce.toFixed(3) + "%",
+      montanteMaximoLei: formatEuro(MONTANTE_MAX_BONIFICADO)
+    } : {}) : {};
     try {
       const res = await fetch("https://credito-backend-ffnk.onrender.com/send-email", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        body: JSON.stringify(Object.assign({
           simulador: "Teto Máximo de Crédito",
           nome, email, telefone: tel, horario,
           rendimento: rendimento + " €",
           outrasPrestacoes: outras + " €",
-          montanteMaximo: montante,
-          tipoTaxa: { variavel: "Variável", fixa: "Fixa", mista: "Mista" }[tipoTaxaAtual] || "Variável"
-        })
+          montanteMaximo: montante
+        }, extraAvancado))
       });
       if (!res.ok) throw new Error();
       status.textContent = "Lead enviada com sucesso. Será contactado em breve.";
