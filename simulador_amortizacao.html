@@ -621,12 +621,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     .inverse-result { margin-top: 10px; font-size: 0.95rem; color: #9a3412; font-weight: 600; line-height: 1.5; }
     .inverse-result.hidden { display: none; }
-    .edu-box {
-      margin-top: 16px; padding: 14px 16px; border-radius: 14px;
-      background: rgba(161,146,118,0.06); border: 1px solid rgba(161,146,118,0.2);
-      font-size: 0.85rem; color: #5c5344; line-height: 1.6;
-    }
-    .edu-box strong { color: #8a7d65; }
     .status { margin-top: 8px; font-size: 0.82rem; }
     .status.ok { color: #16a34a; }
     .status.err { color: #dc2626; }
@@ -892,11 +886,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
             <div id="inverse-result" class="inverse-result hidden"></div>
           </div>
 
-          <div class="edu-box" data-i18n="eduBox">
-            <strong>Porque é que amortizar cedo poupa mais?</strong><br>
-            No início do empréstimo, a maior parte da prestação são <strong>juros</strong> e só uma pequena parte abate ao capital. Quando entrega capital nesta fase, está a eliminar juros que de outra forma pagaria durante muitos anos. A mesma entrega feita no fim do empréstimo poupa muito menos. Por isso, <strong>quanto mais cedo amortizar, mais juros evita</strong>, e escolher "reduzir prazo" (em vez de reduzir a prestação) maximiza essa poupança.
-          </div>
-
           <div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">
             <button class="btn btn-ghost" style="flex:1; justify-content:center;" onclick="exportarExcel()" data-i18n="exportExcel">Descarregar plano em Excel</button>
             <button class="btn btn-ghost" style="flex:1; justify-content:center;" onclick="exportarPDF()" data-i18n="exportPdf">Descarregar plano em PDF</button>
@@ -1020,7 +1009,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         finishIn: "Quero terminar em (anos)", finishInHelp: "Menos do que o prazo atual.",
         paymentFreq: "Periodicidade das entregas",
         inverseBtn: "Calcular entrega necessária",
-        eduBox: "<strong>Porque é que amortizar cedo poupa mais?</strong><br>No início do empréstimo, a maior parte da prestação são <strong>juros</strong> e só uma pequena parte abate ao capital. Quando entrega capital nesta fase, está a eliminar juros que de outra forma pagaria durante muitos anos. A mesma entrega feita no fim do empréstimo poupa muito menos. Por isso, <strong>quanto mais cedo amortizar, mais juros evita</strong>, e escolher \"reduzir prazo\" (em vez de reduzir a prestação) maximiza essa poupança.",
         exportExcel: "Descarregar plano em Excel", exportPdf: "Descarregar plano em PDF",
         disclaimer: "Valores meramente indicativos, calculados com as taxas e condições que introduziu. Não substituem a informação oficial da sua instituição de crédito. As condições reais de amortização (comissões, mínimos, prazos de aviso prévio) devem ser confirmadas no seu contrato e junto do banco.",
         // dinâmicos
@@ -1124,7 +1112,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         finishIn: "I want to finish in (years)", finishInHelp: "Less than the current term.",
         paymentFreq: "Overpayment frequency",
         inverseBtn: "Calculate required overpayment",
-        eduBox: "<strong>Why does overpaying early save more?</strong><br>At the start of the loan, most of the instalment is <strong>interest</strong> and only a small part reduces the capital. When you pay capital in this phase, you eliminate interest you would otherwise pay for many years. The same overpayment made at the end of the loan saves much less. That's why <strong>the earlier you overpay, the more interest you avoid</strong> — and choosing \"reduce term\" (instead of reducing the instalment) maximises that saving.",
         exportExcel: "Download plan as Excel", exportPdf: "Download plan as PDF",
         disclaimer: "Indicative values only, calculated with the rates and conditions you entered. They do not replace the official information from your lender. The actual overpayment conditions (fees, minimums, notice periods) must be confirmed in your contract and with the bank.",
         locale: "en-GB",
