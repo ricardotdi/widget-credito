@@ -664,6 +664,15 @@ function showToast(msg, error = false) {
   setTimeout(() => t.className = '', 3000);
 }
 
+// Os dados dos clientes entram em templates atribuidos a innerHTML. Sem
+// escapar, um nome ou uma nota com HTML seria interpretado como marcacao e
+// executado nesta pagina, que tem a sessao de administrador aberta.
+function esc(v) {
+  return (v === null || v === undefined ? "" : v).toString()
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
 function fmtDate(iso) {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('pt-PT');
@@ -769,11 +778,11 @@ function renderTable() {
 
     return `
       <tr>
-        <td>${c.name}</td>
-        <td>${c.email}</td>
-        <td>${c.phone || '—'}</td>
-        <td>${c.concelho || '—'}</td>
-        <td>${c.processNumber || '—'}</td>
+        <td>${esc(c.name)}</td>
+        <td>${esc(c.email)}</td>
+        <td>${esc(c.phone) || '—'}</td>
+        <td>${esc(c.concelho) || '—'}</td>
+        <td>${esc(c.processNumber) || '—'}</td>
         <td>${fmtDate(c.createdAt)}</td>
         <td>${accountStatus}</td>
         <td>${uploadStatus}</td>
@@ -858,10 +867,10 @@ function openDetail(clientId) {
   document.getElementById('detail-name').textContent = c.name;
 
   document.getElementById('detail-meta').innerHTML = `
-    <div class="meta-item"><div class="meta-label">Email</div><div class="meta-value">${c.email}</div></div>
-    <div class="meta-item"><div class="meta-label">Telefone</div><div class="meta-value">${c.phone || '—'}</div></div>
-    <div class="meta-item"><div class="meta-label">Concelho</div><div class="meta-value">${c.concelho || '—'}</div></div>
-    <div class="meta-item"><div class="meta-label">Nº Processo</div><div class="meta-value">${c.processNumber || '—'}</div></div>
+    <div class="meta-item"><div class="meta-label">Email</div><div class="meta-value">${esc(c.email)}</div></div>
+    <div class="meta-item"><div class="meta-label">Telefone</div><div class="meta-value">${esc(c.phone) || '—'}</div></div>
+    <div class="meta-item"><div class="meta-label">Concelho</div><div class="meta-value">${esc(c.concelho) || '—'}</div></div>
+    <div class="meta-item"><div class="meta-label">Nº Processo</div><div class="meta-value">${esc(c.processNumber) || '—'}</div></div>
     <div class="meta-item"><div class="meta-label">Criado em</div><div class="meta-value">${fmtDate(c.createdAt)}</div></div>
     <div class="meta-item"><div class="meta-label">Conta</div><div class="meta-value">${c.activated ? '✅ Ativa' : '⏳ Pendente'}</div></div>
   `;
@@ -914,7 +923,7 @@ function renderProcessCard(clientId, proc) {
           ${fmtDateTime(w.start)} → ${fmtDateTime(w.end)}
           ${active ? '<span class="badge badge-active" style="margin-left:8px">Ativo</span>' : '<span class="badge badge-inactive" style="margin-left:8px">Expirado</span>'}
         </div>
-        ${w.note ? `<div class="window-note">${w.note}</div>` : ''}
+        ${w.note ? `<div class="window-note">${esc(w.note)}</div>` : ''}
       </div>
       <button class="btn btn-danger" onclick="deleteWindow('${clientId}','${proc.id}','${w.id}')">✕</button>
     </div>`;
@@ -923,7 +932,7 @@ function renderProcessCard(clientId, proc) {
   return `
     <div class="process-card">
       <div class="process-card-header">
-        <div class="process-number">Processo ${proc.number || proc.id.substring(0,8)}</div>
+        <div class="process-number">Processo ${esc(proc.number) || proc.id.substring(0,8)}</div>
         <div>
           <span style="font-size:11px;color:var(--muted)">Criado em ${fmtDate(proc.createdAt)}</span>
           <span class="badge ${uploadActive ? 'badge-active' : 'badge-inactive'}" style="margin-left:10px">Upload ${uploadActive ? 'Ativo' : 'Inativo'}</span>
