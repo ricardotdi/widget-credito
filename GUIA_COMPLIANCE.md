@@ -7,6 +7,10 @@ Baseado no **Aviso do Banco de Portugal n.º 5/2024** (em vigor desde 1 de julho
 > Guia Prático oficial. Em caso de dúvida sobre um suporte concreto, confirma junto do
 > mutuante/compliance antes de publicar.
 
+## ✅ Rodapé legal oficial (usar tal e qual em todos os suportes)
+
+> Bruma Finance é uma marca em processo de registo, detida por Ricardo Vagner Paiva Custódio, intermediário de crédito vinculado, registado junto do Banco de Portugal com o n.º 8693 (Reg. BdP n.º 0008693; telemóvel n.º 911511908; email geral@brumafinance.pt), registo que pode ser confirmado em https://www.bportugal.pt/intermediariocreditofar/ricardo-vagner-paiva-custodio. Intermediário de crédito vinculado, sem exclusividade, com contrato com as entidades mutuantes: Banco BPI, S.A.; Banco Santander Totta, S.A.; Bankinter, S.A. - Sucursal em Portugal; Caixa Geral de Depósitos, S.A.; Novo Banco dos Açores, S.A.; Union de Créditos Inmobiliários, S.A., Establecimiento Financiero de Crédito (Sociedad Unipersonal) - Sucursal em Portugal. Autorizado a prestar os serviços de apresentação ou proposta de contratos de crédito a consumidores; de assistência a consumidores, mediante a realização de atos preparatórios ou de outros trabalhos de gestão pré-contratual relativamente a contratos de crédito que não tenham sido por si apresentados ou propostos; e de celebração de contratos de crédito com consumidores em nome dos mutuantes. Presta também serviços de consultoria relativamente a contratos de crédito. Atividade sujeita à supervisão do Banco de Portugal. Livro de Reclamações Eletrónico | Resolução Alternativa de Litígios: CIMARA e CACCL.
+
 ## ⚠️ IMPORTANTE — registo em nome individual
 
 O registo n.º 8693 no Banco de Portugal está em **nome individual (pessoa singular)**:
@@ -19,9 +23,9 @@ inequívoca é sempre o nome próprio, nunca só "Bruma Finance".
 > de Portugal com o n.º 8693.
 
 **Se usares a marca "Bruma Finance" no suporte, acrescenta:**
-> Bruma Finance é a designação comercial utilizada por Ricardo Vagner Paiva Custódio.
+> Bruma Finance é uma marca em processo de registo, detida por Ricardo Vagner Paiva Custódio.
 
-(Enquanto o registo da marca no INPI estiver pendente, não escrever "marca detida" nem usar ®.)
+(Enquanto o registo da marca no INPI estiver pendente, manter "em processo de registo" e não usar ®.)
 
 (Nunca escrever apenas "Bruma Finance é um intermediário de crédito..." como se "Bruma Finance" fosse a entidade
 registada — legalmente não é.)
@@ -47,8 +51,8 @@ lá consta.*
 - Banco Santander Totta, S.A.
 - Banco BPI, S.A.
 - Caixa Geral de Depósitos, S.A.
-- UCI — União de Créditos Imobiliários, S.A. — Sucursal em Portugal
-- Novo Banco, S.A.
+- Union de Créditos Inmobiliários, S.A., Establecimiento Financiero de Crédito (Sociedad Unipersonal) - Sucursal em Portugal
+- Novo Banco dos Açores, S.A.
 - **Bankinter, S.A. — Sucursal em Portugal** ✅ já confirmado no registo público — pode ser
   publicitado desde já
 
@@ -70,7 +74,7 @@ atualizado):
 - Website: **brumafinance.pt**
 - Categoria de intermediário: **vinculado**
 - Serviços autorizados (assinalar os aplicáveis): apresentação/proposta de contratos de crédito ·
-  assistência a consumidores · celebração de contratos em nome dos mutuantes · consultoria: **[confirmar]**
+  assistência a consumidores · celebração de contratos em nome dos mutuantes · consultoria (todos confirmados)
 
 ⚠️ Sendo o registo **vinculado**, só pode fazer publicidade a produtos de crédito concretos dos
 mutuantes que já constam do registo (secção 5) — nunca a produtos de outras instituições ou de
@@ -116,7 +120,7 @@ Em canais digitais, esta identificação pode estar no próprio post OU através
 redirecione de imediato para o site/página — mas nesse caso a informação tem de estar "no início
 da página" ou numa secção facilmente acessível (não vale esconder no rodapé do site).
 
-Se referires a marca ("Bruma Finance"), acompanha sempre com: *"Bruma Finance é a designação comercial utilizada por Ricardo
+Se referires a marca ("Bruma Finance"), acompanha sempre com: *"Bruma Finance é uma marca em processo de registo, detida por Ricardo
 Vagner Paiva Custódio."*
 
 ---
