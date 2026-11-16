@@ -19,7 +19,9 @@ inequívoca é sempre o nome próprio, nunca só "Bruma Finance".
 > de Portugal com o n.º 8693.
 
 **Se usares a marca "Bruma Finance" no suporte, acrescenta:**
-> Bruma Finance é uma marca detida por Ricardo Vagner Paiva Custódio.
+> Bruma Finance é a designação comercial utilizada por Ricardo Vagner Paiva Custódio.
+
+(Enquanto o registo da marca no INPI estiver pendente, não escrever "marca detida" nem usar ®.)
 
 (Nunca escrever apenas "Bruma Finance é um intermediário de crédito..." como se "Bruma Finance" fosse a entidade
 registada — legalmente não é.)
@@ -114,7 +116,7 @@ Em canais digitais, esta identificação pode estar no próprio post OU através
 redirecione de imediato para o site/página — mas nesse caso a informação tem de estar "no início
 da página" ou numa secção facilmente acessível (não vale esconder no rodapé do site).
 
-Se referires a marca ("Bruma Finance"), acompanha sempre com: *"Bruma Finance é uma marca detida por Ricardo
+Se referires a marca ("Bruma Finance"), acompanha sempre com: *"Bruma Finance é a designação comercial utilizada por Ricardo
 Vagner Paiva Custódio."*
 
 ---
