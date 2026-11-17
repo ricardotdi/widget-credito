@@ -1,4 +1,4 @@
-# Guia de Compliance — Instagram Fin+
+# Guia de Compliance — Redes sociais Bruma Finance
 
 Baseado no **Aviso do Banco de Portugal n.º 5/2024** (em vigor desde 1 de julho de 2025) e no
 **Guia Prático sobre a Publicidade Difundida por Intermediários de Crédito** (BdP, ago. 2025).
@@ -7,21 +7,27 @@ Baseado no **Aviso do Banco de Portugal n.º 5/2024** (em vigor desde 1 de julho
 > Guia Prático oficial. Em caso de dúvida sobre um suporte concreto, confirma junto do
 > mutuante/compliance antes de publicar.
 
+## ✅ Rodapé legal oficial (usar tal e qual em todos os suportes)
+
+> Bruma Finance é uma marca em processo de registo, detida por Ricardo Vagner Paiva Custódio, intermediário de crédito vinculado, registado junto do Banco de Portugal com o n.º 8693 (Reg. BdP n.º 0008693; telemóvel n.º 911511908; email geral@brumafinance.pt), registo que pode ser confirmado em https://www.bportugal.pt/intermediariocreditofar/ricardo-vagner-paiva-custodio. Intermediário de crédito vinculado, sem exclusividade, com contrato com as entidades mutuantes: Banco BPI, S.A.; Banco Santander Totta, S.A.; Bankinter, S.A. - Sucursal em Portugal; Caixa Geral de Depósitos, S.A.; Novo Banco dos Açores, S.A.; Union de Créditos Inmobiliários, S.A., Establecimiento Financiero de Crédito (Sociedad Unipersonal) - Sucursal em Portugal. Autorizado a prestar os serviços de apresentação ou proposta de contratos de crédito a consumidores; de assistência a consumidores, mediante a realização de atos preparatórios ou de outros trabalhos de gestão pré-contratual relativamente a contratos de crédito que não tenham sido por si apresentados ou propostos; e de celebração de contratos de crédito com consumidores em nome dos mutuantes. Presta também serviços de consultoria relativamente a contratos de crédito. Atividade sujeita à supervisão do Banco de Portugal. Livro de Reclamações Eletrónico | Resolução Alternativa de Litígios: CIMARA e CACCL.
+
 ## ⚠️ IMPORTANTE — registo em nome individual
 
 O registo n.º 8693 no Banco de Portugal está em **nome individual (pessoa singular)**:
-**Ricardo Vagner Paiva Custódio**. "Fin+" é apenas a **marca comercial** usada, não uma firma
+**Ricardo Vagner Paiva Custódio**. "Bruma Finance" é apenas a **marca comercial** usada, não uma firma
 registada. Isto muda o texto legal obrigatório: o nome que tem de aparecer na identificação
-inequívoca é sempre o nome próprio, nunca só "Fin+".
+inequívoca é sempre o nome próprio, nunca só "Bruma Finance".
 
 **Texto de identificação legalmente correto:**
 > Ricardo Vagner Paiva Custódio, intermediário de crédito vinculado, registado junto do Banco
 > de Portugal com o n.º 8693.
 
-**Se usares a marca "Fin+" no suporte, acrescenta:**
-> Fin+ é uma marca detida por Ricardo Vagner Paiva Custódio.
+**Se usares a marca "Bruma Finance" no suporte, acrescenta:**
+> Bruma Finance é uma marca em processo de registo, detida por Ricardo Vagner Paiva Custódio.
 
-(Nunca escrever apenas "Fin+ é um intermediário de crédito..." como se "Fin+" fosse a entidade
+(Enquanto o registo da marca no INPI estiver pendente, manter "em processo de registo" e não usar ®.)
+
+(Nunca escrever apenas "Bruma Finance é um intermediário de crédito..." como se "Bruma Finance" fosse a entidade
 registada — legalmente não é.)
 
 ## ⚠️ IMPORTANTE — dois estados diferentes de mutuantes
@@ -37,22 +43,24 @@ assinado há mais tempo. Confirmar sempre em: https://www.bportugal.pt/intermedi
 
 ### Grupo A — Contrato assinado, com denominação completa pronta a usar
 
-*Atualmente só o Bankinter está confirmado no registo público; os restantes 7 têm contrato
-assinado mas aguardam atualização do registo. A lista completa está preparada abaixo para usares
-assim que o registo BdP refletir cada um — antes disso, só podes publicitar quem já lá consta.*
+*São 6 mutuantes com contrato assinado. Na última verificação, só o Bankinter estava confirmado
+no registo público; os restantes podem ainda aguardar atualização do registo. Antes de mencionar
+qualquer um num suporte, confirmar que já consta do registo BdP — só podes publicitar quem já
+lá consta.*
 
 - Banco Santander Totta, S.A.
 - Banco BPI, S.A.
 - Caixa Geral de Depósitos, S.A.
-- UCI — União de Créditos Imobiliários, S.A. — Sucursal em Portugal
-- Novo Banco, S.A.
+- Union de Créditos Inmobiliários, S.A., Establecimiento Financiero de Crédito (Sociedad Unipersonal) - Sucursal em Portugal
+- Novo Banco dos Açores, S.A.
 - **Bankinter, S.A. — Sucursal em Portugal** ✅ já confirmado no registo público — pode ser
   publicitado desde já
-- Abanca Corporación Bancaria, S.A. — Sucursal em Portugal
-- Banco CTT, S.A.
 
-### Grupo B — Pendente (sem contrato assinado)
+### Grupo B — Fora dos suportes por enquanto
 
+- **Abanca Corporación Bancaria, S.A. — Sucursal em Portugal** — ⛔ não incluir em nenhum suporte
+  publicitário por enquanto.
+- **Banco CTT, S.A.** — ⛔ não incluir em nenhum suporte publicitário por enquanto.
 - **Crédito Agrícola** — ⛔ sem contrato de vinculação assinado. Não incluir em nenhum suporte
   publicitário (posts, legendas, bio, site) até haver contrato e registo. Quando for assinado,
   confirmar a denominação exata da entidade (ex. Caixa Central de Crédito Agrícola Mútuo,
@@ -61,12 +69,12 @@ assim que o registo BdP refletir cada um — antes disso, só podes publicitar q
 Dados de identificação a usar em todo o conteúdo (revalidar sempre que o registo for
 atualizado):
 
-- **Nome:** Ricardo Vagner Paiva Custódio (marca: **Fin+**)
+- **Nome:** Ricardo Vagner Paiva Custódio (marca: **Bruma Finance**)
 - Intermediário de Crédito n.º **8693** (Reg. BdP n.º 0008693)
-- Website: **finmais.pt**
+- Website: **brumafinance.pt**
 - Categoria de intermediário: **vinculado**
 - Serviços autorizados (assinalar os aplicáveis): apresentação/proposta de contratos de crédito ·
-  assistência a consumidores · celebração de contratos em nome dos mutuantes · consultoria: **[confirmar]**
+  assistência a consumidores · celebração de contratos em nome dos mutuantes · consultoria (todos confirmados)
 
 ⚠️ Sendo o registo **vinculado**, só pode fazer publicidade a produtos de crédito concretos dos
 mutuantes que já constam do registo (secção 5) — nunca a produtos de outras instituições ou de
@@ -81,13 +89,13 @@ Todo o conteúdo do Instagram cai numa destas categorias, cada uma com regras pr
 | Categoria | O que é | Exemplo |
 |---|---|---|
 | **Publicidade a produtos de crédito** | Promove um produto de crédito concreto (crédito habitação, consumo, etc.) referindo pelo menos uma característica específica, OU uma tipologia de produtos com elementos de preço (taxa, spread, prestação, comissões) | "Crédito habitação com TAEG X%" |
-| **Publicidade à atividade** | Promove a atividade de intermediação de crédito da Fin+ em geral, sem elementos de preço | "Tratamos do teu crédito à habitação — fala connosco" |
-| **Publicidade institucional** | Promove apenas a marca/firma, sem apelar à atividade nem a produtos | Post que mostra só o logo Fin+ |
+| **Publicidade à atividade** | Promove a atividade de intermediação de crédito da Bruma Finance em geral, sem elementos de preço | "Tratamos do teu crédito à habitação — fala connosco" |
+| **Publicidade institucional** | Promove apenas a marca/firma, sem apelar à atividade nem a produtos | Post que mostra só o logo Bruma Finance |
 
-**Regra prática:** conteúdo de "literacia financeira" que também promova a Fin+ (direta ou
+**Regra prática:** conteúdo de "literacia financeira" que também promova a Bruma Finance (direta ou
 indiretamente) conta como publicidade à atividade/institucional — está sujeito às mesmas regras.
 
-⚠️ **A Fin+ só pode fazer publicidade a produtos de crédito concretos se estiver vinculada e com
+⚠️ **A Bruma Finance só pode fazer publicidade a produtos de crédito concretos se estiver vinculada e com
 aprovação prévia do mutuante responsável por esse produto** (ver secção 5). Não incluir taxas,
 spreads, prestações ou TAEG em posts sem essa aprovação.
 
@@ -98,7 +106,7 @@ spreads, prestações ou TAEG em posts sem essa aprovação.
 Todo o suporte publicitário — post, story, reel, carrossel, bio — tem de identificar o
 intermediário de forma inequívoca, com 3 elementos:
 
-1. **Nome completo** (é registo de pessoa singular: **Ricardo Vagner Paiva Custódio** — "Fin+" é
+1. **Nome completo** (é registo de pessoa singular: **Ricardo Vagner Paiva Custódio** — "Bruma Finance" é
    marca, não substitui o nome)
 2. Indicação de que atua como **intermediário de crédito**
 3. **Número de registo no Banco de Portugal**
@@ -112,7 +120,7 @@ Em canais digitais, esta identificação pode estar no próprio post OU através
 redirecione de imediato para o site/página — mas nesse caso a informação tem de estar "no início
 da página" ou numa secção facilmente acessível (não vale esconder no rodapé do site).
 
-Se referires a marca ("Fin+"), acompanha sempre com: *"Fin+ é uma marca detida por Ricardo
+Se referires a marca ("Bruma Finance"), acompanha sempre com: *"Bruma Finance é uma marca em processo de registo, detida por Ricardo
 Vagner Paiva Custódio."*
 
 ---
@@ -123,7 +131,7 @@ Para posts, stories, banners e legendas visíveis na imagem: **mínimo 12 pontos
 (ou equivalente noutra fonte). Para vídeo/Reels: **3,5% da altura do ecrã** (≈38px em Full HD).
 
 - Avalia-se com **zoom a 100%** no ecrã do telemóvel — não vale reduzir o texto para caber.
-- Não uses abreviaturas para identificar a Fin+ ou instituições (mas "BdP" é aceite em contextos
+- Não uses abreviaturas para identificar a Bruma Finance ou instituições (mas "BdP" é aceite em contextos
   de espaço reduzido, como stories).
 
 ---
@@ -148,14 +156,14 @@ intermediário de crédito, condições da oferta) tem de ter **destaque semelha
 mesma imagem/slide.
 
 📌 **O que PODE ir na legenda ou num slide seguinte:** informação que não exige destaque
-similar (ex.: lista de serviços prestados, mutuantes com quem a Fin+ trabalha, exemplo
+similar (ex.: lista de serviços prestados, mutuantes com quem a Bruma Finance trabalha, exemplo
 representativo de TAEG em publicidade a produto). Pode inclusive estar atrás de um "ver mais".
 
 ---
 
 ## 5. Publicidade a produtos de crédito concretos (cuidado extra)
 
-Só podes publicar isto se a Fin+ for intermediário **vinculado** para esse produto, **e**:
+Só podes publicar isto se a Bruma Finance for intermediário **vinculado** para esse produto, **e**:
 
 1. O suporte tem de ser **previamente aprovado pelo mutuante** responsável pelo produto.
 2. Guardar o **comprovativo da aprovação** (e-mail, carta) durante **2 anos**.
@@ -185,15 +193,15 @@ o mutuante montado.
 Frases como "Faça o seu financiamento connosco", "Crédito à sua medida", "Temos um crédito
 para si", "Trate do seu crédito connosco", "Possibilidade de financiamento", "Especialista em
 crédito" **têm de vir sempre acompanhadas, com destaque similar, de "Intermediário de
-crédito" ou "Intermediação de crédito"** — porque sugerem que a Fin+ concede crédito
-diretamente, o que não é o caso (a Fin+ intermedeia, quem concede é o mutuante/banco).
+crédito" ou "Intermediação de crédito"** — porque sugerem que a Bruma Finance concede crédito
+diretamente, o que não é o caso (a Bruma Finance intermedeia, quem concede é o mutuante/banco).
 
 ---
 
 ## 8. Regras específicas do Instagram
 
 - **Carrossel:** informação com destaque similar não pode depender de swipe (ver secção 4).
-- **Stories/Reels:** zoom 100%, sem siglas para identificar a Fin+ (BdP pode ser abreviado, "Fin+"
+- **Stories/Reels:** zoom 100%, sem siglas para identificar a Bruma Finance (BdP pode ser abreviado, "Bruma Finance"
   ou "intermediário de crédito" não).
 - **Histórico:** posts antigos não precisam retroativamente de cumprir o Aviso (estão datados),
   **mas** se reutilizares um post antigo (repost, reshare), conta como novo suporte e tem de
@@ -212,7 +220,7 @@ diretamente, o que não é o caso (a Fin+ intermedeia, quem concede é o mutuant
 - [ ] Nenhuma expressão de uso restrito sem verificar as condições da tabela (secção 6)
 - [ ] Nenhuma expressão de confusão intermediação/concessão sem o disclaimer com destaque
       similar (secção 7)
-- [ ] Identificação da Fin+ como intermediário de crédito + n.º de registo presente e legível
+- [ ] Identificação da Bruma Finance como intermediário de crédito + n.º de registo presente e legível
 - [ ] Texto legível a zoom 100%, sem depender de swipe/scroll/clique para info obrigatória
 - [ ] Se for publicidade institucional pura (só marca): ainda assim, verdadeira, identificável
       como publicidade, não enganosa
